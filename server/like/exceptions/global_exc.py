@@ -2,18 +2,18 @@ import logging
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
+from pydantic.error_wrappers import ValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from ..http_base import HttpResp
 from .base import AppException
+from ..http_base import HttpResp
 
 logger = logging.getLogger(__name__)
 
 
 def configure_exception(app: FastAPI):
-    @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    @app.exception_handler(ValidationError)
+    async def validation_exception_handler(request: Request, exc: ValidationError):
         """处理参数验证的异常
             code: 310 311
         """
@@ -37,6 +37,8 @@ def configure_exception(app: FastAPI):
         resp = HttpResp.SYSTEM_ERROR
         if exc.status_code == 404:
             resp = HttpResp.REQUEST_404_ERROR
+        elif exc.status_code == 405:
+            resp = HttpResp.REQUEST_METHOD_ERROR
         return JSONResponse(
             status_code=200,
             content={'code': resp.code, 'msg': resp.msg,
@@ -47,8 +49,9 @@ def configure_exception(app: FastAPI):
         """处理自定义异常
             code: .
         """
-        logger.error('app_exception_handler: url=[%s]', request.url.path)
-        logger.error(exc, exc_info=True)
+        if exc.echo_exc:
+            logger.error('app_exception_handler: url=[%s]', request.url.path)
+            logger.error(exc, exc_info=True)
         return JSONResponse(
             status_code=200,
             content={'code': exc.code, 'msg': exc.msg, 'data': []})

@@ -2,19 +2,17 @@ from fastapi import FastAPI
 
 
 def configure_event(app: FastAPI):
-    from redis import asyncio as aioredis
     from fastapi_cache import FastAPICache
-    from fastapi_cache.backends.redis import RedisBackend
     from .config import get_settings
     from .dependencies.database import db
+    from .dependencies.cache import redis_be, custom_key_builder
 
     settings = get_settings()
 
     @app.on_event('startup')
     async def startup():
         await db.connect()
-        redis = aioredis.from_url(settings.redis_url, encoding='utf8', decode_responses=True)
-        FastAPICache.init(RedisBackend(redis), prefix='like')
+        FastAPICache.init(redis_be, prefix=settings.redis_prefix, key_builder=custom_key_builder)
 
     @app.on_event('shutdown')
     async def shutdown():
@@ -24,11 +22,13 @@ def configure_event(app: FastAPI):
 def configure_router(app: FastAPI, prefix='/api'):
     from .front.routers import index
     from .front.routers import upload
-    from .admin.routers import user
+    from .admin.routers import user, common, system
 
     app.include_router(index.router, prefix=prefix)
     app.include_router(upload.router, prefix=prefix)
     app.include_router(user.router, prefix=prefix)
+    app.include_router(common.router, prefix=prefix)
+    app.include_router(system.router, prefix=prefix)
 
 
 def create_app() -> FastAPI:

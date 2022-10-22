@@ -2,10 +2,10 @@ from fastapi import APIRouter
 
 from like.http_base import unified_resp
 
-router = APIRouter(prefix='/user')
+router = APIRouter(prefix='/common')
 
 
-@router.get('/list')
+@router.get('/index/console')
 @unified_resp
-async def user_list():
+async def index_console():
     return
