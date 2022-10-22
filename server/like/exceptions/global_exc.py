@@ -31,7 +31,7 @@ def configure_exception(app: FastAPI):
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         """处理客户端请求异常
-            code: 404
+            code: 312 404
         """
         logger.warning('http_exception_handler: url=[%s], status_code=[%s]', request.url.path, exc.status_code)
         resp = HttpResp.SYSTEM_ERROR
@@ -62,6 +62,7 @@ def configure_exception(app: FastAPI):
             code: 500
         """
         logger.error('global_exception_handler: url=[%s]', request.url.path)
+        logger.error(exc, exc_info=True)
         return JSONResponse(
             status_code=200,
             content={'code': HttpResp.SYSTEM_ERROR.code, 'msg': HttpResp.SYSTEM_ERROR.msg, 'data': []})

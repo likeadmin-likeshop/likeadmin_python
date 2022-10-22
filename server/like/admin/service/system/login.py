@@ -2,13 +2,14 @@ import logging
 import time
 from abc import ABC, abstractmethod
 
+import user_agents
 from fastapi import Request, Depends
 
 from like.admin.config import AdminConfig
 from like.dependencies.database import db
 from like.exceptions.base import AppException
 from like.http_base import HttpResp
-from like.models import system_auth_admin
+from like.models import system_auth_admin, system_log_login
 from like.utils.redis import RedisUtil
 from like.utils.tools import ToolsUtil
 from .auth_admin import ISystemAuthAdminService, SystemAuthAdminService
@@ -32,15 +33,15 @@ class SystemLoginService(ISystemLoginService):
     async def login(self, login_in: SystemLoginIn) -> SystemLoginOut:
         sys_admin = await self.auth_admin_service.find_by_username(login_in.username)
         if not sys_admin or sys_admin.is_delete:
-            # TODO: record
-            raise
+            await self.record_login_log(0, login_in.username, HttpResp.LOGIN_ACCOUNT_ERROR.msg)
+            raise AppException(HttpResp.LOGIN_ACCOUNT_ERROR)
         if sys_admin.is_disable:
-            # TODO: record
-            raise
+            await self.record_login_log(sys_admin.id, sys_admin.username, HttpResp.LOGIN_DISABLE_ERROR.msg)
+            raise AppException(HttpResp.LOGIN_DISABLE_ERROR)
         md5_pwd = ToolsUtil.make_md5(f'{login_in.password}{sys_admin.salt}')
         if sys_admin.password != md5_pwd:
-            # TODO: record
-            raise
+            await self.record_login_log(sys_admin.id, sys_admin.username, HttpResp.LOGIN_ACCOUNT_ERROR.msg)
+            raise AppException(HttpResp.LOGIN_ACCOUNT_ERROR)
         try:
             token = ToolsUtil.make_token()
             if not sys_admin.is_multipoint:
@@ -59,14 +60,25 @@ class SystemLoginService(ISystemLoginService):
                 .values(last_login_ip=self.request.client.host, last_login_time=int(time.time()))
             await db.execute(row_update)
 
-            # TODO: record
+            await self.record_login_log(sys_admin.id, sys_admin.username)
             return response
         except Exception as e:
-            # TODO: record
+            err_msg = str(e)
+            await self.record_login_log(sys_admin.id, sys_admin.username, err_msg if err_msg else '未知错误')
             raise AppException(HttpResp.FAILED, echo_exc=True)
 
     async def logout(self, logout_in: SystemLogoutIn):
         await RedisUtil.delete(f'{AdminConfig.backstage_token_key}{logout_in.token}')
+
+    async def record_login_log(self, admin_id: int, username: str, error: str = ''):
+        ua = user_agents.parse(self.request.headers.get('user-agent', ''))
+        try:
+            row = system_log_login.insert().values(
+                admin_id=admin_id, username=username, ip=self.request.client.host,
+                os=ua.os.family, browser=ua.browser.family, status=0 if error else 1, create_time=int(time.time()))
+            await db.execute(row)
+        except Exception as e:
+            logging.error('记录登录日志异常 %s', str(e))
 
     def __init__(self, request: Request, auth_service: ISystemAuthAdminService):
         self.request = request
