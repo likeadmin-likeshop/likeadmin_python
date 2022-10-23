@@ -3,7 +3,8 @@ from sqlalchemy.dialects import mysql
 
 from .base import Base
 
-__all__ = ['SystemAuthAdmin', 'SystemLogLogin', 'system_auth_admin', 'system_log_login']
+__all__ = ['SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemLogLogin',
+           'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_log_login']
 
 
 class SystemAuthAdmin(Base):
@@ -41,6 +42,54 @@ class SystemAuthAdmin(Base):
     delete_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='删除时间')
 
 
+class SystemAuthMenu(Base):
+    __tablename__ = 'la_system_auth_menu'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4',
+        'mysql_collate': 'utf8mb4_general_ci',
+        'mysql_row_format': 'Dynamic',
+        'mysql_auto_increment': '1',
+        'comment': '系统菜单管理表',
+    }
+
+    id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment='主键')
+    pid = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='上级菜单')
+    menu_type = Column(mysql.CHAR(2), nullable=False, server_default='', comment='权限类型: M=目录，C=菜单，A=按钮')
+    menu_name = Column(String(100), nullable=False, server_default='', comment='菜单名称')
+    menu_icon = Column(String(100), nullable=False, server_default='', comment='菜单图标')
+    menu_sort = Column(mysql.SMALLINT(5), nullable=False, server_default=text('0'), comment='菜单排序')
+    perms = Column(String(100), nullable=False, server_default='', comment='权限标识')
+    paths = Column(String(100), nullable=False, server_default='', comment='路由地址')
+    component = Column(String(200), nullable=False, server_default='', comment='前端组件')
+    selected = Column(String(200), nullable=False, server_default='', comment='选中路径')
+    params = Column(String(200), nullable=False, server_default='', comment='路由参数')
+    is_cache = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+                      comment='是否缓存: 0=否, 1=是')
+    is_show = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('1'),
+                     comment='是否显示: 0=否, 1=是')
+    is_disable = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+                        comment='是否禁用: 0=否, 1=是')
+    create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
+    update_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='更新时间')
+
+
+class SystemAuthPerm(Base):
+    __tablename__ = 'la_system_auth_perm'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4',
+        'mysql_collate': 'utf8mb4_general_ci',
+        'mysql_row_format': 'Dynamic',
+        'mysql_auto_increment': '1',
+        'comment': '系统角色菜单表',
+    }
+
+    id = Column(String(100), primary_key=True, server_default='', comment='主键')
+    role_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='角色ID')
+    menu_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='菜单ID')
+
+
 class SystemLogLogin(Base):
     __tablename__ = 'la_system_log_login'
     __table_args__ = {
@@ -64,4 +113,6 @@ class SystemLogLogin(Base):
 
 
 system_auth_admin = SystemAuthAdmin.__table__
+system_auth_menu = SystemAuthMenu.__table__
+system_auth_perm = SystemAuthPerm.__table__
 system_log_login = SystemLogLogin.__table__

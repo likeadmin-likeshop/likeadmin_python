@@ -1,4 +1,5 @@
 import json
+
 from fastapi import Request
 
 
@@ -8,6 +9,7 @@ async def verify_token(request: Request):
     from like.admin.config import AdminConfig
     from like.http_base import HttpResp
     from like.admin.service.system.auth_admin import SystemAuthAdminService
+    from like.admin.service.system.auth_perm import SystemAuthPermService
 
     auths = request.url.path.replace('/api/', '').replace('/', ':')
 
@@ -50,8 +52,7 @@ async def verify_token(request: Request):
 
     role_id = mapping.get('role')
     if not await RedisUtil.hexists(AdminConfig.backstage_roles_key, role_id):
-        # TODO: cache role menus
-        pass
+        await SystemAuthPermService.cache_role_menus_by_role_id(role_id)
 
     menus = await RedisUtil.hget(AdminConfig.backstage_roles_key, role_id)
     if not (menus and auths in menus.split(',')):

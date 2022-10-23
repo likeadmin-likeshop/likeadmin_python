@@ -46,6 +46,10 @@ class RedisUtil:
         return cnt
 
     @classmethod
+    async def hset(cls, key: str, field: str, value: Field, time: int = None) -> int:
+        return await cls.hmset(cls.get_key(key), mapping={field: value}, time=time)
+
+    @classmethod
     async def hget(cls, key: str, field: str) -> str:
         return await RedisUtil.redis.hget(cls.get_key(key), field)
 

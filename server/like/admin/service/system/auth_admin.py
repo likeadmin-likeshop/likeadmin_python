@@ -16,7 +16,7 @@ class ISystemAuthAdminService(ABC):
 
     @classmethod
     @abstractmethod
-    async def cache_admin_user_by_uid(cls, id_: int) -> Union[SystemAuthAdmin, None]:
+    async def cache_admin_user_by_uid(cls, id_: int):
         pass
 
 
