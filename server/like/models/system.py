@@ -3,11 +3,14 @@ from sqlalchemy.dialects import mysql
 
 from .base import Base
 
-__all__ = ['SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemLogLogin',
-           'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_log_login']
+__all__ = [
+    'SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemLogLogin',
+    'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_log_login'
+]
 
 
 class SystemAuthAdmin(Base):
+    """系统管理员实体"""
     __tablename__ = 'la_system_auth_admin'
     __table_args__ = {
         'mysql_engine': 'InnoDB',
@@ -43,6 +46,7 @@ class SystemAuthAdmin(Base):
 
 
 class SystemAuthMenu(Base):
+    """系统菜单实体"""
     __tablename__ = 'la_system_auth_menu'
     __table_args__ = {
         'mysql_engine': 'InnoDB',
@@ -75,6 +79,7 @@ class SystemAuthMenu(Base):
 
 
 class SystemAuthPerm(Base):
+    """系统角色菜单实体"""
     __tablename__ = 'la_system_auth_perm'
     __table_args__ = {
         'mysql_engine': 'InnoDB',
@@ -91,6 +96,7 @@ class SystemAuthPerm(Base):
 
 
 class SystemLogLogin(Base):
+    """系统登录日志实体"""
     __tablename__ = 'la_system_log_login'
     __table_args__ = {
         'mysql_engine': 'InnoDB',

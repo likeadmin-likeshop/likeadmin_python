@@ -2,9 +2,14 @@ from typing import Final
 
 
 class AdminConfig:
+    """后台公共配置"""
+    # 管理缓存键
     backstage_manage_key: Final[str] = 'backstage:manage'
+    # 角色缓存键
     backstage_roles_key: Final[str] = 'backstage:roles'
+    # 令牌缓存键
     backstage_token_key: Final[str] = 'backstage:token:'
+    # 令牌的集合
     backstage_token_set: Final[str] = 'backstage:token:set:'
 
     # 免登录验证

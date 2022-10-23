@@ -12,6 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 def configure_exception(app: FastAPI):
+    """配置全局异常处理
+    """
+
     @app.exception_handler(ValidationError)
     async def validation_exception_handler(request: Request, exc: ValidationError):
         """处理参数验证的异常

@@ -7,6 +7,7 @@ from like.utils.redis import RedisUtil
 
 
 class ISystemAuthPermService(ABC):
+    """系统权限服务抽象类"""
 
     @classmethod
     @abstractmethod
@@ -15,9 +16,11 @@ class ISystemAuthPermService(ABC):
 
 
 class SystemAuthPermService(ISystemAuthPermService):
+    """系统权限服务实现类"""
 
     @classmethod
     async def cache_role_menus_by_role_id(cls, role_id: int):
+        """缓存角色菜单"""
         auth_perms = await db.fetch_all(
             system_auth_perm.select().where(system_auth_perm.c.role_id == role_id))
         menu_ids = [i.menu_id for i in auth_perms]
@@ -34,4 +37,5 @@ class SystemAuthPermService(ISystemAuthPermService):
 
     @classmethod
     async def instance(cls):
+        """实例化"""
         return cls()

@@ -3,11 +3,14 @@ from sqlalchemy.dialects import mysql
 
 from .base import Base
 
-
-__all__ = ['users']
+__all__ = [
+    'User',
+    'users',
+]
 
 
 class User(Base):
+    """用户实体"""
     __tablename__ = 'la_user'
     __table_args__ = {
         'mysql_engine': 'InnoDB',

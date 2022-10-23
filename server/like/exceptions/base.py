@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class AppException(Exception):
-    """The App Exception
+    """应用异常基类
     """
 
     def __init__(self, exc: HttpCode, *args, echo_exc: bool = False, **kwargs):

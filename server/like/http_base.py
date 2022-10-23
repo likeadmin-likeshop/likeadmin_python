@@ -7,6 +7,8 @@ HttpCode = namedtuple('HttpResp', ['code', 'msg'])
 
 
 class HttpResp:
+    """HTTP响应结果
+    """
     SUCCESS = HttpCode(200, '成功')
     FAILED = HttpCode(300, '失败')
     PARAMS_VALID_ERROR = HttpCode(310, '参数校验错误')
@@ -26,6 +28,10 @@ class HttpResp:
 
 
 def unified_resp(func):
+    """统一响应格式
+        接口正常返回时,统一响应结果格式
+    """
+
     @wraps(func)
     async def wrapper(*args, **kwargs):
         resp = await func(*args, **kwargs) or []

@@ -2,6 +2,7 @@ from fastapi import FastAPI, Depends
 
 
 def configure_event(app: FastAPI):
+    """配置事件处理, 并初始化三方库"""
     from fastapi_cache import FastAPICache
     from .config import get_settings
     from .dependencies.database import db
@@ -20,12 +21,14 @@ def configure_event(app: FastAPI):
 
 
 def configure_middleware(app: FastAPI):
+    """配置中间件"""
     from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
     app.add_middleware(ProxyHeadersMiddleware)
 
 
 def configure_router(app: FastAPI, prefix='/api'):
+    """配置路由"""
     from .front.routers import index
     from .front.routers import upload
     from .admin.routers import user, common, system
@@ -38,6 +41,7 @@ def configure_router(app: FastAPI, prefix='/api'):
 
 
 def create_app() -> FastAPI:
+    """创建FastAPI应用,并初始化"""
     from .exceptions.global_exc import configure_exception
     from .dependencies.verify import verify_token
 
