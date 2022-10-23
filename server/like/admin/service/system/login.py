@@ -1,5 +1,6 @@
 import logging
 import time
+from typing import Final
 from abc import ABC, abstractmethod
 
 import user_agents
@@ -28,7 +29,6 @@ class ISystemLoginService(ABC):
 
 
 class SystemLoginService(ISystemLoginService):
-    auth_admin_service: ISystemAuthAdminService
 
     async def login(self, login_in: SystemLoginIn) -> SystemLoginOut:
         sys_admin = await self.auth_admin_service.find_by_username(login_in.username)
@@ -81,8 +81,8 @@ class SystemLoginService(ISystemLoginService):
             logging.error('记录登录日志异常 %s', str(e))
 
     def __init__(self, request: Request, auth_service: ISystemAuthAdminService):
-        self.request = request
-        self.auth_admin_service = auth_service
+        self.request: Final[Request] = request
+        self.auth_admin_service: Final[ISystemAuthAdminService] = auth_service
 
     @classmethod
     async def instance(cls, request: Request,

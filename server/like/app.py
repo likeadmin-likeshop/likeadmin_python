@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 
 
 def configure_event(app: FastAPI):
@@ -19,6 +19,12 @@ def configure_event(app: FastAPI):
         await db.disconnect()
 
 
+def configure_middleware(app: FastAPI):
+    from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+    app.add_middleware(ProxyHeadersMiddleware)
+
+
 def configure_router(app: FastAPI, prefix='/api'):
     from .front.routers import index
     from .front.routers import upload
@@ -33,10 +39,12 @@ def configure_router(app: FastAPI, prefix='/api'):
 
 def create_app() -> FastAPI:
     from .exceptions.global_exc import configure_exception
+    from .dependencies.verify import verify_token
 
-    app = FastAPI()
+    app = FastAPI(dependencies=[Depends(verify_token)])
 
     configure_exception(app)
     configure_event(app)
+    configure_middleware(app)
     configure_router(app)
     return app
