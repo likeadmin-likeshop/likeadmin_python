@@ -1,8 +1,8 @@
 import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
 
-from like.admin.schemas.system import SystemLoginIn
+from like.admin.schemas.system import SystemLoginIn, SystemLogoutIn
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
 from like.http_base import unified_resp
 
@@ -16,6 +16,15 @@ router = APIRouter(prefix='/system')
 async def login(login_in: SystemLoginIn, login_service: ISystemLoginService = Depends(SystemLoginService.instance)):
     """登录系统"""
     return await login_service.login(login_in)
+
+
+@router.post('/logout')
+@unified_resp
+async def logout(token: str = Header(),
+                 login_service: ISystemLoginService = Depends(SystemLoginService.instance)):
+    """退出登录"""
+    await login_service.logout(SystemLogoutIn(token=token))
+    return
 
 
 @router.get('/admin/self')
