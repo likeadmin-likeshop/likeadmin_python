@@ -39,6 +39,42 @@ async def admin_list():
     return
 
 
+@router.get('/admin/detail')
+@unified_resp
+async def admin_detail():
+    return
+
+
+@router.post('/admin/add')
+@unified_resp
+async def admin_add():
+    return
+
+
+@router.post('/admin/edit')
+@unified_resp
+async def admin_edit():
+    return
+
+
+@router.post('/admin/upInfo')
+@unified_resp
+async def admin_upinfo():
+    return
+
+
+@router.post('/admin/del')
+@unified_resp
+async def admin_del():
+    return
+
+
+@router.post('/admin/disable')
+@unified_resp
+async def admin_disable():
+    return
+
+
 @router.get('/menu/route')
 @unified_resp
 async def menu_route():
