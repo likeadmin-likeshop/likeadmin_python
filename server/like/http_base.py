@@ -21,7 +21,7 @@ class HttpResp:
     PARAMS_VALID_ERROR = HttpCode(310, '参数校验错误')
     PARAMS_TYPE_ERROR = HttpCode(311, '参数类型错误')
     REQUEST_METHOD_ERROR = HttpCode(312, '请求方法错误')
-    # ASSERT_ARGUMENT_ERROR = HttpResp(313, '断言参数错误')
+    ASSERT_ARGUMENT_ERROR = HttpCode(313, '断言参数错误')
 
     LOGIN_ACCOUNT_ERROR = HttpCode(330, '登录账号或密码错误')
     LOGIN_DISABLE_ERROR = HttpCode(331, '登录账号已被禁用了')

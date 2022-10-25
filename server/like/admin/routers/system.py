@@ -46,6 +46,7 @@ async def admin_list():
 @unified_resp
 async def admin_detail(detail_in: SystemAuthAdminDetailIn = Depends(),
                        auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
+    """管理员详细"""
     return await auth_service.detail(detail_in.id)
 
 

@@ -70,11 +70,12 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         return SystemAuthAdminSelfOut(user=SystemAuthAdminOut(**dict(sys_admin)), permissions=auths)
 
     async def detail(self, id_: int) -> SystemAuthAdminOut:
+        """管理员详细"""
         sys_admin = await db.fetch_one(
             system_auth_admin.select().where(
                 system_auth_admin.c.id == id_, system_auth_admin.c.is_delete == 0).limit(1))
         if not sys_admin:
-            raise AppException(HttpResp.FAILED, msg='账号已不存在！')
+            raise AppException(HttpResp.ASSERT_ARGUMENT_ERROR, msg='账号已不存在！')
         # TODO: 头像路径处理
         return SystemAuthAdminOut(**dict(sys_admin))
 
