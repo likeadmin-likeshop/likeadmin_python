@@ -5,6 +5,8 @@ from typing import Union, Final
 from fastapi import Depends
 
 from like.admin.config import AdminConfig
+from like.exceptions.base import AppException
+from like.http_base import HttpResp
 from like.admin.schemas.system import SystemAuthAdminOut, SystemAuthAdminSelfOut
 from like.dependencies.database import db
 from like.models import system_auth_admin, system_auth_menu, SystemAuthAdmin
@@ -21,6 +23,10 @@ class ISystemAuthAdminService(ABC):
 
     @abstractmethod
     async def self(self, admin_id: int) -> SystemAuthAdminSelfOut:
+        pass
+
+    @abstractmethod
+    async def detail(self, id_: int) -> SystemAuthAdminOut:
         pass
 
     @classmethod
@@ -62,6 +68,15 @@ class SystemAuthAdminService(ISystemAuthAdminService):
             auths.append('*')
         # TODO: 头像路径处理
         return SystemAuthAdminSelfOut(user=SystemAuthAdminOut(**dict(sys_admin)), permissions=auths)
+
+    async def detail(self, id_: int) -> SystemAuthAdminOut:
+        sys_admin = await db.fetch_one(
+            system_auth_admin.select().where(
+                system_auth_admin.c.id == id_, system_auth_admin.c.is_delete == 0).limit(1))
+        if not sys_admin:
+            raise AppException(HttpResp.FAILED, msg='账号已不存在！')
+        # TODO: 头像路径处理
+        return SystemAuthAdminOut(**dict(sys_admin))
 
     @classmethod
     async def cache_admin_user_by_uid(cls, id_: int):

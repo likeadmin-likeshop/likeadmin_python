@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends, Request, Header
 
-from like.admin.schemas.system import SystemLoginIn, SystemLogoutIn
+from like.admin.schemas.system import SystemLoginIn, SystemLogoutIn, SystemAuthAdminDetailIn
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
 from like.http_base import unified_resp
@@ -44,8 +44,9 @@ async def admin_list():
 
 @router.get('/admin/detail')
 @unified_resp
-async def admin_detail():
-    return
+async def admin_detail(detail_in: SystemAuthAdminDetailIn = Depends(),
+                       auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
+    return await auth_service.detail(detail_in.id)
 
 
 @router.post('/admin/add')

@@ -20,6 +20,11 @@ class SystemLogoutIn(BaseModel):
     token: str
 
 
+class SystemAuthAdminDetailIn(BaseModel):
+    """管理员详情参数"""
+    id: int  # 主键
+
+
 class SystemAuthAdminOut(BaseModel):
     """管理员返回信息"""
     id: int  # 主键
