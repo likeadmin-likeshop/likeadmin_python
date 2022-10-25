@@ -13,10 +13,12 @@ class AppException(Exception):
     """应用异常基类
     """
 
-    def __init__(self, exc: HttpCode, *args, echo_exc: bool = False, **kwargs):
+    def __init__(self, exc: HttpCode, *args, code: int = None, msg: str = None, echo_exc: bool = False, **kwargs):
         super().__init__()
-        self._code = exc.code or HttpResp.FAILED.code
-        self._message = exc.msg or HttpResp.FAILED.msg
+        _code = code if code is not None else exc.code
+        _message = msg if msg is not None else exc.msg
+        self._code = _code or HttpResp.FAILED.code
+        self._message = _message or HttpResp.FAILED.msg
         self.echo_exc = echo_exc
         self.args = args or []
         self.kwargs = kwargs or {}
