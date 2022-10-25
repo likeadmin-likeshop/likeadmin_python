@@ -4,8 +4,8 @@ from sqlalchemy.dialects import mysql
 from .base import Base
 
 __all__ = [
-    'SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemLogLogin',
-    'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_log_login'
+    'SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemAuthRole', 'SystemLogLogin',
+    'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_auth_role', 'system_log_login',
 ]
 
 
@@ -95,6 +95,28 @@ class SystemAuthPerm(Base):
     menu_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='菜单ID')
 
 
+class SystemAuthRole(Base):
+    """系统角色实体"""
+    __tablename__ = 'la_system_auth_role'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4',
+        'mysql_collate': 'utf8mb4_general_ci',
+        'mysql_row_format': 'Dynamic',
+        'mysql_auto_increment': '1',
+        'comment': '系统角色管理表',
+    }
+
+    id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment='主键')
+    name = Column(String(100), nullable=False, server_default='', comment='角色名称')
+    remark = Column(String(200), nullable=False, server_default='', comment='备注信息')
+    is_disable = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+                        comment='是否禁用: 0=否, 1=是')
+    sort = Column(mysql.SMALLINT(5), nullable=False, server_default=text('0'), comment='角色排序')
+    create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
+    update_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='更新时间')
+
+
 class SystemLogLogin(Base):
     """系统登录日志实体"""
     __tablename__ = 'la_system_log_login'
@@ -121,4 +143,5 @@ class SystemLogLogin(Base):
 system_auth_admin = SystemAuthAdmin.__table__
 system_auth_menu = SystemAuthMenu.__table__
 system_auth_perm = SystemAuthPerm.__table__
+system_auth_role = SystemAuthRole.__table__
 system_log_login = SystemLogLogin.__table__

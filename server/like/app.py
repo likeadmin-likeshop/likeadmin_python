@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.staticfiles import StaticFiles
 
 
 def configure_event(app: FastAPI):
@@ -42,10 +43,16 @@ def configure_router(app: FastAPI, prefix='/api'):
 
 def create_app() -> FastAPI:
     """创建FastAPI应用,并初始化"""
+    from .config import get_settings
     from .exceptions.global_exc import configure_exception
     from .dependencies.verify import verify_token
 
     app = FastAPI(dependencies=[Depends(verify_token)])
+
+    settings = get_settings()
+    # 静态资源路径配置
+    if settings.enabled_static:
+        app.mount(settings.static_path, StaticFiles(directory=settings.static_directory), name='static')
 
     configure_exception(app)
     configure_event(app)

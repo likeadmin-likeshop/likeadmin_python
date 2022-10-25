@@ -1,8 +1,9 @@
+from typing import List
 from abc import ABC, abstractmethod
 
 from like.admin.config import AdminConfig
 from like.dependencies.database import db
-from like.models import system_auth_menu, system_auth_perm
+from like.models import system_auth_menu, system_auth_perm, system_auth_role
 from like.utils.redis import RedisUtil
 
 
@@ -11,12 +12,27 @@ class ISystemAuthPermService(ABC):
 
     @classmethod
     @abstractmethod
-    async def cache_role_menus_by_role_id(cls, id_: int):
+    async def select_menus_by_role_id(cls, role_id: int) -> List[int]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    async def cache_role_menus_by_role_id(cls, role_id: int):
         pass
 
 
 class SystemAuthPermService(ISystemAuthPermService):
     """系统权限服务实现类"""
+
+    @classmethod
+    async def select_menus_by_role_id(cls, role_id: int) -> List[int]:
+        role = await db.fetch_one(
+            system_auth_role.select()
+            .where(system_auth_role.c.id == role_id, system_auth_role.c.is_disable == 0).limit(1))
+        if not role:
+            return []
+        perms = await db.fetch_all(system_auth_perm.select().where(system_auth_perm.c.role_id == role_id))
+        return [i.menu_id for i in perms]
 
     @classmethod
     async def cache_role_menus_by_role_id(cls, role_id: int):

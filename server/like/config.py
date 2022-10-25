@@ -35,7 +35,14 @@ class Settings(BaseSettings):
 
     # Redis源配置
     redis_url: str = 'redis://localhost:6379'
-    
+
+    # 是否启用静态资源
+    enabled_static = False
+    # 静态资源URL路径
+    static_path = '/api/static'
+    # 静态资源本地路径
+    static_directory = 'static'
+
     # 全局配置
     # 时区
     timezone: str = 'Asia/Shanghai'
