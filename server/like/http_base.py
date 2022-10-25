@@ -1,5 +1,12 @@
 from collections import namedtuple
+from datetime import datetime
 from functools import wraps
+
+import pytz
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+
+from .config import get_settings
 
 __all__ = ['HttpCode', 'HttpResp', 'unified_resp']
 
@@ -35,6 +42,12 @@ def unified_resp(func):
     @wraps(func)
     async def wrapper(*args, **kwargs):
         resp = await func(*args, **kwargs) or []
-        return {'code': HttpResp.SUCCESS.code, 'msg': HttpResp.SUCCESS.msg, 'data': resp}
+        return JSONResponse(content=jsonable_encoder(
+            # 正常请求响应
+            {'code': HttpResp.SUCCESS.code, 'msg': HttpResp.SUCCESS.msg, 'data': resp},
+            # 自定义日期时间格式编码器
+            custom_encoder={
+                datetime: lambda dt: dt.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(get_settings().timezone))
+                .strftime(get_settings().datetime_fmt)}))
 
     return wrapper

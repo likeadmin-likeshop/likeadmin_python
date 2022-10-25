@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     redis_url: str = 'redis://localhost:6379'
     
     # 全局配置
+    # 时区
+    timezone: str = 'Asia/Shanghai'
+    # 日期时间格式
+    datetime_fmt: str = '%Y-%m-%d %H:%M:%S'
     # 系统加密字符
     secret: str = 'UVTIyzCy'
     # Redis键前缀
