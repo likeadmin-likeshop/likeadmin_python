@@ -45,6 +45,7 @@ def unified_resp(func):
         return JSONResponse(content=jsonable_encoder(
             # 正常请求响应
             {'code': HttpResp.SUCCESS.code, 'msg': HttpResp.SUCCESS.msg, 'data': resp},
+            by_alias=False,
             # 自定义日期时间格式编码器
             custom_encoder={
                 datetime: lambda dt: dt.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(get_settings().timezone))
