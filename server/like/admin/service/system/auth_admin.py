@@ -67,7 +67,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         else:
             auths.append('*')
         # TODO: 头像路径处理
-        return SystemAuthAdminSelfOut(user=SystemAuthAdminOut(**dict(sys_admin)), permissions=auths)
+        return SystemAuthAdminSelfOut(user=SystemAuthAdminOut.from_orm(sys_admin), permissions=auths)
 
     async def detail(self, id_: int) -> SystemAuthAdminOut:
         """管理员详细"""
@@ -77,7 +77,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         if not sys_admin:
             raise AppException(HttpResp.ASSERT_ARGUMENT_ERROR, msg='账号已不存在！')
         # TODO: 头像路径处理
-        return SystemAuthAdminOut(**dict(sys_admin))
+        return SystemAuthAdminOut.from_orm(sys_admin)
 
     @classmethod
     async def cache_admin_user_by_uid(cls, id_: int):
