@@ -5,8 +5,6 @@ from typing import Union, Final
 from fastapi import Depends
 
 from like.admin.config import AdminConfig
-from like.exceptions.base import AppException
-from like.http_base import HttpResp
 from like.admin.schemas.system import SystemAuthAdminOut, SystemAuthAdminSelfOut
 from like.dependencies.database import db
 from like.models import system_auth_admin, system_auth_menu, SystemAuthAdmin
@@ -74,8 +72,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         sys_admin = await db.fetch_one(
             system_auth_admin.select().where(
                 system_auth_admin.c.id == id_, system_auth_admin.c.is_delete == 0).limit(1))
-        if not sys_admin:
-            raise AppException(HttpResp.ASSERT_ARGUMENT_ERROR, msg='账号已不存在！')
+        assert sys_admin, '账号已不存在！'
         # TODO: 头像路径处理
         return SystemAuthAdminOut.from_orm(sys_admin)
 

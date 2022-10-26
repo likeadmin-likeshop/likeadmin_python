@@ -30,17 +30,6 @@ def configure_exception(app: FastAPI):
             status_code=200,
             content={'code': resp.code, 'msg': resp.msg, 'data': errs})
 
-    @app.exception_handler(ValidationError)
-    async def validation_exception_handler(request: Request, exc: ValidationError):
-        """处理参数验证的异常 (除请求参数验证之外的)
-            code: 500
-        """
-        logger.error('validation_exception_handler: url=[%s]', request.url.path)
-        logger.error(exc, exc_info=True)
-        return JSONResponse(
-            status_code=200,
-            content={'code': HttpResp.SYSTEM_ERROR.code, 'msg': HttpResp.SYSTEM_ERROR.code, 'data': []})
-
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException):
         """处理客户端请求异常
@@ -54,7 +43,18 @@ def configure_exception(app: FastAPI):
             resp = HttpResp.REQUEST_METHOD_ERROR
         return JSONResponse(
             status_code=200,
-            content={'code': resp.code, 'msg': resp.msg,
+            content={'code': resp.code, 'msg': resp.msg, 'data': []})
+
+    @app.exception_handler(AssertionError)
+    async def assert_exception_handler(request: Request, exc: AssertionError):
+        """处理断言异常
+            code: 313
+        """
+        errs = ','.join(exc.args) if exc.args else HttpResp.ASSERT_ARGUMENT_ERROR.msg
+        logger.warning('app_exception_handler: url=[%s], errs=[%s]', request.url.path, errs)
+        return JSONResponse(
+            status_code=200,
+            content={'code': HttpResp.ASSERT_ARGUMENT_ERROR.code, 'msg': errs,
                      'data': []})
 
     @app.exception_handler(AppException)
@@ -68,6 +68,17 @@ def configure_exception(app: FastAPI):
         return JSONResponse(
             status_code=200,
             content={'code': exc.code, 'msg': exc.msg, 'data': []})
+
+    @app.exception_handler(ValidationError)
+    async def validation_exception_handler(request: Request, exc: ValidationError):
+        """处理参数验证的异常 (除请求参数验证之外的)
+            code: 500
+        """
+        logger.error('validation_exception_handler: url=[%s]', request.url.path)
+        logger.error(exc, exc_info=True)
+        return JSONResponse(
+            status_code=200,
+            content={'code': HttpResp.SYSTEM_ERROR.code, 'msg': HttpResp.SYSTEM_ERROR.code, 'data': []})
 
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
