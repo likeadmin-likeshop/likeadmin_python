@@ -1,15 +1,18 @@
 import json
+import time
 from abc import ABC, abstractmethod
 from typing import Union, Final
 
 from fastapi import Depends
 
 from like.admin.config import AdminConfig
-from like.admin.schemas.system import SystemAuthAdminOut, SystemAuthAdminSelfOut
+from like.admin.schemas.system import SystemAuthAdminCreateIn, SystemAuthAdminOut, SystemAuthAdminSelfOut
 from like.dependencies.database import db
+from like.utils.tools import ToolsUtil
 from like.models import system_auth_admin, system_auth_menu, SystemAuthAdmin
 from like.utils.redis import RedisUtil
 from .auth_perm import ISystemAuthPermService, SystemAuthPermService
+from .auth_role import ISystemAuthRoleService, SystemAuthRoleService
 
 
 class ISystemAuthAdminService(ABC):
@@ -25,6 +28,10 @@ class ISystemAuthAdminService(ABC):
 
     @abstractmethod
     async def detail(self, id_: int) -> SystemAuthAdminOut:
+        pass
+
+    @abstractmethod
+    async def add(self, admin_create_in: SystemAuthAdminCreateIn):
         pass
 
     @classmethod
@@ -76,6 +83,30 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         # TODO: 头像路径处理
         return SystemAuthAdminOut.from_orm(sys_admin)
 
+    async def add(self, admin_create_in: SystemAuthAdminCreateIn):
+        """管理员新增"""
+        assert not await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.username == admin_create_in.username,
+                   system_auth_admin.c.is_delete == 0).limit(1)), '账号已存在换一个吧！'
+        assert not await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.nickname == admin_create_in.nickname,
+                   system_auth_admin.c.is_delete == 0).limit(1)), '昵称已存在换一个吧！'
+        role_out = await self.auth_role_service.detail(admin_create_in.role)
+        assert role_out, '角色不存在!'
+        assert role_out.isDisable <= 0, '当前角色已被禁用!'
+        create_dict = dict(admin_create_in)
+        salt = ToolsUtil.random_string(5)
+        create_dict['salt'] = salt
+        create_dict['password'] = ToolsUtil.make_md5(f'{admin_create_in.password.strip()}{salt}')
+        # TODO: 头像路径处理
+        create_dict['avatar'] = admin_create_in.avatar if admin_create_in.avatar else '/api/static/backend_avatar.png'
+        create_dict['create_time'] = int(time.time())
+        create_dict['update_time'] = int(time.time())
+        row = system_auth_admin.insert().values(**create_dict)
+        await db.execute(row)
+
     @classmethod
     async def cache_admin_user_by_uid(cls, id_: int):
         """缓存管理员"""
@@ -84,10 +115,13 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         await RedisUtil.hmset(f'{AdminConfig.backstage_manage_key}', {f'{row.id}': json.dumps(dict(row))})
         return
 
-    def __init__(self, auth_perm_service: ISystemAuthPermService):
+    def __init__(self, auth_perm_service: ISystemAuthPermService, auth_role_service: ISystemAuthRoleService):
         self.auth_perm_service: Final[ISystemAuthPermService] = auth_perm_service
+        self.auth_role_service: Final[ISystemAuthRoleService] = auth_role_service
 
     @classmethod
-    async def instance(cls, auth_perm_service: ISystemAuthPermService = Depends(SystemAuthPermService.instance)):
+    async def instance(cls,
+                       auth_perm_service: ISystemAuthPermService = Depends(SystemAuthPermService.instance),
+                       auth_role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
         """实例化"""
-        return cls(auth_perm_service)
+        return cls(auth_perm_service, auth_role_service)
