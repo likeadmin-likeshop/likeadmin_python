@@ -39,6 +39,11 @@ class SystemAuthAdminCreateIn(BaseModel):
     is_multipoint: int = Field(alias='isMultipoint')  # 多端登录: [0=否, 1=是]
 
 
+class SystemAuthAdminEditIn(SystemAuthAdminCreateIn):
+    """管理员编辑参数"""
+    id: int  # 主键
+
+
 class SystemAuthAdminDelIn(BaseModel):
     """管理员删除参数"""
     id: int  # 主键

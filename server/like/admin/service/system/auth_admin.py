@@ -6,8 +6,11 @@ from typing import Union, Final
 from fastapi import Depends, Request
 
 from like.admin.config import AdminConfig
-from like.admin.schemas.system import SystemAuthAdminCreateIn, SystemAuthAdminOut, SystemAuthAdminSelfOut
+from like.admin.schemas.system import (
+    SystemAuthAdminCreateIn, SystemAuthAdminEditIn, SystemAuthAdminOut, SystemAuthAdminSelfOut)
 from like.dependencies.database import db
+from like.exceptions.base import AppException
+from like.http_base import HttpResp
 from like.models import system_auth_admin, system_auth_menu, SystemAuthAdmin
 from like.utils.redis import RedisUtil
 from like.utils.tools import ToolsUtil
@@ -32,6 +35,10 @@ class ISystemAuthAdminService(ABC):
 
     @abstractmethod
     async def add(self, admin_create_in: SystemAuthAdminCreateIn):
+        pass
+
+    @abstractmethod
+    async def edit(self, admin_edit_in: SystemAuthAdminEditIn):
         pass
 
     @abstractmethod
@@ -114,13 +121,55 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         create_dict['update_time'] = int(time.time())
         await db.execute(system_auth_admin.insert().values(**create_dict))
 
-    @classmethod
-    async def cache_admin_user_by_uid(cls, id_: int):
-        """缓存管理员"""
-        row = await db.fetch_one(
-            system_auth_admin.select().where(system_auth_admin.c.id == id_).limit(1))
-        await RedisUtil.hmset(f'{AdminConfig.backstage_manage_key}', {f'{row.id}': json.dumps(dict(row))})
-        return
+    async def edit(self, admin_edit_in: SystemAuthAdminEditIn):
+        """管理员更新"""
+        assert await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.id == admin_edit_in.id, system_auth_admin.c.is_delete == 0)
+            .limit(1)), '账号不存在了!'
+        assert not await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.username == admin_edit_in.username,
+                   system_auth_admin.c.is_delete == 0,
+                   system_auth_admin.c.id != admin_edit_in.id)
+            .limit(1)), '账号已存在换一个吧！'
+        assert not await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.nickname == admin_edit_in.nickname,
+                   system_auth_admin.c.is_delete == 0,
+                   system_auth_admin.c.id != admin_edit_in.id)
+            .limit(1)), '昵称已存在换一个吧！'
+        if admin_edit_in.role > 0 and admin_edit_in.id != 1:
+            assert await self.auth_role_service.detail(admin_edit_in.role), '角色不存在!'
+        # 更新管理员信息
+        admin_dict = dict(admin_edit_in)
+        # TODO: 头像路径处理
+        admin_dict['avatar'] = admin_edit_in.avatar
+        admin_dict['role'] = 0 if admin_edit_in.id == 1 else admin_edit_in.role
+        admin_dict['update_time'] = int(time.time())
+        if admin_edit_in.id == 1:
+            del admin_dict['username']
+        if admin_edit_in.password:
+            if not (6 <= len(admin_edit_in.password) <= 20):
+                raise AppException(HttpResp.FAILED, msg='密码必须在6~20位')
+            salt = ToolsUtil.random_string(5)
+            admin_dict['salt'] = salt
+            admin_dict['password'] = ToolsUtil.make_md5(f'{admin_edit_in.password.strip()}{salt}')
+        else:
+            del admin_dict['password']
+        await db.execute(system_auth_admin.update()
+                         .where(system_auth_admin.c.id == admin_edit_in.id)
+                         .values(**admin_dict))
+        # 如果更改自己的密码,则更新缓存
+        id_ = self.request.state.admin_id
+        if admin_edit_in.password and admin_edit_in.id == id_:
+            token = self.request.headers.get('token', '')
+            sys_admin_set_key = f'{AdminConfig.backstage_token_set}{id_}'
+            ts = await RedisUtil.sget(sys_admin_set_key)
+            if ts:
+                await RedisUtil.delete(*(f'{AdminConfig.backstage_token_key}{t}' for t in ts))
+            await RedisUtil.delete(sys_admin_set_key)
+            await RedisUtil.sset(sys_admin_set_key, token)
 
     async def delete(self, id_: int):
         """管理员删除"""
@@ -147,6 +196,14 @@ class SystemAuthAdminService(ISystemAuthAdminService):
                          .where(system_auth_admin.c.id == id_)
                          .values(is_disable=1 if auth_admin.is_disable == 0 else 0,
                                  update_time=int(time.time())))
+
+    @classmethod
+    async def cache_admin_user_by_uid(cls, id_: int):
+        """缓存管理员"""
+        row = await db.fetch_one(
+            system_auth_admin.select().where(system_auth_admin.c.id == id_).limit(1))
+        await RedisUtil.hmset(f'{AdminConfig.backstage_manage_key}', {f'{row.id}': json.dumps(dict(row))})
+        return
 
     def __init__(self, request: Request, auth_perm_service: ISystemAuthPermService,
                  auth_role_service: ISystemAuthRoleService):
