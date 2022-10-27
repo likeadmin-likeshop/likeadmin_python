@@ -3,14 +3,14 @@ import time
 from abc import ABC, abstractmethod
 from typing import Union, Final
 
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from like.admin.config import AdminConfig
 from like.admin.schemas.system import SystemAuthAdminCreateIn, SystemAuthAdminOut, SystemAuthAdminSelfOut
 from like.dependencies.database import db
-from like.utils.tools import ToolsUtil
 from like.models import system_auth_admin, system_auth_menu, SystemAuthAdmin
 from like.utils.redis import RedisUtil
+from like.utils.tools import ToolsUtil
 from .auth_perm import ISystemAuthPermService, SystemAuthPermService
 from .auth_role import ISystemAuthRoleService, SystemAuthRoleService
 
@@ -32,6 +32,14 @@ class ISystemAuthAdminService(ABC):
 
     @abstractmethod
     async def add(self, admin_create_in: SystemAuthAdminCreateIn):
+        pass
+
+    @abstractmethod
+    async def delete(self, id_: int):
+        pass
+
+    @abstractmethod
+    async def disable(self, id_: int):
         pass
 
     @classmethod
@@ -104,8 +112,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         create_dict['avatar'] = admin_create_in.avatar if admin_create_in.avatar else '/api/static/backend_avatar.png'
         create_dict['create_time'] = int(time.time())
         create_dict['update_time'] = int(time.time())
-        row = system_auth_admin.insert().values(**create_dict)
-        await db.execute(row)
+        await db.execute(system_auth_admin.insert().values(**create_dict))
 
     @classmethod
     async def cache_admin_user_by_uid(cls, id_: int):
@@ -115,13 +122,41 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         await RedisUtil.hmset(f'{AdminConfig.backstage_manage_key}', {f'{row.id}': json.dumps(dict(row))})
         return
 
-    def __init__(self, auth_perm_service: ISystemAuthPermService, auth_role_service: ISystemAuthRoleService):
+    async def delete(self, id_: int):
+        """管理员删除"""
+        assert await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.id == id_, system_auth_admin.c.is_delete == 0)
+            .limit(1)), '账号已不存在!'
+        assert id_ != 1, '系统管理员不允许删除!'
+        assert id_ != self.request.state.admin_id, '不能删除自己!'
+        await db.execute(system_auth_admin.update()
+                         .where(system_auth_admin.c.id == id_)
+                         .values(is_delete=1, delete_time=int(time.time())))
+        await self.cache_admin_user_by_uid(id_)
+
+    async def disable(self, id_: int):
+        """管理员状态切换"""
+        auth_admin = await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.id == id_, system_auth_admin.c.is_delete == 0)
+            .limit(1))
+        assert auth_admin, '账号已不存在!'
+        assert id_ != self.request.state.admin_id, '不能禁用自己!'
+        await db.execute(system_auth_admin.update()
+                         .where(system_auth_admin.c.id == id_)
+                         .values(is_disable=1 if auth_admin.is_disable == 0 else 0,
+                                 update_time=int(time.time())))
+
+    def __init__(self, request: Request, auth_perm_service: ISystemAuthPermService,
+                 auth_role_service: ISystemAuthRoleService):
+        self.request: Final[Request] = request
         self.auth_perm_service: Final[ISystemAuthPermService] = auth_perm_service
         self.auth_role_service: Final[ISystemAuthRoleService] = auth_role_service
 
     @classmethod
-    async def instance(cls,
+    async def instance(cls, request: Request,
                        auth_perm_service: ISystemAuthPermService = Depends(SystemAuthPermService.instance),
                        auth_role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
         """实例化"""
-        return cls(auth_perm_service, auth_role_service)
+        return cls(request, auth_perm_service, auth_role_service)

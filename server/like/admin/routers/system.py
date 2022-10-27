@@ -2,7 +2,9 @@ import logging
 
 from fastapi import APIRouter, Depends, Request, Header
 
-from like.admin.schemas.system import SystemLoginIn, SystemLogoutIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn
+from like.admin.schemas.system import (
+    SystemLoginIn, SystemLogoutIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn, SystemAuthAdminDelIn,
+    SystemAuthAdminDisableIn)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
 from like.http_base import unified_resp
@@ -72,14 +74,18 @@ async def admin_upinfo():
 
 @router.post('/admin/del')
 @unified_resp
-async def admin_del():
-    return
+async def admin_del(admin_del_in: SystemAuthAdminDelIn,
+                    auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
+    """管理员删除"""
+    return await auth_service.delete(admin_del_in.id)
 
 
 @router.post('/admin/disable')
 @unified_resp
-async def admin_disable():
-    return
+async def admin_disable(admin_disable_in: SystemAuthAdminDisableIn,
+                        auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
+    """管理员状态切换"""
+    return await auth_service.disable(admin_disable_in.id)
 
 
 @router.get('/menu/route')
