@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
+from fastapi_pagination import add_pagination
 
 
 def configure_event(app: FastAPI):
@@ -58,4 +59,5 @@ def create_app() -> FastAPI:
     configure_event(app)
     configure_middleware(app)
     configure_router(app)
+    add_pagination(app)
     return app

@@ -48,3 +48,17 @@ class SystemAuthAdminSelfOut(BaseModel):
     """当前系统管理员返回信息"""
     user: SystemAuthAdminOut  # 用户信息
     permissions: List[str]  # 权限集合: [[*]=>所有权限, ['article:add']=>部分权限]
+
+
+class SystemAuthPostOut(BaseModel):
+    id: int
+    code: str
+    name: str
+    remarks: str
+    sort: int
+    isStop: int = Field(alias='is_stop')
+    createTime: str = Field(alias='create_time')
+    updateTime: str = Field(alias='update_time')
+
+    class Config:
+        orm_mode = True

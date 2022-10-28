@@ -1,9 +1,13 @@
 import logging
+from typing import Union
 
 from fastapi import APIRouter, Depends, Request, Header
+from fastapi.params import Query
 
-from like.admin.schemas.system import SystemLoginIn, SystemLogoutIn, SystemAuthAdminDetailIn
+from like.admin.schemas.page import PageInationResult
+from like.admin.schemas.system import SystemLoginIn, SystemLogoutIn, SystemAuthAdminDetailIn, SystemAuthPostOut
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
+from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
 from like.http_base import unified_resp
 
@@ -102,3 +106,41 @@ async def role_all():
 @unified_resp
 async def role_list():
     return
+
+
+# 岗位相关接口
+@router.get('/post/all', )
+async def post_all(post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
+    return await post_service.fetch_all()
+
+
+@router.get('/post/detail')
+@unified_resp
+async def post_detail():
+    return {}
+
+
+@router.get('/post/list', response_model=PageInationResult[SystemAuthPostOut])
+@unified_resp
+async def post_list(code: Union[str, None] = Query(default=None), status: Union[int, None] = Query(default=None),
+                    name: Union[str, None] = Query(default=None),
+                    post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
+    return await post_service.fetch_list(code=code,  name=name, is_stop=status)
+
+
+@router.post('/post/add')
+@unified_resp
+async def post_add():
+    return {}
+
+
+@router.post('/post/delete')
+@unified_resp
+async def post_delete():
+    return {}
+
+
+@router.post('/post/edit')
+@unified_resp
+async def post_edit():
+    return {}
