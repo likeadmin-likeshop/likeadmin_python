@@ -40,6 +40,9 @@ class SystemAuthAdminOut(BaseModel):
     createTime: datetime = Field(alias='create_time')  # 创建时间
     updateTime: datetime = Field(alias='update_time')  # 更新时间
 
+    class Config:
+        orm_mode = True
+
     # def __init__(self, avatar, **kwargs):
     #     super().__init__(avatar=avatar, **kwargs)
 
@@ -48,7 +51,8 @@ class SystemAuthAdminSelfOut(BaseModel):
     """当前系统管理员返回信息"""
     user: SystemAuthAdminOut  # 用户信息
     permissions: List[str]  # 权限集合: [[*]=>所有权限, ['article:add']=>部分权限]
-
+    class Config:
+        orm_mode = True
 
 class SystemAuthPostOut(BaseModel):
     id: int
@@ -62,3 +66,5 @@ class SystemAuthPostOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
