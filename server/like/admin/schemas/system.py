@@ -44,6 +44,14 @@ class SystemAuthAdminEditIn(SystemAuthAdminCreateIn):
     id: int  # 主键
 
 
+class SystemAuthAdminUpdateIn(BaseModel):
+    """管理员更新参数"""
+    avatar: str  # 头像
+    nickname: str  # 昵称
+    password: str  # 要修改的密码
+    curr_password: str = Field(alias='currPassword')  # 当前密码
+
+
 class SystemAuthAdminDelIn(BaseModel):
     """管理员删除参数"""
     id: int  # 主键

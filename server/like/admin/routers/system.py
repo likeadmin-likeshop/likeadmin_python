@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Header
 
 from like.admin.schemas.system import (
     SystemLoginIn, SystemLogoutIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn, SystemAuthAdminDelIn,
-    SystemAuthAdminDisableIn, SystemAuthAdminEditIn)
+    SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
 from like.http_base import unified_resp
@@ -26,8 +26,7 @@ async def login(login_in: SystemLoginIn, login_service: ISystemLoginService = De
 async def logout(token: str = Header(),
                  login_service: ISystemLoginService = Depends(SystemLoginService.instance)):
     """退出登录"""
-    await login_service.logout(SystemLogoutIn(token=token))
-    return
+    return await login_service.logout(SystemLogoutIn(token=token))
 
 
 @router.get('/admin/self')
@@ -70,8 +69,10 @@ async def admin_edit(admin_edit_in: SystemAuthAdminEditIn,
 
 @router.post('/admin/upInfo')
 @unified_resp
-async def admin_upinfo():
-    return
+async def admin_upinfo(request: Request, admin_update_in: SystemAuthAdminUpdateIn,
+                       auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
+    """管理员更新"""
+    return await auth_service.update(admin_update_in, request.state.admin_id)
 
 
 @router.post('/admin/del')

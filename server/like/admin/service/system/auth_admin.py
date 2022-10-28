@@ -7,7 +7,8 @@ from fastapi import Depends, Request
 
 from like.admin.config import AdminConfig
 from like.admin.schemas.system import (
-    SystemAuthAdminCreateIn, SystemAuthAdminEditIn, SystemAuthAdminOut, SystemAuthAdminSelfOut)
+    SystemAuthAdminCreateIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
+    SystemAuthAdminOut, SystemAuthAdminSelfOut)
 from like.dependencies.database import db
 from like.exceptions.base import AppException
 from like.http_base import HttpResp
@@ -39,6 +40,10 @@ class ISystemAuthAdminService(ABC):
 
     @abstractmethod
     async def edit(self, admin_edit_in: SystemAuthAdminEditIn):
+        pass
+
+    @abstractmethod
+    async def update(self, admin_update_in: SystemAuthAdminUpdateIn, admin_id: int):
         pass
 
     @abstractmethod
@@ -142,7 +147,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         if admin_edit_in.role > 0 and admin_edit_in.id != 1:
             assert await self.auth_role_service.detail(admin_edit_in.role), '角色不存在!'
         # 更新管理员信息
-        admin_dict = dict(admin_edit_in)
+        admin_dict = admin_edit_in.dict()
         # TODO: 头像路径处理
         admin_dict['avatar'] = admin_edit_in.avatar
         admin_dict['role'] = 0 if admin_edit_in.id == 1 else admin_edit_in.role
@@ -160,10 +165,52 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         await db.execute(system_auth_admin.update()
                          .where(system_auth_admin.c.id == admin_edit_in.id)
                          .values(**admin_dict))
-        # 如果更改自己的密码,则更新缓存
+        self.cache_admin_user_by_uid(admin_edit_in.id)
+        # 如果更改自己的密码,则删除旧缓存
         id_ = self.request.state.admin_id
         if admin_edit_in.password and admin_edit_in.id == id_:
             token = self.request.headers.get('token', '')
+            RedisUtil.delete(f'{AdminConfig.backstage_token_key}{token}')
+            sys_admin_set_key = f'{AdminConfig.backstage_token_set}{id_}'
+            ts = await RedisUtil.sget(sys_admin_set_key)
+            if ts:
+                await RedisUtil.delete(*(f'{AdminConfig.backstage_token_key}{t}' for t in ts))
+            await RedisUtil.delete(sys_admin_set_key)
+            await RedisUtil.sset(sys_admin_set_key, token)
+
+    async def update(self, admin_update_in: SystemAuthAdminUpdateIn, admin_id: int):
+        """管理员更新"""
+        sys_admin = await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.id == admin_id,
+                   system_auth_admin.c.is_delete == 0).limit(1))
+        assert sys_admin, '账号不存在了!'
+        # 更新管理员信息
+        admin_dict = admin_update_in.dict()
+        del admin_dict['curr_password']
+        # TODO: 头像路径处理
+        admin_dict['avatar'] = admin_update_in.avatar if admin_update_in.avatar else '/api/static/backend_avatar.png'
+        admin_dict['update_time'] = int(time.time())
+        if admin_update_in.password:
+            curr_pass = ToolsUtil.make_md5(f'{admin_update_in.curr_password}{sys_admin.salt}')
+            if curr_pass != sys_admin.password:
+                raise AppException(HttpResp.FAILED, msg='当前密码不正确!')
+            if not (6 <= len(admin_update_in.password) <= 20):
+                raise AppException(HttpResp.FAILED, msg='密码必须在6~20位')
+            salt = ToolsUtil.random_string(5)
+            admin_dict['salt'] = salt
+            admin_dict['password'] = ToolsUtil.make_md5(f'{admin_update_in.password.strip()}{salt}')
+        else:
+            del admin_dict['password']
+        await db.execute(system_auth_admin.update()
+                         .where(system_auth_admin.c.id == sys_admin.id)
+                         .values(**admin_dict))
+        self.cache_admin_user_by_uid(admin_id)
+        # 如果更改自己的密码,则删除旧缓存
+        id_ = admin_id
+        if admin_update_in.password:
+            token = self.request.headers.get('token', '')
+            RedisUtil.delete(f'{AdminConfig.backstage_token_key}{token}')
             sys_admin_set_key = f'{AdminConfig.backstage_token_set}{id_}'
             ts = await RedisUtil.sget(sys_admin_set_key)
             if ts:
