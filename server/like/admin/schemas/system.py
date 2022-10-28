@@ -51,8 +51,10 @@ class SystemAuthAdminSelfOut(BaseModel):
     """当前系统管理员返回信息"""
     user: SystemAuthAdminOut  # 用户信息
     permissions: List[str]  # 权限集合: [[*]=>所有权限, ['article:add']=>部分权限]
+
     class Config:
         orm_mode = True
+
 
 class SystemAuthPostOut(BaseModel):
     id: int
@@ -66,5 +68,3 @@ class SystemAuthPostOut(BaseModel):
 
     class Config:
         orm_mode = True
-
-
