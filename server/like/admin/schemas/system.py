@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import List
 
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 
@@ -22,7 +23,7 @@ class SystemLogoutIn(BaseModel):
 
 class SystemAuthAdminDetailIn(BaseModel):
     """管理员详情参数"""
-    id: int = Field(gt=0)  # 主键
+    id: int = Query(gt=0)  # 主键
 
 
 class SystemAuthAdminCreateIn(BaseModel):
