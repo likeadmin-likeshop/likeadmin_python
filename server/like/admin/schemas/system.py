@@ -1,28 +1,66 @@
 from datetime import datetime
 from typing import List
 
+from fastapi import Query
 from pydantic import BaseModel, Field
 
 
 class SystemLoginIn(BaseModel):
     """系统登录参数"""
-    username: str
-    password: str
+    username: str = Field(min_length=2, max_length=20)  # 账号
+    password: str = Field(min_length=6, max_length=32)  # 密码
 
 
 class SystemLoginOut(BaseModel):
     """系统登录返回信息"""
-    token: str
+    token: str  # 令牌
 
 
 class SystemLogoutIn(BaseModel):
     """退出登录参数"""
-    token: str
+    token: str  # 令牌
 
 
 class SystemAuthAdminDetailIn(BaseModel):
     """管理员详情参数"""
-    id: int  # 主键
+    id: int = Query(gt=0)  # 主键
+
+
+class SystemAuthAdminCreateIn(BaseModel):
+    """管理员新增参数"""
+    dept_id: int = Field(alias='deptId')  # 部门ID
+    post_id: int = Field(alias='postId')  # 岗位ID
+    username: str = Field(min_length=2, max_length=20)  # 账号
+    nickname: str = Field(min_length=2, max_length=30)  # 昵称
+    password: str  # 密码
+    avatar: str  # 头像
+    role: int = Field(gt=0)  # 角色
+    sort: int = Field(ge=0)  # 排序
+    is_disable: int = Field(alias='isDisable', ge=0, le=1)  # 是否禁用: [0=否, 1=是]
+    is_multipoint: int = Field(alias='isMultipoint', ge=0, le=1)  # 多端登录: [0=否, 1=是]
+
+
+class SystemAuthAdminEditIn(SystemAuthAdminCreateIn):
+    """管理员编辑参数"""
+    id: int = Field(gt=0)  # 主键
+
+
+class SystemAuthAdminUpdateIn(BaseModel):
+    """管理员更新参数"""
+    avatar: str  # 头像
+    nickname: str = Field(min_length=2, max_length=30)  # 昵称
+    password: str  # 要修改的密码
+    curr_password: str = Field(alias='currPassword', min_length=6, max_length=32)  # 当前密码
+
+
+class SystemAuthAdminDelIn(BaseModel):
+    """管理员删除参数"""
+    id: int = Field(gt=0)  # 主键
+
+
+class SystemAuthAdminDisableIn(BaseModel):
+    """管理员状态切换参数"""
+    id: int = Field(gt=0)  # 主键
 
 
 class SystemAuthAdminOut(BaseModel):
@@ -43,8 +81,7 @@ class SystemAuthAdminOut(BaseModel):
     class Config:
         orm_mode = True
 
-    # def __init__(self, avatar, **kwargs):
-    #     super().__init__(avatar=avatar, **kwargs)
+    # def __init__(self, avatar, **kwargs):  #     super().__init__(avatar=avatar, **kwargs)
 
 
 class SystemAuthAdminSelfOut(BaseModel):
@@ -65,6 +102,22 @@ class SystemAuthPostOut(BaseModel):
     isStop: int = Field(alias='is_stop')
     createTime: str = Field(alias='create_time')
     updateTime: str = Field(alias='update_time')
+
+    class Config:
+        orm_mode = True
+
+
+class SystemAuthRoleOut(BaseModel):
+    """系统角色返回信息"""
+    id: int  # 主键
+    name: str  # 角色名称
+    remark: str  # 角色备注
+    menus: List[int]  # 关联菜单
+    member: int  # 成员数量
+    sort: int  # 角色排序
+    isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+    updateTime: datetime = Field(alias='update_time')  # 更新时间
 
     class Config:
         orm_mode = True
