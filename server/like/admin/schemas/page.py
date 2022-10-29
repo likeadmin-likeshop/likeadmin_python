@@ -10,10 +10,10 @@ C = TypeVar("C")
 
 class PageParams(BaseModel, AbstractParams):
     pageNo: int = Query(1, ge=1, description='Page Number')
-    pageSize: int = Query(20, gt=0, le=100, description='Page Size')
+    pageSize: int = Query(20, gt=0, le=60, description='Page Size')
 
     def to_raw_params(self) -> RawParams:
-        offset = (self.pageNo-1) * self.pageSize
+        offset = (self.pageNo - 1) * self.pageSize
         return RawParams(limit=self.pageSize, offset=offset)
 
 
