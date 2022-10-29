@@ -6,8 +6,9 @@ from fastapi.params import Query
 
 from like.admin.schemas.page import PageInationResult
 from like.admin.schemas.system import (
-    SystemLoginIn, SystemLogoutIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn, SystemAuthAdminDelIn,
-    SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn, SystemAuthPostOut)
+    SystemLoginIn, SystemLogoutIn, SystemAuthAdminListIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn,
+    SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
+    SystemAuthAdminOut, SystemAuthPostOut)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
@@ -41,10 +42,12 @@ async def admin_self(request: Request,
     return await auth_service.self(request.state.admin_id)
 
 
-@router.get('/admin/list')
+@router.get('/admin/list', response_model=PageInationResult[SystemAuthAdminOut])
 @unified_resp
-async def admin_list():
-    return
+async def admin_list(list_in: SystemAuthAdminListIn = Depends(),
+                     auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
+    """管理员列表"""
+    return await auth_service.list(list_in)
 
 
 @router.get('/admin/detail')

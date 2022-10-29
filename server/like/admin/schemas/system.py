@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Union
 
 from fastapi import Query
 from pydantic import BaseModel, Field
@@ -19,6 +19,13 @@ class SystemLoginOut(BaseModel):
 class SystemLogoutIn(BaseModel):
     """退出登录参数"""
     token: str  # 令牌
+
+
+class SystemAuthAdminListIn(BaseModel):
+    """管理员列表参数"""
+    username: Union[str, None] = Query(default=None)  # 账号
+    nickname: Union[str, None] = Query(default=None)  # 昵称
+    role: Union[int, None] = Query(default=None)  # 角色ID
 
 
 class SystemAuthAdminDetailIn(BaseModel):
@@ -69,8 +76,10 @@ class SystemAuthAdminOut(BaseModel):
     username: str  # 账号
     nickname: str  # 昵称
     avatar: str  # 头像
-    role: str  # 角色
-    dept: str = Field(alias='dept_id')  # 部门
+    role: Union[str, None]  # 角色
+    deptId: int = Field(alias='dept_id')  # 部门ID
+    postId: int = Field(alias='post_id')  # 岗位ID
+    dept: Union[str, None]  # 部门
     isMultipoint: int = Field(alias='is_multipoint')  # 多端登录: [0=否, 1=是]
     isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
     lastLoginIp: str = Field(alias='last_login_ip')  # 最后登录IP
@@ -84,9 +93,28 @@ class SystemAuthAdminOut(BaseModel):
     # def __init__(self, avatar, **kwargs):  #     super().__init__(avatar=avatar, **kwargs)
 
 
+class SystemAuthAdminSelfOneOut(BaseModel):
+    """当前管理员返回部分信息"""
+    id: int  # 主键
+    username: str  # 账号
+    nickname: str  # 昵称
+    avatar: str  # 头像
+    role: str  # 角色
+    dept: str = Field(alias='dept_id')  # 部门
+    isMultipoint: int = Field(alias='is_multipoint')  # 多端登录: [0=否, 1=是]
+    isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
+    lastLoginIp: str = Field(alias='last_login_ip')  # 最后登录IP
+    lastLoginTime: datetime = Field(alias='last_login_time')  # 最后登录时间
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+    updateTime: datetime = Field(alias='update_time')  # 更新时间
+
+    class Config:
+        orm_mode = True
+
+
 class SystemAuthAdminSelfOut(BaseModel):
     """当前系统管理员返回信息"""
-    user: SystemAuthAdminOut  # 用户信息
+    user: SystemAuthAdminSelfOneOut  # 用户信息
     permissions: List[str]  # 权限集合: [[*]=>所有权限, ['article:add']=>部分权限]
 
     class Config:
