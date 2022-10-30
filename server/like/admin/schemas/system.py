@@ -225,6 +225,9 @@ class SystemAuthMenuOut(BaseModel):
 
 
 class SystemAuthPostOut(BaseModel):
+    """
+    系统岗位返回信息
+    """
     id: int
     code: str
     name: str
@@ -233,6 +236,65 @@ class SystemAuthPostOut(BaseModel):
     isStop: int = Field(alias='is_stop')
     createTime: str = Field(alias='create_time')
     updateTime: str = Field(alias='update_time')
+
+    class Config:
+        orm_mode = True
+
+
+class SystemAuthPostAddIn(BaseModel):
+    """
+    系统岗位新增参数
+    """
+    code: str
+    name: str
+    remarks: str
+    sort: int
+    is_stop: int = Field(alias='isStop')
+
+    class Config:
+        orm_mode = True
+
+
+class SystemAuthPostEditIn(BaseModel):
+    """
+    系统岗位编辑参数
+    """
+    id: int = Field(gt=0)  # 主键
+    code: str
+    name: str
+    remarks: str
+    sort: int
+    isStop: int = Field(alias='is_stop')
+
+    class Config:
+        orm_mode = True
+
+
+class SystemAuthPostDelIn(BaseModel):
+    """
+    系统岗位删除参数
+    """
+    id: int = Field(gt=0)  # 主键
+
+
+class SystemAuthPostDetailIn(BaseModel):
+    """
+    系统岗位详情参数
+    """
+    id: int = Field(gt=0)  # 主键
+
+
+class SystemAuthRoleOut(BaseModel):
+    """系统角色返回信息"""
+    id: int  # 主键
+    name: str  # 角色名称
+    remark: str  # 角色备注
+    menus: List[int]  # 关联菜单
+    member: int  # 成员数量
+    sort: int  # 角色排序
+    isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+    updateTime: datetime = Field(alias='update_time')  # 更新时间
 
     class Config:
         orm_mode = True
