@@ -10,7 +10,8 @@ from like.admin.schemas.system import (
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
     SystemAuthRoleDetailIn, SystemAuthRoleDelIn, SystemAuthRoleCreateIn, SystemAuthRoleEditIn,
     SystemAuthMenuDetailIn, SystemAuthMenuCreateIn, SystemAuthMenuEditIn, SystemAuthMenuDelIn,
-    SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut)
+    SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut, SystemAuthPostAddIn, SystemAuthPostDetailIn, SystemAuthPostDelIn,
+    SystemAuthPostEditIn)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAuthMenuService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
@@ -203,8 +204,9 @@ async def post_all(post_service: ISystemAuthPostService = Depends(SystemAuthPost
 
 @router.get('/post/detail')
 @unified_resp
-async def post_detail():
-    return {}
+async def post_detail(post_detail_in: SystemAuthPostDetailIn = Depends(),
+                      post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
+    return await post_service.detail(post_detail_in.id)
 
 
 @router.get('/post/list', response_model=PageInationResult[SystemAuthPostOut])
@@ -217,17 +219,20 @@ async def post_list(code: Union[str, None] = Query(default=None), status: Union[
 
 @router.post('/post/add')
 @unified_resp
-async def post_add():
-    return {}
+async def post_add(post_add_in: SystemAuthPostAddIn=Depends(),
+                   post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
+    return await post_service.add(post_add_in)
 
 
 @router.post('/post/delete')
 @unified_resp
-async def post_delete():
-    return {}
+async def post_delete(post_delete_in: SystemAuthPostDelIn=Depends(),
+                      post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
+    return await post_service.delete(post_delete_in.id)
 
 
 @router.post('/post/edit')
 @unified_resp
-async def post_edit():
-    return {}
+async def post_edit(post_edit_in: SystemAuthPostEditIn = Depends(),
+                    post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
+    return await post_service.edit(post_edit_in)
