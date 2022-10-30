@@ -149,8 +149,8 @@ class SystemAuthRoleOut(BaseModel):
 class SystemAuthRoleDetailOut(SystemAuthRoleOut):
     """系统角色返回信息"""
     remark: str  # 角色备注
-    menus: List[int]  # 关联菜单
-    member: int  # 成员数量
+    menus: List[int] = Field(default_factory=list)  # 关联菜单
+    member: int = Field(default=0)  # 成员数量
     sort: int  # 角色排序
     isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
 

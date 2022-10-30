@@ -4,6 +4,7 @@ from typing import Final, List
 import pydantic
 from fastapi import Depends
 from fastapi_pagination.bases import AbstractPage
+from fastapi_pagination.ext.databases import paginate
 from sqlalchemy import func, select
 
 from like.admin.schemas.system import (
@@ -52,17 +53,28 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         return pydantic.parse_obj_as(List[SystemAuthRoleOut], roles)
 
     async def list(self) -> AbstractPage[SystemAuthRoleDetailOut]:
-        pass
+        """角色列表"""
+        query = system_auth_role.select() \
+            .order_by(system_auth_role.c.sort.desc(), system_auth_role.c.id.desc())
+        pager = await paginate(db, query)
+        for obj in pager.lists:
+            obj.member = await self.get_member_cnt(obj.id)
+        return pager
+
+    async def get_member_cnt(self, role_id: int):
+        """根据角色ID获取成员数量"""
+        return await db.fetch_val(
+            select(func.count(system_auth_admin.c.id))
+            .where(system_auth_admin.c.role == role_id, system_auth_admin.c.is_delete == 0))
 
     async def detail(self, id_: int) -> SystemAuthRoleDetailOut:
         """角色详情"""
         role = await db.fetch_one(system_auth_role.select().where(system_auth_role.c.id == id_).limit(1))
         assert role, '角色已不存在!'
+        role_id = role.id
         role_dict = dict(role)
-        role_dict['member'] = await db.fetch_val(
-            select(func.count(system_auth_admin.c.id))
-            .where(system_auth_admin.c.role == role.id, system_auth_admin.c.is_delete == 0))
-        role_dict['menus'] = await self.auth_perm_service.select_menus_by_role_id(role.id)
+        role_dict['member'] = await self.get_member_cnt(role_id)
+        role_dict['menus'] = await self.auth_perm_service.select_menus_by_role_id(role_id)
         return SystemAuthRoleDetailOut(**role_dict)
 
     async def add(self, create_in: SystemAuthRoleCreateIn):
