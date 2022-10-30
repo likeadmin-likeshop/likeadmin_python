@@ -65,13 +65,21 @@ class SystemAuthPermService(ISystemAuthPermService):
         await RedisUtil.hset(AdminConfig.backstage_roles_key, str(role_id), ','.join(menus))
 
     async def batch_save_by_menu_ids(self, role_id: int, menu_ids: str):
-        pass
+        """批量写入角色菜单"""
+        if menu_ids:
+            perms = []
+            for menu_id in menu_ids.split(','):
+                perms.append({'role_id': role_id, 'menu_id': menu_id})
+            perm_ins = system_auth_perm.insert().values(perms)
+            await db.execute(perm_ins)
 
     async def batch_delete_by_role_id(self, role_id: int):
-        pass
+        """批量删除角色菜单(根据角色ID)"""
+        await db.execute(system_auth_perm.delete().where(system_auth_perm.c.role_id == role_id))
 
     async def batch_delete_by_menu_id(self, menu_id: int):
-        pass
+        """批量删除角色菜单(根据菜单ID)"""
+        await db.execute(system_auth_perm.delete().where(system_auth_perm.c.menu_id == menu_id))
 
     @classmethod
     async def instance(cls):
