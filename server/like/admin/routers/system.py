@@ -122,6 +122,30 @@ async def role_list():
     return
 
 
+@router.get('/role/detail')
+@unified_resp
+async def role_detail():
+    return
+
+
+@router.post('/role/add')
+@unified_resp
+async def role_add():
+    return
+
+
+@router.post('/role/edit')
+@unified_resp
+async def role_edit():
+    return
+
+
+@router.post('/role/del')
+@unified_resp
+async def role_del():
+    return
+
+
 # 岗位相关接口
 @router.get('/post/all')
 async def post_all(post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):

@@ -121,6 +121,43 @@ class SystemAuthAdminSelfOut(BaseModel):
         orm_mode = True
 
 
+class SystemAuthRoleCreateIn(BaseModel):
+    """新增角色参数"""
+    name: str = Field(min_length=1, max_length=30)  # 角色名称
+    sort: int = Field(ge=0)  # 角色排序
+    is_disable: int = Field(alias='isDisable', ge=0, le=1)  # 是否禁用: [0=否, 1=是]
+    remark: [str, None] = Field(default='', max_length=200)  # 角色备注
+    menu_ids: Union[str, None] = Field(alias='menuIds')  # 关联菜单
+
+
+class SystemAuthRoleEditIn(SystemAuthRoleCreateIn):
+    """编辑角色参数"""
+    id: int = Field(gt=0)  # 主键
+
+
+class SystemAuthRoleOut(BaseModel):
+    """系统角色返回信息"""
+    id: int  # 主键
+    name: str  # 角色名称
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+    updateTime: datetime = Field(alias='update_time')  # 更新时间
+
+    class Config:
+        orm_mode = True
+
+
+class SystemAuthRoleDetailOut(SystemAuthRoleOut):
+    """系统角色返回信息"""
+    remark: str  # 角色备注
+    menus: List[int]  # 关联菜单
+    member: int  # 成员数量
+    sort: int  # 角色排序
+    isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
+
+    class Config:
+        orm_mode = True
+
+
 class SystemAuthPostOut(BaseModel):
     id: int
     code: str
@@ -130,22 +167,6 @@ class SystemAuthPostOut(BaseModel):
     isStop: int = Field(alias='is_stop')
     createTime: str = Field(alias='create_time')
     updateTime: str = Field(alias='update_time')
-
-    class Config:
-        orm_mode = True
-
-
-class SystemAuthRoleOut(BaseModel):
-    """系统角色返回信息"""
-    id: int  # 主键
-    name: str  # 角色名称
-    remark: str  # 角色备注
-    menus: List[int]  # 关联菜单
-    member: int  # 成员数量
-    sort: int  # 角色排序
-    isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
-    createTime: datetime = Field(alias='create_time')  # 创建时间
-    updateTime: datetime = Field(alias='update_time')  # 更新时间
 
     class Config:
         orm_mode = True

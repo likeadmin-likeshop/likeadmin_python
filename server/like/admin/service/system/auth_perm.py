@@ -1,5 +1,5 @@
-from typing import List
 from abc import ABC, abstractmethod
+from typing import List
 
 from like.admin.config import AdminConfig
 from like.dependencies.database import db
@@ -20,12 +20,25 @@ class ISystemAuthPermService(ABC):
     async def cache_role_menus_by_role_id(cls, role_id: int):
         pass
 
+    @abstractmethod
+    async def batch_save_by_menu_ids(self, role_id: int, menu_ids: str):
+        pass
+
+    @abstractmethod
+    async def batch_delete_by_role_id(self, role_id: int):
+        pass
+
+    @abstractmethod
+    async def batch_delete_by_menu_id(self, menu_id: int):
+        pass
+
 
 class SystemAuthPermService(ISystemAuthPermService):
     """系统权限服务实现类"""
 
     @classmethod
     async def select_menus_by_role_id(cls, role_id: int) -> List[int]:
+        """根据角色ID获取菜单ID"""
         role = await db.fetch_one(
             system_auth_role.select()
             .where(system_auth_role.c.id == role_id, system_auth_role.c.is_disable == 0).limit(1))
@@ -50,6 +63,15 @@ class SystemAuthPermService(ISystemAuthPermService):
                 .order_by(system_auth_menu.c.menu_sort, system_auth_menu.c.id)
             menus = [i.perms for i in auth_menus if i.perms]
         await RedisUtil.hset(AdminConfig.backstage_roles_key, str(role_id), ','.join(menus))
+
+    async def batch_save_by_menu_ids(self, role_id: int, menu_ids: str):
+        pass
+
+    async def batch_delete_by_role_id(self, role_id: int):
+        pass
+
+    async def batch_delete_by_menu_id(self, menu_id: int):
+        pass
 
     @classmethod
     async def instance(cls):
