@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Final
+from typing import Final, List
 
+import pydantic
 from fastapi import Depends
 from fastapi_pagination.bases import AbstractPage
 from sqlalchemy import func, select
@@ -43,8 +44,12 @@ class ISystemAuthRoleService(ABC):
 class SystemAuthRoleService(ISystemAuthRoleService):
     """系统角色服务实现类"""
 
-    async def all(self) -> AbstractPage[SystemAuthRoleOut]:
-        pass
+    async def all(self) -> List[SystemAuthRoleOut]:
+        """角色所有"""
+        roles = await db.fetch_all(
+            system_auth_role.select()
+            .order_by(system_auth_role.c.sort.desc(), system_auth_role.c.id.desc()))
+        return pydantic.parse_obj_as(List[SystemAuthRoleOut], roles)
 
     async def list(self) -> AbstractPage[SystemAuthRoleDetailOut]:
         pass

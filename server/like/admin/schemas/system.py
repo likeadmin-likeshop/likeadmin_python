@@ -126,7 +126,7 @@ class SystemAuthRoleCreateIn(BaseModel):
     name: str = Field(min_length=1, max_length=30)  # 角色名称
     sort: int = Field(ge=0)  # 角色排序
     is_disable: int = Field(alias='isDisable', ge=0, le=1)  # 是否禁用: [0=否, 1=是]
-    remark: [str, None] = Field(default='', max_length=200)  # 角色备注
+    remark: str = Field(default='', max_length=200)  # 角色备注
     menu_ids: Union[str, None] = Field(alias='menuIds')  # 关联菜单
 
 

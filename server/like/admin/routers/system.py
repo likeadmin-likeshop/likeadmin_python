@@ -10,6 +10,7 @@ from like.admin.schemas.system import (
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
     SystemAuthAdminOut, SystemAuthPostOut)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
+from like.admin.service.system.auth_role import ISystemAuthRoleService, SystemAuthRoleService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
 from like.http_base import unified_resp
@@ -112,8 +113,9 @@ async def menu_list():
 
 @router.get('/role/all')
 @unified_resp
-async def role_all():
-    return
+async def role_all(role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
+    """角色所有"""
+    return await role_service.all()
 
 
 @router.get('/role/list')
