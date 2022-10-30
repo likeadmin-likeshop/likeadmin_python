@@ -122,6 +122,9 @@ class SystemAuthAdminSelfOut(BaseModel):
 
 
 class SystemAuthPostOut(BaseModel):
+    """
+    系统岗位返回信息
+    """
     id: int
     code: str
     name: str
@@ -133,6 +136,49 @@ class SystemAuthPostOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SystemAuthPostAddIn(BaseModel):
+    """
+    系统岗位新增参数
+    """
+    code: str
+    name: str
+    remarks: str
+    sort: int
+    is_stop: int = Field(alias='isStop')
+
+    class Config:
+        orm_mode = True
+
+
+class SystemAuthPostEditIn(BaseModel):
+    """
+    系统岗位编辑参数
+    """
+    id: int = Field(gt=0)  # 主键
+    code: str
+    name: str
+    remarks: str
+    sort: int
+    isStop: int = Field(alias='is_stop')
+
+    class Config:
+        orm_mode = True
+
+
+class SystemAuthPostDelIn(BaseModel):
+    """
+    系统岗位删除参数
+    """
+    id: int = Field(gt=0)  # 主键
+
+
+class SystemAuthPostDetailIn(BaseModel):
+    """
+    系统岗位详情参数
+    """
+    id: int = Field(gt=0)  # 主键
 
 
 class SystemAuthRoleOut(BaseModel):
