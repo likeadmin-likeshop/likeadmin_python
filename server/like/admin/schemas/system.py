@@ -121,6 +121,11 @@ class SystemAuthAdminSelfOut(BaseModel):
         orm_mode = True
 
 
+class SystemAuthRoleDetailIn(BaseModel):
+    """角色详情参数"""
+    id: int = Query(gt=0)  # 主键
+
+
 class SystemAuthRoleCreateIn(BaseModel):
     """新增角色参数"""
     name: str = Field(min_length=1, max_length=30)  # 角色名称
