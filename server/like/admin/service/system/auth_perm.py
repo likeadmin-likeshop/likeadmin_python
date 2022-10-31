@@ -60,8 +60,8 @@ class SystemAuthPermService(ISystemAuthPermService):
                 system_auth_menu.select().where(
                     system_auth_menu.c.is_disable == 0,
                     system_auth_menu.c.id in menu_ids,
-                    system_auth_menu.c.menu_type in ['C', 'A'])) \
-                .order_by(system_auth_menu.c.menu_sort, system_auth_menu.c.id)
+                    system_auth_menu.c.menu_type in ['C', 'A'])
+                .order_by(system_auth_menu.c.menu_sort, system_auth_menu.c.id))
             menus = [i.perms for i in auth_menus if i.perms]
         await RedisUtil.hset(AdminConfig.backstage_roles_key, str(role_id), ','.join(menus))
 

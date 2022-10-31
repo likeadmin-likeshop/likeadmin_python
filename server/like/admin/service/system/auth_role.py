@@ -95,7 +95,23 @@ class SystemAuthRoleService(ISystemAuthRoleService):
 
     async def edit(self, edit_in: SystemAuthRoleEditIn):
         """编辑角色"""
-        pass
+        assert await db.fetch_one(
+            system_auth_role.select().where(system_auth_role.c.id == edit_in.id)
+            .limit(1)), '角色已不存在!'
+        assert not await db.fetch_one(
+            system_auth_role.select()
+            .where(system_auth_role.c.id != edit_in.id,
+                   system_auth_role.c.name == edit_in.name.strip())
+            .limit(1)), '角色名称已存在!'
+        role_dict = edit_in.dict()
+        role_dict['name'] = edit_in.name.strip()
+        role_dict['update_time'] = int(time.time())
+        del role_dict['menu_ids']
+        await db.execute(
+            system_auth_role.update().where(system_auth_role.c.id == edit_in.id).values(**role_dict))
+        await self.auth_perm_service.batch_delete_by_role_id(edit_in.id)
+        await self.auth_perm_service.batch_save_by_menu_ids(edit_in.id, edit_in.menu_ids)
+        await self.auth_perm_service.cache_role_menus_by_role_id(edit_in.id)
 
     async def delete(self, id_: int):
         """删除角色"""
