@@ -8,7 +8,7 @@ from like.admin.schemas.page import PageInationResult
 from like.admin.schemas.system import (
     SystemLoginIn, SystemLogoutIn, SystemAuthAdminListIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn,
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
-    SystemAuthRoleDetailIn,
+    SystemAuthRoleDetailIn, SystemAuthRoleDelIn,
     SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
@@ -148,8 +148,10 @@ async def role_edit():
 
 @router.post('/role/del')
 @unified_resp
-async def role_del():
-    return
+async def role_del(del_in: SystemAuthRoleDelIn,
+                   role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
+    """删除角色"""
+    return await role_service.delete(del_in.id)
 
 
 # 岗位相关接口

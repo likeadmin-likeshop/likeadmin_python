@@ -140,6 +140,11 @@ class SystemAuthRoleEditIn(SystemAuthRoleCreateIn):
     id: int = Field(gt=0)  # 主键
 
 
+class SystemAuthRoleDelIn(BaseModel):
+    """删除角色参数"""
+    id: int = Field(gt=0)  # 主键
+
+
 class SystemAuthRoleOut(BaseModel):
     """系统角色返回信息"""
     id: int  # 主键

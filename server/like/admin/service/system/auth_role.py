@@ -7,6 +7,8 @@ from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
 from sqlalchemy import func, select
 
+from like.admin.config import AdminConfig
+from like.utils.redis import RedisUtil
 from like.admin.schemas.system import (
     SystemAuthRoleCreateIn, SystemAuthRoleEditIn, SystemAuthRoleOut, SystemAuthRoleDetailOut)
 from like.dependencies.database import db
@@ -84,7 +86,17 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         pass
 
     async def delete(self, id_: int):
-        pass
+        """删除角色"""
+        assert await db.fetch_one(
+            system_auth_role.select().where(system_auth_role.c.id == id_)
+            .limit(1)), '角色已不存在!'
+        assert not await db.fetch_one(
+            system_auth_admin.select()
+            .where(system_auth_admin.c.role == id_, system_auth_admin.c.is_delete == 0)
+            .limit(1)), '角色已被管理员使用,请先移除'
+        await db.execute(system_auth_role.delete().where(system_auth_role.c.id == id_))
+        await self.auth_perm_service.batch_delete_by_role_id(id_)
+        await RedisUtil.hdel(AdminConfig.backstage_roles_key, str(id_))
 
     def __init__(self, auth_perm_service: ISystemAuthPermService):
         self.auth_perm_service: Final[ISystemAuthPermService] = auth_perm_service
