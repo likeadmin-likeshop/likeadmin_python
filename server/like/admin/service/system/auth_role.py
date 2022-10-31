@@ -1,3 +1,4 @@
+import time
 from abc import ABC, abstractmethod
 from typing import Final, List
 
@@ -8,11 +9,11 @@ from fastapi_pagination.ext.databases import paginate
 from sqlalchemy import func, select
 
 from like.admin.config import AdminConfig
-from like.utils.redis import RedisUtil
 from like.admin.schemas.system import (
     SystemAuthRoleCreateIn, SystemAuthRoleEditIn, SystemAuthRoleOut, SystemAuthRoleDetailOut)
 from like.dependencies.database import db
 from like.models import system_auth_role, system_auth_admin
+from like.utils.redis import RedisUtil
 from .auth_perm import ISystemAuthPermService, SystemAuthPermService
 
 
@@ -80,9 +81,20 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         return SystemAuthRoleDetailOut(**role_dict)
 
     async def add(self, create_in: SystemAuthRoleCreateIn):
-        pass
+        """新增角色"""
+        assert not await db.fetch_one(
+            system_auth_role.select().where(system_auth_role.c.name == create_in.name.strip())
+            .limit(1)), '角色名称已存在!'
+        role_dict = create_in.dict()
+        role_dict['name'] = create_in.name.strip()
+        role_dict['create_time'] = int(time.time())
+        role_dict['update_time'] = int(time.time())
+        del role_dict['menu_ids']
+        result = await db.execute(system_auth_role.insert().values(role_dict))
+        await self.auth_perm_service.batch_save_by_menu_ids(result, create_in.menu_ids)
 
     async def edit(self, edit_in: SystemAuthRoleEditIn):
+        """编辑角色"""
         pass
 
     async def delete(self, id_: int):

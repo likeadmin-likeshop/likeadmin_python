@@ -8,7 +8,7 @@ from like.admin.schemas.page import PageInationResult
 from like.admin.schemas.system import (
     SystemLoginIn, SystemLogoutIn, SystemAuthAdminListIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn,
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
-    SystemAuthRoleDetailIn, SystemAuthRoleDelIn,
+    SystemAuthRoleDetailIn, SystemAuthRoleDelIn, SystemAuthRoleCreateIn, SystemAuthRoleEditIn,
     SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
@@ -136,14 +136,18 @@ async def role_detail(detail_in: SystemAuthRoleDetailIn = Depends(),
 
 @router.post('/role/add')
 @unified_resp
-async def role_add():
-    return
+async def role_add(create_in: SystemAuthRoleCreateIn,
+                   role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
+    """新增角色"""
+    return await role_service.add(create_in)
 
 
 @router.post('/role/edit')
 @unified_resp
-async def role_edit():
-    return
+async def role_edit(edit_in: SystemAuthRoleEditIn,
+                    role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
+    """编辑角色"""
+    return await role_service.edit(edit_in)
 
 
 @router.post('/role/del')

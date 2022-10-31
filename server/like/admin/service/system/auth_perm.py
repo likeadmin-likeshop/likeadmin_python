@@ -1,3 +1,4 @@
+import uuid
 from abc import ABC, abstractmethod
 from typing import List
 
@@ -69,7 +70,7 @@ class SystemAuthPermService(ISystemAuthPermService):
         if menu_ids:
             perms = []
             for menu_id in menu_ids.split(','):
-                perms.append({'role_id': role_id, 'menu_id': menu_id})
+                perms.append({'id': uuid.uuid4().hex, 'role_id': role_id, 'menu_id': int(menu_id)})
             perm_ins = system_auth_perm.insert().values(perms)
             await db.execute(perm_ins)
 
