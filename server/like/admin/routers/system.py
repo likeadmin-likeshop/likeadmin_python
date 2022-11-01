@@ -9,7 +9,7 @@ from like.admin.schemas.system import (
     SystemLoginIn, SystemLogoutIn, SystemAuthAdminListIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn,
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
     SystemAuthRoleDetailIn, SystemAuthRoleDelIn, SystemAuthRoleCreateIn, SystemAuthRoleEditIn,
-    SystemAuthMenuDetailIn, SystemAuthMenuCreateIn, SystemAuthMenuDelIn,
+    SystemAuthMenuDetailIn, SystemAuthMenuCreateIn, SystemAuthMenuEditIn, SystemAuthMenuDelIn,
     SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAuthMenuService
@@ -181,8 +181,10 @@ async def menu_add(create_in: SystemAuthMenuCreateIn,
 
 @router.post('/menu/edit')
 @unified_resp
-async def menu_edit():
-    return
+async def menu_edit(edit_in: SystemAuthMenuEditIn,
+                    menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
+    """编辑菜单"""
+    return await menu_service.edit(edit_in)
 
 
 @router.post('/menu/del')

@@ -1,6 +1,6 @@
+import time
 from abc import ABC, abstractmethod
 from typing import Final, List, Union
-import time
 
 import pydantic
 from fastapi import Depends, Request
@@ -86,13 +86,18 @@ class SystemAuthMenuService(ISystemAuthMenuService):
         await RedisUtil.delete(AdminConfig.backstage_roles_key)
 
     async def edit(self, edit_in: SystemAuthMenuEditIn):
-        pass
+        """编辑菜单"""
+        assert await db.fetch_one(
+            system_auth_menu.select().where(system_auth_menu.c.id == edit_in.id).limit(1)), '菜单已不存在!'
+        edit_dict = edit_in.dict()
+        edit_dict['update_time'] = int(time.time())
+        await db.execute(system_auth_menu.update().where(system_auth_menu.c.id == edit_in.id).values(**edit_dict))
+        await RedisUtil.delete(AdminConfig.backstage_roles_key)
 
     async def delete(self, id_: int):
         """删除菜单"""
-        menu = await db.fetch_one(
-            system_auth_menu.select().where(system_auth_menu.c.id == id_).limit(1))
-        assert menu, '菜单已不存在!'
+        assert await db.fetch_one(
+            system_auth_menu.select().where(system_auth_menu.c.id == id_).limit(1)), '菜单已不存在!'
         assert not await db.fetch_one(
             system_auth_menu.select().where(system_auth_menu.c.pid == id_)), '请先删除子菜单再操作！'
         await db.execute(system_auth_menu.delete().where(system_auth_menu.c.id == id_))

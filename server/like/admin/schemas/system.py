@@ -191,17 +191,17 @@ class SystemAuthMenuCreateIn(BaseModel):
 
 
 class SystemAuthMenuEditIn(SystemAuthMenuCreateIn):
-    """编辑角色参数"""
+    """编辑菜单参数"""
     id: int = Field(gt=0)  # 主键
 
 
 class SystemAuthMenuDelIn(BaseModel):
-    """删除角色参数"""
+    """删除菜单参数"""
     id: int = Field(gt=0)  # 主键
 
 
 class SystemAuthMenuOut(BaseModel):
-    """系统角色返回信息"""
+    """系统菜单返回信息"""
     id: int  # 主键
     pid: int  # 上级菜单
     menuType: str = Field(alias='menu_type')  # 权限类型: [M=目录, C=菜单, A=按钮]
