@@ -24,7 +24,7 @@ class ISystemAuthMenuService(ABC):
         pass
 
     @abstractmethod
-    async def detail(self, id_: int) -> SystemAuthMenuOut:
+    async def detail(self, id_: int) -> Union[SystemAuthMenuOut, dict]:
         pass
 
     @abstractmethod
@@ -67,8 +67,12 @@ class SystemAuthMenuService(ISystemAuthMenuService):
             [i.dict(exclude_none=True) for i in pydantic.parse_obj_as(List[SystemAuthMenuOut], menus)],
             'id', 'pid', 'children')
 
-    async def detail(self, id_: int) -> SystemAuthMenuOut:
-        pass
+    async def detail(self, id_: int) -> Union[SystemAuthMenuOut, dict]:
+        """菜单详情"""
+        menu = await db.fetch_one(
+            system_auth_menu.select().where(system_auth_menu.c.id == id_).limit(1))
+        assert menu, '菜单已不存在!'
+        return SystemAuthMenuOut.from_orm(menu).dict(exclude_none=True)
 
     async def add(self, create_in: SystemAuthMenuCreateIn):
         pass
