@@ -1,16 +1,13 @@
-import time
 from abc import ABC, abstractmethod
 from typing import Final, List, Union
 
 import pydantic
 from fastapi import Depends, Request
 
-from like.admin.config import AdminConfig
 from like.admin.schemas.system import (
     SystemAuthMenuCreateIn, SystemAuthMenuEditIn, SystemAuthMenuOut)
 from like.dependencies.database import db
 from like.models import system_auth_menu
-from like.utils.redis import RedisUtil
 from like.utils.array import ArrayUtil
 from .auth_perm import ISystemAuthPermService, SystemAuthPermService
 
@@ -58,11 +55,17 @@ class SystemAuthMenuService(ISystemAuthMenuService):
             system_auth_menu.select().where(*where)
             .order_by(system_auth_menu.c.menu_sort.desc(), system_auth_menu.c.id))
         return ArrayUtil.list_to_tree(
-            [i.dict(exclude_none=True)
-             for i in pydantic.parse_obj_as(List[SystemAuthMenuOut], menus)], 'id', 'pid', 'children')
+            [i.dict(exclude_none=True) for i in pydantic.parse_obj_as(List[SystemAuthMenuOut], menus)],
+            'id', 'pid', 'children')
 
-    async def list(self) -> List[SystemAuthMenuOut]:
-        pass
+    async def list(self) -> List[Union[SystemAuthMenuOut, dict]]:
+        """菜单列表"""
+        menus = await db.fetch_all(
+            system_auth_menu.select()
+            .order_by(system_auth_menu.c.menu_sort.desc(), system_auth_menu.c.id))
+        return ArrayUtil.list_to_tree(
+            [i.dict(exclude_none=True) for i in pydantic.parse_obj_as(List[SystemAuthMenuOut], menus)],
+            'id', 'pid', 'children')
 
     async def detail(self, id_: int) -> SystemAuthMenuOut:
         pass

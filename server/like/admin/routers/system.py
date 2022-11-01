@@ -157,8 +157,9 @@ async def menu_route(request: Request,
 
 @router.get('/menu/list')
 @unified_resp
-async def menu_list():
-    return
+async def menu_list(menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
+    """菜单列表"""
+    return await menu_service.list()
 
 
 @router.get('/menu/detail')
