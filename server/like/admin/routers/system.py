@@ -100,18 +100,6 @@ async def admin_disable(admin_disable_in: SystemAuthAdminDisableIn,
     return await auth_service.disable(admin_disable_in.id)
 
 
-@router.get('/menu/route')
-@unified_resp
-async def menu_route():
-    return
-
-
-@router.get('/menu/list')
-@unified_resp
-async def menu_list():
-    return
-
-
 @router.get('/role/all')
 @unified_resp
 async def role_all(role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
@@ -156,6 +144,42 @@ async def role_del(del_in: SystemAuthRoleDelIn,
                    role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
     """删除角色"""
     return await role_service.delete(del_in.id)
+
+
+@router.get('/menu/route')
+@unified_resp
+async def menu_route():
+    return
+
+
+@router.get('/menu/list')
+@unified_resp
+async def menu_list():
+    return
+
+
+@router.get('/menu/detail')
+@unified_resp
+async def menu_detail():
+    return
+
+
+@router.post('/menu/add')
+@unified_resp
+async def menu_add():
+    return
+
+
+@router.post('/menu/edit')
+@unified_resp
+async def menu_edit():
+    return
+
+
+@router.post('/menu/del')
+@unified_resp
+async def menu_del():
+    return
 
 
 # 岗位相关接口
