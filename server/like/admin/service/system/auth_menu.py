@@ -49,7 +49,7 @@ class SystemAuthMenuService(ISystemAuthMenuService):
     async def select_menu_by_role_id(self, role_id) -> List[Union[SystemAuthMenuOut, dict]]:
         """根据角色ID获取菜单"""
         admin_id = self.request.state.admin_id
-        menu_ids = self.auth_perm_service.select_menu_ids_by_role_id(role_id) or [0]
+        menu_ids = await self.auth_perm_service.select_menu_ids_by_role_id(role_id) or [0]
         where = [system_auth_menu.c.menu_type.in_(('M', 'C')),
                  system_auth_menu.c.is_disable == 0]
         if admin_id != 1:
@@ -89,7 +89,15 @@ class SystemAuthMenuService(ISystemAuthMenuService):
         pass
 
     async def delete(self, id_: int):
-        pass
+        """删除菜单"""
+        menu = await db.fetch_one(
+            system_auth_menu.select().where(system_auth_menu.c.id == id_).limit(1))
+        assert menu, '菜单已不存在!'
+        assert not await db.fetch_one(
+            system_auth_menu.select().where(system_auth_menu.c.pid == id_)), '请先删除子菜单再操作！'
+        await db.execute(system_auth_menu.delete().where(system_auth_menu.c.id == id_))
+        await self.auth_perm_service.batch_delete_by_menu_id(id_)
+        await RedisUtil.delete(AdminConfig.backstage_roles_key)
 
     def __init__(self, request: Request, auth_perm_service: ISystemAuthPermService):
         self.request: Final[Request] = request

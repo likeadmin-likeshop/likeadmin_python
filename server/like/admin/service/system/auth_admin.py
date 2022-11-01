@@ -86,7 +86,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         # 角色权限
         auths = []
         if admin_id > 1:
-            menu_ids = self.auth_perm_service.select_menu_ids_by_role_id(int(sys_admin.role))
+            menu_ids = await self.auth_perm_service.select_menu_ids_by_role_id(int(sys_admin.role))
             if menu_ids:
                 menus = await db.fetch_all(
                     system_auth_menu.select()
@@ -207,7 +207,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         await db.execute(system_auth_admin.update()
                          .where(system_auth_admin.c.id == admin_edit_in.id)
                          .values(**admin_dict))
-        self.cache_admin_user_by_uid(admin_edit_in.id)
+        await self.cache_admin_user_by_uid(admin_edit_in.id)
         # 如果更改自己的密码,则删除旧缓存
         id_ = self.request.state.admin_id
         if admin_edit_in.password and admin_edit_in.id == id_:
@@ -247,7 +247,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         await db.execute(system_auth_admin.update()
                          .where(system_auth_admin.c.id == sys_admin.id)
                          .values(**admin_dict))
-        self.cache_admin_user_by_uid(admin_id)
+        await self.cache_admin_user_by_uid(admin_id)
         # 如果更改自己的密码,则删除旧缓存
         id_ = admin_id
         if admin_update_in.password:

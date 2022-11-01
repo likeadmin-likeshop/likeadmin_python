@@ -34,7 +34,7 @@ async def verify_token(request: Request):
     uid_str = await RedisUtil.get(token)
     uid = int(uid_str)
     if not await RedisUtil.hexists(AdminConfig.backstage_manage_key, uid_str):
-        await SystemAuthAdminService.cache_admin_user_by_uid(uid_str)
+        await SystemAuthAdminService.cache_admin_user_by_uid(uid)
 
     # 校验用户被删除
     mapping = json.loads(await RedisUtil.hget(AdminConfig.backstage_manage_key, uid_str))

@@ -9,7 +9,7 @@ from like.admin.schemas.system import (
     SystemLoginIn, SystemLogoutIn, SystemAuthAdminListIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn,
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
     SystemAuthRoleDetailIn, SystemAuthRoleDelIn, SystemAuthRoleCreateIn, SystemAuthRoleEditIn,
-    SystemAuthMenuDetailIn, SystemAuthMenuCreateIn,
+    SystemAuthMenuDetailIn, SystemAuthMenuCreateIn, SystemAuthMenuDelIn,
     SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAuthMenuService
@@ -187,8 +187,10 @@ async def menu_edit():
 
 @router.post('/menu/del')
 @unified_resp
-async def menu_del():
-    return
+async def menu_del(del_in: SystemAuthMenuDelIn,
+                   menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
+    """删除菜单"""
+    return await menu_service.delete(del_in.id)
 
 
 # 岗位相关接口
