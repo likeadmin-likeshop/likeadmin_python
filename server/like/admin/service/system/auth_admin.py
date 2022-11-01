@@ -212,7 +212,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         id_ = self.request.state.admin_id
         if admin_edit_in.password and admin_edit_in.id == id_:
             token = self.request.headers.get('token', '')
-            RedisUtil.delete(f'{AdminConfig.backstage_token_key}{token}')
+            await RedisUtil.delete(f'{AdminConfig.backstage_token_key}{token}')
             sys_admin_set_key = f'{AdminConfig.backstage_token_set}{id_}'
             ts = await RedisUtil.sget(sys_admin_set_key)
             if ts:
@@ -252,7 +252,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         id_ = admin_id
         if admin_update_in.password:
             token = self.request.headers.get('token', '')
-            RedisUtil.delete(f'{AdminConfig.backstage_token_key}{token}')
+            await RedisUtil.delete(f'{AdminConfig.backstage_token_key}{token}')
             sys_admin_set_key = f'{AdminConfig.backstage_token_set}{id_}'
             ts = await RedisUtil.sget(sys_admin_set_key)
             if ts:

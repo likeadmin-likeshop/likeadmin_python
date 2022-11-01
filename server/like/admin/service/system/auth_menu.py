@@ -1,14 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import Final, List, Union
+import time
 
 import pydantic
 from fastapi import Depends, Request
 
+from like.admin.config import AdminConfig
 from like.admin.schemas.system import (
     SystemAuthMenuCreateIn, SystemAuthMenuEditIn, SystemAuthMenuOut)
 from like.dependencies.database import db
 from like.models import system_auth_menu
 from like.utils.array import ArrayUtil
+from like.utils.redis import RedisUtil
 from .auth_perm import ISystemAuthPermService, SystemAuthPermService
 
 
@@ -75,7 +78,12 @@ class SystemAuthMenuService(ISystemAuthMenuService):
         return SystemAuthMenuOut.from_orm(menu).dict(exclude_none=True)
 
     async def add(self, create_in: SystemAuthMenuCreateIn):
-        pass
+        """新增菜单"""
+        create_dict = create_in.dict()
+        create_dict['create_time'] = int(time.time())
+        create_dict['update_time'] = int(time.time())
+        await db.execute(system_auth_menu.insert().values(**create_dict))
+        await RedisUtil.delete(AdminConfig.backstage_roles_key)
 
     async def edit(self, edit_in: SystemAuthMenuEditIn):
         pass
