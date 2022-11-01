@@ -86,7 +86,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         # 角色权限
         auths = []
         if admin_id > 1:
-            menu_ids = self.auth_perm_service.select_menus_by_role_id(int(sys_admin.role))
+            menu_ids = self.auth_perm_service.select_menu_ids_by_role_id(int(sys_admin.role))
             if menu_ids:
                 menus = await db.fetch_all(
                     system_auth_menu.select()

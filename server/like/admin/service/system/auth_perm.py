@@ -13,7 +13,7 @@ class ISystemAuthPermService(ABC):
 
     @classmethod
     @abstractmethod
-    async def select_menus_by_role_id(cls, role_id: int) -> List[int]:
+    async def select_menu_ids_by_role_id(cls, role_id: int) -> List[int]:
         pass
 
     @classmethod
@@ -38,7 +38,7 @@ class SystemAuthPermService(ISystemAuthPermService):
     """系统权限服务实现类"""
 
     @classmethod
-    async def select_menus_by_role_id(cls, role_id: int) -> List[int]:
+    async def select_menu_ids_by_role_id(cls, role_id: int) -> List[int]:
         """根据角色ID获取菜单ID"""
         role = await db.fetch_one(
             system_auth_role.select()

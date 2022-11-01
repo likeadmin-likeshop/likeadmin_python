@@ -77,7 +77,7 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         role_id = role.id
         role_dict = dict(role)
         role_dict['member'] = await self.get_member_cnt(role_id)
-        role_dict['menus'] = await self.auth_perm_service.select_menus_by_role_id(role_id)
+        role_dict['menus'] = await self.auth_perm_service.select_menu_ids_by_role_id(role_id)
         return SystemAuthRoleDetailOut(**role_dict)
 
     async def add(self, create_in: SystemAuthRoleCreateIn):

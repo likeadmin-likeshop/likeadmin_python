@@ -218,6 +218,7 @@ class SystemAuthMenuOut(BaseModel):
     isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
     createTime: datetime = Field(alias='create_time')  # 创建时间
     updateTime: datetime = Field(alias='update_time')  # 更新时间
+    children: Union['SystemAuthMenuOut', None]  # 子集
 
     class Config:
         orm_mode = True

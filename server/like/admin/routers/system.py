@@ -13,6 +13,7 @@ from like.admin.schemas.system import (
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
 from like.admin.service.system.auth_role import ISystemAuthRoleService, SystemAuthRoleService
+from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAuthMenuService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
 from like.http_base import unified_resp
 
@@ -148,8 +149,10 @@ async def role_del(del_in: SystemAuthRoleDelIn,
 
 @router.get('/menu/route')
 @unified_resp
-async def menu_route():
-    return
+async def menu_route(request: Request,
+                     menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
+    """菜单路由"""
+    return await menu_service.select_menu_by_role_id(request.state.admin_id)
 
 
 @router.get('/menu/list')
