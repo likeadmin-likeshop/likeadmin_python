@@ -1,9 +1,10 @@
-from typing import Final
-import string
 import hashlib
+import json
 import random
+import string
 import time
 import uuid
+from typing import Final
 
 from like.config import get_settings
 
@@ -38,3 +39,8 @@ class ToolsUtil:
         token = ToolsUtil.make_md5(f'{ToolsUtil.make_uuid()}{ms}{ToolsUtil.random_string(8)}')
         token_secret = f'{token}{ToolsUtil.secret}'
         return f'{ToolsUtil.make_md5(token_secret)}{ToolsUtil.random_string(6)}'
+
+    @staticmethod
+    def json_to_map(json_str: str) -> dict:
+        """JSON转dict"""
+        return json.loads(json_str)

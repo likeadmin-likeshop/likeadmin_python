@@ -1,17 +1,37 @@
-from sqlalchemy import Column, String, text
+from sqlalchemy import Column, String, Text, text
 from sqlalchemy.dialects import mysql
 
 from .base import Base, TimestampMixin
 
 __all__ = [
-    'SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemAuthRole', 'SystemLogLogin', 'SystemAuthDept',
-    'SystemAuthPost', 'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_auth_role',
-    'system_log_login',
-    'system_auth_post', 'system_auth_dept'
+    'SystemConfig', 'SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemAuthRole', 'SystemLogLogin',
+    'SystemAuthDept', 'SystemAuthPost',
+    'system_config', 'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_auth_role',
+    'system_log_login', 'system_auth_post', 'system_auth_dept'
 ]
 
 
-class SystemAuthAdmin(Base):
+class SystemConfig(Base):
+    """系统配置实体"""
+    __tablename__ = 'la_system_config'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4',
+        'mysql_collate': 'utf8mb4_general_ci',
+        'mysql_row_format': 'Dynamic',
+        'mysql_auto_increment': '1',
+        'comment': '系统全局配置表',
+    }
+
+    id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment='主键')
+    type = Column(String(30), nullable=True, server_default='', comment='类型')
+    name = Column(String(60), nullable=False, server_default='', comment='键')
+    value = Column(Text, nullable=True, comment='值')
+    create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=True, server_default=text('0'), comment='创建时间')
+    update_time = Column(mysql.INTEGER(10, unsigned=True), nullable=True, server_default=text('0'), comment='更新时间')
+
+
+class SystemAuthAdmin(Base, TimestampMixin):
     """系统管理员实体"""
     __tablename__ = 'la_system_auth_admin'
     __table_args__ = {
@@ -42,9 +62,6 @@ class SystemAuthAdmin(Base):
     last_login_ip = Column(String(30), nullable=False, server_default='', comment='最后登录IP')
     last_login_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'),
                              comment='最后登录时间')
-    create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
-    update_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='更新时间')
-    delete_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='删除时间')
 
 
 class SystemAuthMenu(Base):
@@ -88,7 +105,6 @@ class SystemAuthPerm(Base):
         'mysql_charset': 'utf8mb4',
         'mysql_collate': 'utf8mb4_general_ci',
         'mysql_row_format': 'Dynamic',
-        'mysql_auto_increment': '1',
         'comment': '系统角色菜单表',
     }
 
@@ -185,6 +201,7 @@ class SystemAuthPost(Base, TimestampMixin):
                        comment='是否删除: [0=否, 1=是]')
 
 
+system_config = SystemConfig.__table__
 system_auth_admin = SystemAuthAdmin.__table__
 system_auth_menu = SystemAuthMenu.__table__
 system_auth_perm = SystemAuthPerm.__table__
