@@ -1,6 +1,8 @@
+import inspect
 from collections import namedtuple
 from datetime import datetime
 from functools import wraps
+from typing import Callable, TypeVar
 
 import pytz
 from fastapi.encoders import jsonable_encoder
@@ -10,6 +12,7 @@ from .config import get_settings
 
 __all__ = ['HttpCode', 'HttpResp', 'unified_resp']
 
+RT = TypeVar('RT')  # 返回类型
 HttpCode = namedtuple('HttpResp', ['code', 'msg'])
 
 
@@ -34,14 +37,17 @@ class HttpResp:
     SYSTEM_ERROR = HttpCode(500, '系统错误')
 
 
-def unified_resp(func):
+def unified_resp(func: Callable[..., RT]) -> Callable[..., RT]:
     """统一响应格式
         接口正常返回时,统一响应结果格式
     """
 
     @wraps(func)
-    async def wrapper(*args, **kwargs):
-        resp = await func(*args, **kwargs) or []
+    async def wrapper(*args, **kwargs) -> RT:
+        if inspect.iscoroutinefunction(func):
+            resp = await func(*args, **kwargs) or []
+        else:
+            resp = func(*args, **kwargs) or []
         return JSONResponse(content=jsonable_encoder(
             # 正常请求响应
             {'code': HttpResp.SUCCESS.code, 'msg': HttpResp.SUCCESS.msg, 'data': resp},
