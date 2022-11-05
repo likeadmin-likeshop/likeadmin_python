@@ -53,6 +53,10 @@ class Settings(BaseSettings):
     # Redis键前缀
     redis_prefix: str = 'Like:'
 
+    upload_prefix = "/api/uploads"
+
+    domain = 'https://127.0.0.1'
+
 
 @lru_cache()
 def get_settings() -> Settings:

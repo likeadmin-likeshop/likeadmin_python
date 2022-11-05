@@ -10,9 +10,11 @@ from like.admin.schemas.system import (
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
     SystemAuthRoleDetailIn, SystemAuthRoleDelIn, SystemAuthRoleCreateIn, SystemAuthRoleEditIn,
     SystemAuthMenuDetailIn, SystemAuthMenuCreateIn, SystemAuthMenuEditIn, SystemAuthMenuDelIn,
-    SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut, SystemAuthPostAddIn, SystemAuthPostDetailIn, SystemAuthPostDelIn,
-    SystemAuthPostEditIn)
+    SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut, SystemAuthPostAddIn, SystemAuthPostDetailIn,
+    SystemAuthPostDelIn,
+    SystemAuthPostEditIn, SystemAuthDeptDetailIn, SystemAuthDeptDeleteIn, SystemAuthDeptAddIn, SystemAuthDeptEditIn)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
+from like.admin.service.system.auth_dept import ISystemAuthDeptService, SystemAuthDeptService
 from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAuthMenuService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
 from like.admin.service.system.auth_role import ISystemAuthRoleService, SystemAuthRoleService
@@ -198,6 +200,7 @@ async def menu_del(del_in: SystemAuthMenuDelIn,
 
 # 岗位相关接口
 @router.get('/post/all')
+@unified_resp
 async def post_all(post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
     return await post_service.fetch_all()
 
@@ -219,14 +222,14 @@ async def post_list(code: Union[str, None] = Query(default=None), status: Union[
 
 @router.post('/post/add')
 @unified_resp
-async def post_add(post_add_in: SystemAuthPostAddIn=Depends(),
+async def post_add(post_add_in: SystemAuthPostAddIn = Depends(),
                    post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
     return await post_service.add(post_add_in)
 
 
 @router.post('/post/delete')
 @unified_resp
-async def post_delete(post_delete_in: SystemAuthPostDelIn=Depends(),
+async def post_delete(post_delete_in: SystemAuthPostDelIn = Depends(),
                       post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
     return await post_service.delete(post_delete_in.id)
 
@@ -236,3 +239,45 @@ async def post_delete(post_delete_in: SystemAuthPostDelIn=Depends(),
 async def post_edit(post_edit_in: SystemAuthPostEditIn = Depends(),
                     post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
     return await post_service.edit(post_edit_in)
+
+
+@router.get('/dept/all')
+@unified_resp
+async def dept_all(dept_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
+    return await dept_service.fetch_all()
+
+
+@router.get('/dept/list')
+@unified_resp
+async def dept_list(is_stop: Union[int, None] = Query(default=None),
+                    name: Union[str, None] = Query(default=None),
+                    dept_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
+    return await dept_service.fetch_list(name=name, is_stop=is_stop)
+
+
+@router.get('/dept/add')
+@unified_resp
+async def dept_add(dept_add_in: SystemAuthDeptAddIn = Depends(),
+                   dept_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
+    return await dept_service.add(dept_add_in)
+
+
+@router.get('/dept/edit')
+@unified_resp
+async def dept_edit(dept_edit_in: SystemAuthDeptEditIn = Depends(),
+                    dept_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
+    return await dept_service.edit(dept_edit_in)
+
+
+@router.get('/dept/detail')
+@unified_resp
+async def dept_detail(dept_detail_in: SystemAuthDeptDetailIn = Depends(),
+                      post_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
+    return await post_service.detail(dept_detail_in.id)
+
+
+@router.get('/dept/delete')
+@unified_resp
+async def dept_delete(dept_deletel_in: SystemAuthDeptDeleteIn = Depends(),
+                      post_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
+    return await post_service.delete(dept_deletel_in.id)
