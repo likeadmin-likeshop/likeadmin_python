@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from fastapi_pagination.ext.databases import paginate
 from sqlalchemy import select
 
-from like.admin.schemas.system import SystemAuthPostAddIn, SystemAuthPostEditIn
+from like.admin.schemas.system import SystemAuthPostAddIn, SystemAuthPostEditIn, SystemAuthPostOut
 from like.dependencies.database import db
 from like.models.system import system_auth_post, system_auth_admin
 
@@ -40,10 +40,12 @@ class SystemAuthPostService(ISystemAuthPostService):
     order_by = [system_auth_post.c.sort.desc(), system_auth_post.c.id.desc()]
 
     async def fetch_all(self):
-        return await db.fetch_all(select(self.select_columns).order_by(*self.order_by))
+        post_all = await db.fetch_all(
+            select(self.select_columns).where(system_auth_post.c.is_delete == 0).order_by(*self.order_by))
+        return [SystemAuthPostOut(**post) for post in post_all]
 
     async def fetch_list(self, code: str = '', name: str = '', is_stop: int = None):
-        where = [system_auth_post.c.is_delete == 0, system_auth_post.c.delete_time == 0]
+        where = [system_auth_post.c.is_delete == 0]
         if code:
             where.append(system_auth_post.c.code == code)
         if name:
@@ -72,7 +74,7 @@ class SystemAuthPostService(ISystemAuthPostService):
             system_auth_post.c.code == post_edit_in.code or system_auth_post.c.name == post_edit_in.name,
             system_auth_post.c.is_delete == 0).limit(1))
 
-        edit_post = post_edit_in.dict(by_alias=True)
+        edit_post = post_edit_in.dict()
         edit_post['update_time'] = int(time.time())
 
         return await db.execute(system_auth_post.update()
