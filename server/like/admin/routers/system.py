@@ -19,6 +19,7 @@ from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAu
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
 from like.admin.service.system.auth_role import ISystemAuthRoleService, SystemAuthRoleService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
+from like.dependencies.log import record_log
 from like.http_base import unified_resp
 
 logger = logging.getLogger(__name__)
@@ -65,7 +66,7 @@ async def admin_detail(detail_in: SystemAuthAdminDetailIn = Depends(),
     return await auth_service.detail(detail_in.id)
 
 
-@router.post('/admin/add')
+@router.post('/admin/add', dependencies=[Depends(record_log(title='管理员新增'))])
 @unified_resp
 async def admin_add(admin_create_in: SystemAuthAdminCreateIn,
                     auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
@@ -73,7 +74,7 @@ async def admin_add(admin_create_in: SystemAuthAdminCreateIn,
     return await auth_service.add(admin_create_in)
 
 
-@router.post('/admin/edit')
+@router.post('/admin/edit', dependencies=[Depends(record_log(title='管理员编辑'))])
 @unified_resp
 async def admin_edit(admin_edit_in: SystemAuthAdminEditIn,
                      auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
@@ -81,7 +82,7 @@ async def admin_edit(admin_edit_in: SystemAuthAdminEditIn,
     return await auth_service.edit(admin_edit_in)
 
 
-@router.post('/admin/upInfo')
+@router.post('/admin/upInfo', dependencies=[Depends(record_log(title='管理员更新'))])
 @unified_resp
 async def admin_upinfo(request: Request, admin_update_in: SystemAuthAdminUpdateIn,
                        auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
@@ -89,7 +90,7 @@ async def admin_upinfo(request: Request, admin_update_in: SystemAuthAdminUpdateI
     return await auth_service.update(admin_update_in, request.state.admin_id)
 
 
-@router.post('/admin/del')
+@router.post('/admin/del', dependencies=[Depends(record_log(title='管理员删除'))])
 @unified_resp
 async def admin_del(admin_del_in: SystemAuthAdminDelIn,
                     auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
@@ -97,7 +98,7 @@ async def admin_del(admin_del_in: SystemAuthAdminDelIn,
     return await auth_service.delete(admin_del_in.id)
 
 
-@router.post('/admin/disable')
+@router.post('/admin/disable', dependencies=[Depends(record_log(title='管理员状态切换'))])
 @unified_resp
 async def admin_disable(admin_disable_in: SystemAuthAdminDisableIn,
                         auth_service: ISystemAuthAdminService = Depends(SystemAuthAdminService.instance)):
@@ -112,14 +113,15 @@ async def role_all(role_service: ISystemAuthRoleService = Depends(SystemAuthRole
     return await role_service.all()
 
 
-@router.get('/role/list', response_model=PageInationResult[SystemAuthRoleDetailOut])
+@router.get('/role/list', dependencies=[Depends(record_log(title='角色列表'))],
+            response_model=PageInationResult[SystemAuthRoleDetailOut])
 @unified_resp
 async def role_list(role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
     """角色列表"""
     return await role_service.list()
 
 
-@router.get('/role/detail')
+@router.get('/role/detail', dependencies=[Depends(record_log(title='角色详情'))])
 @unified_resp
 async def role_detail(detail_in: SystemAuthRoleDetailIn = Depends(),
                       role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
@@ -127,7 +129,7 @@ async def role_detail(detail_in: SystemAuthRoleDetailIn = Depends(),
     return await role_service.detail(detail_in.id)
 
 
-@router.post('/role/add')
+@router.post('/role/add', dependencies=[Depends(record_log(title='角色新增'))])
 @unified_resp
 async def role_add(create_in: SystemAuthRoleCreateIn,
                    role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
@@ -135,7 +137,7 @@ async def role_add(create_in: SystemAuthRoleCreateIn,
     return await role_service.add(create_in)
 
 
-@router.post('/role/edit')
+@router.post('/role/edit', dependencies=[Depends(record_log(title='角色编辑'))])
 @unified_resp
 async def role_edit(edit_in: SystemAuthRoleEditIn,
                     role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
@@ -143,7 +145,7 @@ async def role_edit(edit_in: SystemAuthRoleEditIn,
     return await role_service.edit(edit_in)
 
 
-@router.post('/role/del')
+@router.post('/role/del', dependencies=[Depends(record_log(title='角色删除'))])
 @unified_resp
 async def role_del(del_in: SystemAuthRoleDelIn,
                    role_service: ISystemAuthRoleService = Depends(SystemAuthRoleService.instance)):
@@ -174,7 +176,7 @@ async def menu_detail(detail_in: SystemAuthMenuDetailIn = Depends(),
     return await menu_service.detail(detail_in.id)
 
 
-@router.post('/menu/add')
+@router.post('/menu/add', dependencies=[Depends(record_log(title='菜单新增'))])
 @unified_resp
 async def menu_add(create_in: SystemAuthMenuCreateIn,
                    menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
@@ -182,7 +184,7 @@ async def menu_add(create_in: SystemAuthMenuCreateIn,
     return await menu_service.add(create_in)
 
 
-@router.post('/menu/edit')
+@router.post('/menu/edit', dependencies=[Depends(record_log(title='菜单编辑'))])
 @unified_resp
 async def menu_edit(edit_in: SystemAuthMenuEditIn,
                     menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
@@ -190,7 +192,7 @@ async def menu_edit(edit_in: SystemAuthMenuEditIn,
     return await menu_service.edit(edit_in)
 
 
-@router.post('/menu/del')
+@router.post('/menu/del', dependencies=[Depends(record_log(title='菜单删除'))])
 @unified_resp
 async def menu_del(del_in: SystemAuthMenuDelIn,
                    menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
