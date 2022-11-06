@@ -5,9 +5,9 @@ from .base import Base, TimestampMixin
 
 __all__ = [
     'SystemConfig', 'SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemAuthRole', 'SystemLogLogin',
-    'SystemAuthDept', 'SystemAuthPost',
+    'SystemLogOperate', 'SystemAuthDept', 'SystemAuthPost',
     'system_config', 'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_auth_role',
-    'system_log_login', 'system_auth_post', 'system_auth_dept'
+    'system_log_login', 'system_log_operate', 'system_auth_post', 'system_auth_dept'
 ]
 
 
@@ -158,6 +158,35 @@ class SystemLogLogin(Base):
     create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
 
 
+class SystemLogOperate(Base):
+    """系统操作日志实体"""
+    __tablename__ = 'la_system_log_operate'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4',
+        'mysql_collate': 'utf8mb4_general_ci',
+        'mysql_row_format': 'Dynamic',
+        'mysql_auto_increment': '1',
+        'comment': '系统操作日志表',
+    }
+
+    id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment='主键')
+    admin_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='操作人ID')
+    type = Column(String(30), nullable=False, server_default='', comment='请求类型: GET/POST/PUT')
+    title = Column(String(30), server_default='', comment='操作标题')
+    ip = Column(String(30), nullable=False, server_default='', comment='请求IP')
+    url = Column(String(200), nullable=False, server_default='', comment='请求接口')
+    method = Column(String(200), nullable=False, server_default='', comment='请求方法')
+    args = Column(Text, comment='请求参数')
+    error = Column(Text, comment='错误信息')
+    status = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('1'),
+                    comment='执行状态: 1=成功, 2=失败')
+    start_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='开始时间')
+    end_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='结束时间')
+    task_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='执行耗时')
+    create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
+
+
 class SystemAuthDept(Base, TimestampMixin):
     __tablename__ = 'la_system_auth_dept'
     __table_args__ = {
@@ -207,5 +236,6 @@ system_auth_menu = SystemAuthMenu.__table__
 system_auth_perm = SystemAuthPerm.__table__
 system_auth_role = SystemAuthRole.__table__
 system_log_login = SystemLogLogin.__table__
+system_log_operate = SystemLogOperate.__table__
 system_auth_post = SystemAuthPost.__table__
 system_auth_dept = SystemAuthDept.__table__
