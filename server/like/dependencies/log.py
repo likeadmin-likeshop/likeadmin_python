@@ -47,7 +47,7 @@ def record_log(title: str = '', req_type: RequestType = RequestType.Default) -> 
                 args = ','.join([i.filename for i in forms.values()])
             else:
                 form_params = await request.json()
-                args = json.dumps(form_params, ensure_ascii=False)
+                args = json.dumps([form_params], ensure_ascii=False)
         elif req_method == 'GET':
             # args = json.dumps(dict(request.query_params), ensure_ascii=False)
             args = str(request.query_params)
