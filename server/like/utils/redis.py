@@ -17,7 +17,18 @@ class RedisUtil:
 
     @staticmethod
     def get_key(key: str) -> str:
+        """key通用前缀"""
         return f'{RedisUtil.prefix}{key}'
+
+    @staticmethod
+    async def info(section: Union[str, None] = None) -> dict:
+        """Redis服务信息"""
+        return await RedisUtil.redis.info(section)
+
+    @staticmethod
+    async def dbsize() -> dict:
+        """当前数据库key数量"""
+        return await RedisUtil.redis.dbsize()
 
     @classmethod
     async def set(cls, key: str, value: Field, time: int = None):

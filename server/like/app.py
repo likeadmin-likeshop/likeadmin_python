@@ -33,13 +33,14 @@ def configure_router(app: FastAPI, prefix='/api'):
     """配置路由"""
     from .front.routers import index
     from .front.routers import upload
-    from .admin.routers import user, common, system
+    from .admin.routers import user, common, system, monitor
 
     app.include_router(index.router, prefix=prefix)
     app.include_router(upload.router, prefix=prefix)
     app.include_router(user.router, prefix=prefix)
     app.include_router(common.router, prefix=prefix)
     app.include_router(system.router, prefix=prefix)
+    app.include_router(monitor.router, prefix=prefix)
 
 
 def create_app() -> FastAPI:
