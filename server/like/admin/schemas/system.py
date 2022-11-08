@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Union, Literal
 
 from fastapi import Query
@@ -326,3 +326,59 @@ class SystemAuthDeptAddIn(BaseModel):
 
 class SystemAuthDeptEditIn(SystemAuthDeptAddIn):
     id: int = Query(gt=0)  # 主键
+
+
+class SystemLogOperateIn(BaseModel):
+    """操作日志列表参数"""
+    title: Union[str, None] = Query(default=None)  # 操作标题
+    username: Union[str, None] = Query(default=None)  # 用户账号
+    ip: Union[str, None] = Query(default=None)  # 请求IP
+    type: Union[str, None] = Query(default=None)  # 请求类型: GET/POST/PUT
+    status: Union[int, None] = Query(default=None)  # 执行状态: [1=成功, 2=失败]
+    url: Union[str, None] = Query(default=None)  # 请求地址
+    start_time: Union[date, None] = Field(alias='startTime')  # 开始时间
+    end_time: Union[date, None] = Field(alias='endTime')  # 结束时间
+
+
+class SystemLogOperateOut(BaseModel):
+    """操作日志返回信息"""
+    id: int  # 主键
+    username: str  # 用户账号
+    nickname: str  # 用户昵称
+    type: str  # 请求类型: GET/POST/PUT
+    title: str  # 操作标题
+    method: str  # 请求方式
+    ip: str  # 请求IP
+    url: str  # 请求地址
+    args: str  # 请求参数
+    error: str  # 错误信息
+    status: int  # 执行状态: [1=成功, 2=失败]
+    taskTime: str = Field(alias='task_time')  # 执行耗时
+    startTime: datetime = Field(alias='start_time')  # 开始时间
+    endTime: datetime = Field(alias='end_time')  # 结束时间
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+
+    class Config:
+        orm_mode = True
+
+
+class SystemLogLoginIn(BaseModel):
+    """登录日志列表参数"""
+    username: Union[str, None] = Query(default=None)  # 登录账号
+    status: Union[int, None] = Query(default=None)  # 操作状态: [1=成功, 2=失败]
+    start_time: Union[date, None] = Field(alias='startTime')  # 开始时间
+    end_time: Union[date, None] = Field(alias='endTime')  # 结束时间
+
+
+class SystemLogLoginOut(BaseModel):
+    """登录日志返回信息"""
+    id: int  # 主键
+    username: str  # 登录账号
+    ip: str  # 来源IP
+    os: str  # 操作系统
+    browser: str  # 浏览器
+    status: int  # 操作状态: [1=成功, 2=失败]
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+
+    class Config:
+        orm_mode = True

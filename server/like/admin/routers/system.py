@@ -11,14 +11,15 @@ from like.admin.schemas.system import (
     SystemAuthRoleDetailIn, SystemAuthRoleDelIn, SystemAuthRoleCreateIn, SystemAuthRoleEditIn,
     SystemAuthMenuDetailIn, SystemAuthMenuCreateIn, SystemAuthMenuEditIn, SystemAuthMenuDelIn,
     SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut, SystemAuthPostAddIn, SystemAuthPostDetailIn,
-    SystemAuthPostDelIn,
-    SystemAuthPostEditIn, SystemAuthDeptDetailIn, SystemAuthDeptDeleteIn, SystemAuthDeptAddIn, SystemAuthDeptEditIn)
+    SystemAuthPostDelIn, SystemAuthPostEditIn, SystemAuthDeptDetailIn, SystemAuthDeptDeleteIn, SystemAuthDeptAddIn,
+    SystemAuthDeptEditIn, SystemLogOperateIn, SystemLogOperateOut, SystemLogLoginIn, SystemLogLoginOut)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_dept import ISystemAuthDeptService, SystemAuthDeptService
 from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAuthMenuService
 from like.admin.service.system.auth_post import ISystemAuthPostService, SystemAuthPostService
 from like.admin.service.system.auth_role import ISystemAuthRoleService, SystemAuthRoleService
 from like.admin.service.system.login import ISystemLoginService, SystemLoginService
+from like.admin.service.system.logs import ISystemLogsServer, SystemLogsServer
 from like.dependencies.log import record_log
 from like.http_base import unified_resp
 
@@ -283,3 +284,19 @@ async def dept_detail(dept_detail_in: SystemAuthDeptDetailIn = Depends(),
 async def dept_delete(dept_deletel_in: SystemAuthDeptDeleteIn = Depends(),
                       post_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
     return await post_service.delete(dept_deletel_in.id)
+
+
+@router.get('/log/operate', response_model=PageInationResult[SystemLogOperateOut])
+@unified_resp
+async def log_operate(operate_in: SystemLogOperateIn = Depends(),
+                      logs_service: ISystemLogsServer = Depends(SystemLogsServer.instance)):
+    """系统操作日志"""
+    return await logs_service.operate(operate_in)
+
+
+@router.get('/log/login', response_model=PageInationResult[SystemLogLoginOut])
+@unified_resp
+async def log_login(login_in: SystemLogLoginIn = Depends(),
+                    logs_service: ISystemLogsServer = Depends(SystemLogsServer.instance)):
+    """系统登录日志"""
+    return await logs_service.login(login_in)

@@ -21,7 +21,7 @@ class ISystemAuthRoleService(ABC):
     """系统角色服务抽象类"""
 
     @abstractmethod
-    async def all(self) -> AbstractPage[SystemAuthRoleOut]:
+    async def all(self) -> List[SystemAuthRoleOut]:
         pass
 
     @abstractmethod
