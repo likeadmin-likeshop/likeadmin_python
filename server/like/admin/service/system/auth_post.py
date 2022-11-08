@@ -22,12 +22,15 @@ class ISystemAuthPostService(ABC):
     async def add(self, post_add_in):
         pass
 
+    @abstractmethod
     async def delete(self, _id):
         pass
 
+    @abstractmethod
     async def edit(self, post_edit_in):
         pass
 
+    @abstractmethod
     async def detail(self, _id):
         pass
 
@@ -49,7 +52,7 @@ class SystemAuthPostService(ISystemAuthPostService):
         if code:
             where.append(system_auth_post.c.code == code)
         if name:
-            where.append(system_auth_post.c.name == name)
+            where.append(system_auth_post.c.name.like('%{0}%'.format(name)))
         if is_stop:
             where.append(system_auth_post.c.is_stop == is_stop)
         query = select(self.select_columns).select_from(system_auth_post).where(*where).order_by(*self.order_by)
