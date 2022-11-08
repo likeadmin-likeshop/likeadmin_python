@@ -234,8 +234,8 @@ class SystemAuthPostOut(BaseModel):
     remarks: str
     sort: int
     isStop: int = Field(alias='is_stop')
-    createTime: str = Field(alias='create_time')
-    updateTime: str = Field(alias='update_time')
+    createTime: datetime = Field(alias='create_time')
+    updateTime: datetime = Field(alias='update_time')
 
     class Config:
         orm_mode = True
@@ -300,8 +300,8 @@ class SystemAuthDeptOut(BaseModel):
     mobile: str  # 联系电话
     sort: int  # 部门排序
     isStop: int = Field(alias='is_stop')
-    createTime: str = Field(alias='create_time')
-    updateTime: str = Field(alias='update_time')
+    createTime: datetime = Field(alias='create_time')
+    updateTime: datetime = Field(alias='update_time')
 
     class Config:
         orm_mode = True
