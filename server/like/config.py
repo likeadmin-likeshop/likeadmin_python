@@ -20,6 +20,7 @@ class Settings(BaseSettings):
             .env 文件内写入:
                 UPLOAD_DIRECTORY='/tmp/test/'
                 REDIS_URL='redis://localhost:6379'
+                DATABASE_URL='mysql+pymysql://root:root@localhost:3306/likeadmin?charset=utf8mb4'
 
                 上述环境变量会覆盖 upload_directory 和 redis_url
     """
