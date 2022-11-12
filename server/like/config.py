@@ -38,13 +38,14 @@ class Settings(BaseSettings):
     redis_url: str = 'redis://localhost:6379'
 
     # 是否启用静态资源
-    enabled_static = False
+    enabled_static: bool = False
     # 静态资源URL路径
-    static_path = '/api/static'
+    static_path: str = '/api/static'
     # 静态资源本地路径
-    static_directory = 'static'
+    static_directory: str = 'static'
 
     # 全局配置
+    version: str = 'v1.0.0'
     # 时区
     timezone: str = 'Asia/Shanghai'
     # 日期时间格式
