@@ -17,6 +17,7 @@ class ISystemAuthDeptService(ABC):
     async def fetch_all(self):
         pass
 
+    @abstractmethod
     async def fetch_list(self, name: str = '', is_stop: int = None):
         pass
 
@@ -24,17 +25,20 @@ class ISystemAuthDeptService(ABC):
     async def add(self, dept_add_in):
         pass
 
+    @abstractmethod
     async def delete(self, dept_id):
         pass
 
+    @abstractmethod
     async def edit(self, dept_edit_in):
         pass
 
+    @abstractmethod
     async def detail(self, dept_id):
         pass
 
 
-class SystemAuthDeptService():
+class SystemAuthDeptService(ISystemAuthDeptService):
     select_columns = [system_auth_dept.c.id, system_auth_dept.c.pid, system_auth_dept.c.name,
                       system_auth_dept.c.duty, system_auth_dept.c.mobile, system_auth_dept.c.sort,
                       system_auth_dept.c.is_stop, system_auth_dept.c.create_time,
@@ -50,7 +54,7 @@ class SystemAuthDeptService():
     async def fetch_list(self, name: str = '', is_stop: int = None):
         where = [system_auth_dept.c.is_delete == 0]
         if name:
-            where.append(system_auth_dept.c.name == name)
+            where.append(system_auth_dept.c.name.like('%{0}%'.format(name)))
         if is_stop:
             where.append(system_auth_dept.c.is_stop == is_stop)
         depts = await db.fetch_all(
@@ -60,7 +64,7 @@ class SystemAuthDeptService():
             'id', 'pid', 'children')
 
     async def add(self, dept_add_in: SystemAuthDeptAddIn):
-        if dept_add_in.pid == 0 :
+        if dept_add_in.pid == 0:
             assert not await db.fetch_one(
                 system_auth_dept.select([system_auth_dept.c.id, system_auth_dept.c.pid, system_auth_dept.c.name]).where(
                     system_auth_dept.c.pid == 0, system_auth_dept.c.is_delete == 0)), "顶级部门只允许有一个"
