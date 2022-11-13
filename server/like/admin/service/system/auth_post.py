@@ -1,6 +1,8 @@
 import time
 from abc import ABC, abstractmethod
+from typing import List
 
+import pydantic
 from fastapi_pagination.ext.databases import paginate
 from sqlalchemy import select
 
@@ -45,7 +47,7 @@ class SystemAuthPostService(ISystemAuthPostService):
     async def fetch_all(self):
         post_all = await db.fetch_all(
             select(self.select_columns).where(system_auth_post.c.is_delete == 0).order_by(*self.order_by))
-        return [SystemAuthPostOut(**post) for post in post_all]
+        return pydantic.parse_obj_as(List[SystemAuthPostOut], post_all)
 
     async def fetch_list(self, code: str = '', name: str = '', is_stop: int = None):
         where = [system_auth_post.c.is_delete == 0]

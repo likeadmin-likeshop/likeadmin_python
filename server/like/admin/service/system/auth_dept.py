@@ -49,7 +49,7 @@ class SystemAuthDeptService(ISystemAuthDeptService):
         dept_all = await db.fetch_all(
             select(self.select_columns).where(system_auth_dept.c.pid >= 0, system_auth_dept.c.is_delete == 0).order_by(
                 *self.order_by))
-        return [SystemAuthDeptOut(**dept) for dept in dept_all]
+        return pydantic.parse_obj_as(List[SystemAuthDeptOut], dept_all)
 
     async def fetch_list(self, name: str = '', is_stop: int = None):
         where = [system_auth_dept.c.is_delete == 0]

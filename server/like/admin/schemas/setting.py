@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from pydantic import BaseModel, Field
 
@@ -44,3 +44,40 @@ class SettingProtocolIn(BaseModel):
     """
     service: CommonProtocol  # 服务协议
     privacy: CommonProtocol  # 隐私协议
+
+
+class SettingsStorageDetailIn(BaseModel):
+    """存储设置详情入参"""
+    alias: str
+
+
+class SettingsStorageEditIn(BaseModel):
+    """存储设置配置入参"""
+    alias: str
+    status: int
+    bucket: Union[str, None]
+    secretKey: Union[str, None]
+    accessKey: Union[str, None]
+    domain: Union[str, None]
+    region: Union[str, None]
+
+
+class SettingsStorageChangeIn(BaseModel):
+    """切换存储入参"""
+    alias: str
+    status: int
+
+
+class SettingsStorageOut(BaseModel):
+    """存储设置列表返回"""
+    alias: str
+    status: int
+    describe: str = ""
+
+
+class SettingsStorageDetailOut(SettingsStorageOut):
+    """存储设置详情返回"""
+    bucket: str = ""
+    secretKey: str = ""
+    accessKey: str = ""
+    domain: str = ""

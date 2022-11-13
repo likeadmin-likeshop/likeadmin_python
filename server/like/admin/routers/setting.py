@@ -1,11 +1,16 @@
+import logging
+
 from fastapi import APIRouter, Depends
 
-from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn
+from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingsStorageDetailIn, \
+    SettingsStorageEditIn, SettingsStorageChangeIn
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
+from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
 from like.admin.service.setting.website import ISettingWebsiteService, SettingWebsiteService
 from like.http_base import unified_resp
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix='/setting')
 
 
@@ -52,3 +57,30 @@ async def protocol_save(protocol_in: SettingProtocolIn,
                         protocol_service: ISettingProtocolService = Depends(SettingProtocolService.instance)):
     """保存网站政策信息"""
     return await protocol_service.save(protocol_in)
+
+
+@router.get('/storage/list')
+@unified_resp
+async def list(service: ISettingStorageService = Depends(SettingStorageService.instance)):
+    return await service.list()
+
+
+@router.get('/storage/detail')
+@unified_resp
+async def detail(storage_detail_in: SettingsStorageDetailIn = Depends(),
+                 service: ISettingStorageService = Depends(SettingStorageService.instance)):
+    return await service.detail(storage_detail_in.alias)
+
+
+@router.post('/storage/edit')
+@unified_resp
+async def edit(storage_edit_in: SettingsStorageEditIn = Depends(),
+               service: ISettingStorageService = Depends(SettingStorageService.instance)):
+    return await service.edit(storage_edit_in)
+
+
+@router.post('/storage/change')
+@unified_resp
+async def change(storage_change_in: SettingsStorageChangeIn = Depends(),
+                 service: ISettingStorageService = Depends(SettingStorageService.instance)):
+    return await service.change(storage_change_in.alias, storage_change_in.status)
