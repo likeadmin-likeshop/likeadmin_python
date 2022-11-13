@@ -52,7 +52,7 @@ class ServerInfo:
         cpu_times = psutil.cpu_times()
         total = cpu_times.user + cpu_times.nice + cpu_times.system + cpu_times.idle + cpu_times.iowait \
                 + cpu_times.irq + cpu_times.softirq + cpu_times.steal
-        res['total'] = total
+        res['total'] = round(total, 2)
         res['sys'] = round(cpu_times.system / total, 2)
         res['used'] = round(cpu_times.user / total, 2)
         res['wait'] = round(cpu_times.iowait / total, 2)
