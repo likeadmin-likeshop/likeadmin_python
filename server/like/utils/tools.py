@@ -4,7 +4,7 @@ import random
 import string
 import time
 import uuid
-from typing import Final
+from typing import Final, Union
 
 from like.config import get_settings
 
@@ -41,6 +41,6 @@ class ToolsUtil:
         return f'{ToolsUtil.make_md5(token_secret)}{ToolsUtil.random_string(6)}'
 
     @staticmethod
-    def json_to_map(json_str: str) -> dict:
+    def json_to_map(json_str: str) -> Union[dict, list]:
         """JSON转dict"""
         return json.loads(json_str)
