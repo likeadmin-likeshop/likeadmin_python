@@ -3,10 +3,10 @@ import time
 from abc import ABC, abstractmethod
 from typing import Union, Final
 
-from sqlalchemy import select
 from fastapi import Depends, Request
 from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
+from sqlalchemy import select
 
 from like.admin.config import AdminConfig
 from like.admin.schemas.system import (
@@ -19,6 +19,7 @@ from like.models import (
     system_auth_admin, system_auth_menu, system_auth_role, system_auth_dept, SystemAuthAdmin)
 from like.utils.redis import RedisUtil
 from like.utils.tools import ToolsUtil
+from like.utils.urls import UrlUtil
 from .auth_perm import ISystemAuthPermService, SystemAuthPermService
 from .auth_role import ISystemAuthRoleService, SystemAuthRoleService
 
@@ -99,8 +100,9 @@ class SystemAuthAdminService(ISystemAuthAdminService):
                 auths.append('')
         else:
             auths.append('*')
-        # TODO: 头像路径处理
-        return SystemAuthAdminSelfOut(user=SystemAuthAdminSelfOneOut.from_orm(sys_admin), permissions=auths)
+        admin = SystemAuthAdminSelfOneOut.from_orm(sys_admin)
+        admin.avatar = UrlUtil.to_absolute_url(admin.avatar)
+        return SystemAuthAdminSelfOut(user=admin, permissions=auths)
 
     async def list(self, list_in: SystemAuthAdminListIn) -> AbstractPage[SystemAuthAdminOut]:
         """管理员列表"""
@@ -126,7 +128,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         pager = await paginate(db, query)
         # 处理返回结果
         for obj in pager.lists:
-            # TODO: 头像路径处理
+            obj.avatar = UrlUtil.to_absolute_url(obj.avatar)
             if obj.id == 1:
                 obj.role = '系统管理员'
             if not obj.dept:
@@ -139,8 +141,8 @@ class SystemAuthAdminService(ISystemAuthAdminService):
             system_auth_admin.select().where(
                 system_auth_admin.c.id == id_, system_auth_admin.c.is_delete == 0).limit(1))
         assert sys_admin, '账号已不存在！'
-        # TODO: 头像路径处理
         sys_admin_out = SystemAuthAdminOut.from_orm(sys_admin)
+        sys_admin_out.avatar = UrlUtil.to_absolute_url(sys_admin_out.avatar)
         if not sys_admin_out.dept:
             sys_admin_out.dept = str(sys_admin_out.deptId)
         return sys_admin_out
@@ -162,8 +164,8 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         salt = ToolsUtil.random_string(5)
         create_dict['salt'] = salt
         create_dict['password'] = ToolsUtil.make_md5(f'{admin_create_in.password.strip()}{salt}')
-        # TODO: 头像路径处理
-        create_dict['avatar'] = admin_create_in.avatar if admin_create_in.avatar else '/api/static/backend_avatar.png'
+        create_dict['avatar'] = UrlUtil.to_relative_url(admin_create_in.avatar) \
+            if admin_create_in.avatar else '/api/static/backend_avatar.png'
         create_dict['create_time'] = int(time.time())
         create_dict['update_time'] = int(time.time())
         await db.execute(system_auth_admin.insert().values(**create_dict))
@@ -190,8 +192,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
             assert await self.auth_role_service.detail(admin_edit_in.role), '角色不存在!'
         # 更新管理员信息
         admin_dict = admin_edit_in.dict()
-        # TODO: 头像路径处理
-        admin_dict['avatar'] = admin_edit_in.avatar
+        admin_dict['avatar'] = UrlUtil.to_relative_url(admin_edit_in.avatar)
         admin_dict['role'] = 0 if admin_edit_in.id == 1 else admin_edit_in.role
         admin_dict['update_time'] = int(time.time())
         if admin_edit_in.id == 1:
@@ -230,8 +231,8 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         # 更新管理员信息
         admin_dict = admin_update_in.dict()
         del admin_dict['curr_password']
-        # TODO: 头像路径处理
-        admin_dict['avatar'] = admin_update_in.avatar if admin_update_in.avatar else '/api/static/backend_avatar.png'
+        admin_dict['avatar'] = UrlUtil.to_relative_url(admin_update_in.avatar) \
+            if admin_update_in.avatar else '/api/static/backend_avatar.png'
         admin_dict['update_time'] = int(time.time())
         if admin_update_in.password:
             curr_pass = ToolsUtil.make_md5(f'{admin_update_in.curr_password}{sys_admin.salt}')
