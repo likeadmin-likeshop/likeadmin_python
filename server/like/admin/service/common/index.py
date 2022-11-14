@@ -62,9 +62,9 @@ class IndexService(IIndexService):
         copyright = await ConfigUtil.get_val('website', 'copyright', '')
         return {
             'webName': website.get('name', ''),
-            'webLogo': website.get('logo', ''),
-            'webFavicon': website.get('favicon', ''),
-            'webBackdrop': website.get('backdrop', ''),
+            'webLogo': UrlUtil.to_absolute_url(website.get('logo', '')),
+            'webFavicon': UrlUtil.to_absolute_url(website.get('favicon', '')),
+            'webBackdrop': UrlUtil.to_absolute_url(website.get('backdrop', '')),
             'ossDomain': UrlUtil.domain,
             'copyright': json.loads(copyright) if copyright else [],
         }
