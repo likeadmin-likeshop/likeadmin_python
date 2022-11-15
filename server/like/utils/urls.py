@@ -19,10 +19,10 @@ class UrlUtil:
         :return:
         """
         if not url:
-            return ""
-        if url.index("/") != 0:
-            url = "/" + url
-        if url.startswith("/api/static/"):
+            return ''
+        if url.find('/') != 0:
+            url = '/' + url
+        if url.startswith('/api/static/'):
             return cls.domain + url
         return cls.domain + cls.upload_prefix + url
 
@@ -39,5 +39,5 @@ class UrlUtil:
         if not url or not url.startswith('http'):
             return url
         if cls.engine == 'local':
-            return url.replace(cls.domain, "").replace("/" + cls.upload_prefix + "/", "/")
+            return url.replace(cls.domain, '').replace('/' + cls.upload_prefix + '/', '/')
         return url
