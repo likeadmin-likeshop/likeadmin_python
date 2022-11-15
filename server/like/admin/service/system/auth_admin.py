@@ -160,6 +160,8 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         role_out = await self.auth_role_service.detail(admin_create_in.role)
         assert role_out, '角色不存在!'
         assert role_out.isDisable <= 0, '当前角色已被禁用!'
+        if not (6 <= len(admin_create_in.password) <= 20):
+            raise AppException(HttpResp.FAILED, msg='密码必须在6~20位')
         create_dict = dict(admin_create_in)
         salt = ToolsUtil.random_string(5)
         create_dict['salt'] = salt
