@@ -273,22 +273,6 @@ class SystemAuthPostDetailIn(BaseModel):
     id: int = Query(gt=0)  # 主键
 
 
-class SystemAuthRoleOut(BaseModel):
-    """系统角色返回信息"""
-    id: int  # 主键
-    name: str  # 角色名称
-    remark: str  # 角色备注
-    menus: List[int]  # 关联菜单
-    member: int  # 成员数量
-    sort: int  # 角色排序
-    isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
-    createTime: datetime = Field(alias='create_time')  # 创建时间
-    updateTime: datetime = Field(alias='update_time')  # 更新时间
-
-    class Config:
-        orm_mode = True
-
-
 class SystemAuthDeptOut(BaseModel):
     """
     系统部门返回信息
