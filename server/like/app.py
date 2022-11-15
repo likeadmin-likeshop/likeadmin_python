@@ -25,8 +25,10 @@ def configure_event(app: FastAPI):
 def configure_middleware(app: FastAPI):
     """配置中间件"""
     from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+    from .middlewares import init_cors_middleware
 
     app.add_middleware(ProxyHeadersMiddleware)
+    init_cors_middleware(app)
 
 
 def configure_router(app: FastAPI, prefix='/api'):

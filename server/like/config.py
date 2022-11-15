@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     # 静态资源本地路径
     static_directory: str = 'static'
 
+    # CORS 跨域资源共享
+    # 允许跨域的源列表 eg. '["*"]'   '["http://localhost", "http://localhost:8080", "https://www.example.org"]'
+    cors_allow_origins: str = '["*"]'
+
     # 全局配置
     version: str = 'v1.0.0'
     # 时区
