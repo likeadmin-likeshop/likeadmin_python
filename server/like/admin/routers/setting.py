@@ -74,13 +74,13 @@ async def detail(storage_detail_in: SettingsStorageDetailIn = Depends(),
 
 @router.post('/storage/edit')
 @unified_resp
-async def edit(storage_edit_in: SettingsStorageEditIn = Depends(),
+async def edit(storage_edit_in: SettingsStorageEditIn,
                service: ISettingStorageService = Depends(SettingStorageService.instance)):
     return await service.edit(storage_edit_in)
 
 
 @router.post('/storage/change')
 @unified_resp
-async def change(storage_change_in: SettingsStorageChangeIn = Depends(),
+async def change(storage_change_in: SettingsStorageChangeIn,
                  service: ISettingStorageService = Depends(SettingStorageService.instance)):
     return await service.change(storage_change_in.alias, storage_change_in.status)
