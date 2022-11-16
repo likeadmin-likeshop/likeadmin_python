@@ -36,12 +36,12 @@ class SystemLogsServer(ISystemLogsServer):
         if operate_in.title:
             where.append(system_log_operate.c.title.like(f'%{operate_in.title}%'))
         if operate_in.username:
-            where.append(system_log_operate.c.username.like(f'%{operate_in.username}%'))
+            where.append(system_auth_admin.c.username.like(f'%{operate_in.username}%'))
         if operate_in.ip:
             where.append(system_log_operate.c.ip.like(f'%{operate_in.ip}%'))
         if operate_in.type:
             where.append(system_log_operate.c.type == operate_in.type)
-        if operate_in.status:
+        if operate_in.status is not None:
             where.append(system_log_operate.c.status == operate_in.status)
         if operate_in.url:
             where.append(system_log_operate.c.url == operate_in.url)
