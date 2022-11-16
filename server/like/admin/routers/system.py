@@ -258,14 +258,14 @@ async def dept_list(is_stop: Union[int, None] = Query(default=None),
     return await dept_service.fetch_list(name=name, is_stop=is_stop)
 
 
-@router.get('/dept/add')
+@router.post('/dept/add')
 @unified_resp
 async def dept_add(dept_add_in: SystemAuthDeptAddIn = Depends(),
                    dept_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
     return await dept_service.add(dept_add_in)
 
 
-@router.get('/dept/edit')
+@router.post('/dept/edit')
 @unified_resp
 async def dept_edit(dept_edit_in: SystemAuthDeptEditIn = Depends(),
                     dept_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
@@ -279,7 +279,7 @@ async def dept_detail(dept_detail_in: SystemAuthDeptDetailIn = Depends(),
     return await post_service.detail(dept_detail_in.id)
 
 
-@router.get('/dept/delete')
+@router.post('/dept/delete')
 @unified_resp
 async def dept_delete(dept_deletel_in: SystemAuthDeptDeleteIn = Depends(),
                       post_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
