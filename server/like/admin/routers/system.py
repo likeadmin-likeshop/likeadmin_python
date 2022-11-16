@@ -230,7 +230,7 @@ async def post_add(post_add_in: SystemAuthPostAddIn,
     return await post_service.add(post_add_in)
 
 
-@router.post('/post/delete')
+@router.post('/post/del')
 @unified_resp
 async def post_delete(post_delete_in: SystemAuthPostDelIn,
                       post_service: ISystemAuthPostService = Depends(SystemAuthPostService.instance)):
@@ -279,7 +279,7 @@ async def dept_detail(dept_detail_in: SystemAuthDeptDetailIn = Depends(),
     return await post_service.detail(dept_detail_in.id)
 
 
-@router.post('/dept/delete')
+@router.post('/dept/del')
 @unified_resp
 async def dept_delete(dept_deletel_in: SystemAuthDeptDeleteIn,
                       post_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
