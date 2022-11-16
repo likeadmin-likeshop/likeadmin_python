@@ -118,7 +118,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
             where.append(system_auth_admin.c.username.like(f'%{list_in.username}%'))
         if list_in.nickname:
             where.append(system_auth_admin.c.nickname.like(f'%{list_in.nickname}%'))
-        if list_in.role:
+        if list_in.role is not None:
             where.append(system_auth_admin.c.role == list_in.role)
         query = select(columns).where(*where) \
             .select_from(

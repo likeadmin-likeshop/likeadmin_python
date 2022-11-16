@@ -3,6 +3,25 @@ from typing import List, Union, Literal
 
 from fastapi import Query
 from pydantic import BaseModel, Field
+from pydantic.validators import str_validator
+
+
+def empty_to_none(v: str) -> Union[str, None]:
+    """替换空字符为None"""
+    if v == '':
+        return None
+    return v
+
+
+class EmptyStrToNone(str):
+    """空字符串替换类型
+        针对非str类型，可传空字符串类型校验
+    """
+
+    @classmethod
+    def __get_validators__(cls):
+        yield str_validator
+        yield empty_to_none
 
 
 class SystemLoginIn(BaseModel):
@@ -25,7 +44,7 @@ class SystemAuthAdminListIn(BaseModel):
     """管理员列表参数"""
     username: Union[str, None] = Query(default=None)  # 账号
     nickname: Union[str, None] = Query(default=None)  # 昵称
-    role: Union[int, None] = Query(default=None)  # 角色ID
+    role: Union[int, None, EmptyStrToNone] = Query(default=None)  # 角色ID
 
 
 class SystemAuthAdminDetailIn(BaseModel):
@@ -318,10 +337,10 @@ class SystemLogOperateIn(BaseModel):
     username: Union[str, None] = Query(default=None)  # 用户账号
     ip: Union[str, None] = Query(default=None)  # 请求IP
     type: Union[str, None] = Query(default=None)  # 请求类型: GET/POST/PUT
-    status: Union[int, None] = Query(default=None)  # 执行状态: [1=成功, 2=失败]
+    status: Union[int, None, EmptyStrToNone] = Query(default=None)  # 执行状态: [1=成功, 2=失败]
     url: Union[str, None] = Query(default=None)  # 请求地址
-    start_time: Union[date, None] = Field(alias='startTime')  # 开始时间
-    end_time: Union[date, None] = Field(alias='endTime')  # 结束时间
+    start_time: Union[date, None, EmptyStrToNone] = Query(alias='startTime')  # 开始时间
+    end_time: Union[date, None, EmptyStrToNone] = Query(alias='endTime')  # 结束时间
 
 
 class SystemLogOperateOut(BaseModel):
@@ -349,9 +368,9 @@ class SystemLogOperateOut(BaseModel):
 class SystemLogLoginIn(BaseModel):
     """登录日志列表参数"""
     username: Union[str, None] = Query(default=None)  # 登录账号
-    status: Union[int, None] = Query(default=None)  # 操作状态: [1=成功, 2=失败]
-    start_time: Union[date, None] = Field(alias='startTime')  # 开始时间
-    end_time: Union[date, None] = Field(alias='endTime')  # 结束时间
+    status: Union[int, None, EmptyStrToNone] = Query(default=None)  # 操作状态: [1=成功, 2=失败]
+    start_time: Union[date, None, EmptyStrToNone] = Query(alias='startTime')  # 开始时间
+    end_time: Union[date, None, EmptyStrToNone] = Query(alias='endTime')  # 结束时间
 
 
 class SystemLogLoginOut(BaseModel):
