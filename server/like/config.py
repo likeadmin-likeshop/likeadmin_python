@@ -1,15 +1,20 @@
 from functools import lru_cache
+from os import path
 
+from dotenv import load_dotenv
 from pydantic import BaseSettings as Base
 
 __all__ = ['get_settings']
+
+ENV_FILES = ('.env', '.env.prod')
+ROOT_PATH = path.dirname(path.abspath(path.join(__file__, '..')))
 
 
 class BaseSettings(Base):
     """配置基类"""
 
     class Config:
-        env_file = '.env', '.env.prod'
+        env_file = ENV_FILES
         env_file_encoding = 'utf-8'
 
 
@@ -79,4 +84,7 @@ class Settings(BaseSettings):
 @lru_cache()
 def get_settings() -> Settings:
     """获取并缓存应用配置"""
+    # 读取server目录下的配置
+    for f in ENV_FILES:
+        load_dotenv(dotenv_path=path.join(ROOT_PATH, f))
     return Settings()
