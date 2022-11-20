@@ -327,6 +327,11 @@ class SystemAuthDeptAddIn(BaseModel):
     is_stop: int = Field(alias='isStop')
 
 
+class SystemAuthDeptListIn(BaseModel):
+    isStop: Union[int, None] = Query(default=None,)
+    name: Union[str, None] = Query(default=None)
+
+
 class SystemAuthDeptEditIn(SystemAuthDeptAddIn):
     id: int = Query(gt=0)  # 主键
 

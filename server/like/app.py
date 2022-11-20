@@ -58,6 +58,7 @@ def create_app() -> FastAPI:
     # 静态资源路径配置
     if settings.enabled_static:
         app.mount(settings.static_path, StaticFiles(directory=settings.static_directory), name='static')
+        app.mount(settings.upload_prefix, StaticFiles(directory=settings.upload_directory), name='upload')
 
     configure_exception(app)
     configure_event(app)

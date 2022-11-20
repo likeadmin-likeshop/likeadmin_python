@@ -32,6 +32,18 @@ class Settings(BaseSettings):
     # 上传文件路径
     upload_directory: str = '/tmp/uploads/likeadmin-python/'
 
+    # 上传图片限制
+    upload_image_size = 1024 * 1024 * 10
+
+    # 上传视频限制
+    upload_video_size = 1024 * 1024 * 30
+
+    # 上传图片扩展
+    upload_image_ext = {"png", "jpg", "jpeg", "gif", "ico", "bmp"}
+
+    # 上传视频扩展
+    upload_video_ext = {"mp4", "mp3", "avi", "flv", "rmvb", "mov"}
+
     # 数据源配置
     database_url: str = 'mysql+pymysql://root:root@localhost:3306/likeadmin?charset=utf8mb4'
     # 数据库连接池最小值
@@ -66,7 +78,7 @@ class Settings(BaseSettings):
 
     upload_prefix = "/api/uploads"
 
-    domain = 'https://127.0.0.1'
+    domain = 'http://127.0.0.1:8000'
 
 
 @lru_cache()
