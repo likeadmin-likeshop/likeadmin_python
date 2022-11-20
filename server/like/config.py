@@ -31,18 +31,16 @@ class Settings(BaseSettings):
     """
     # 上传文件路径
     upload_directory: str = '/tmp/uploads/likeadmin-python/'
-
     # 上传图片限制
     upload_image_size = 1024 * 1024 * 10
-
     # 上传视频限制
     upload_video_size = 1024 * 1024 * 30
-
     # 上传图片扩展
-    upload_image_ext = {"png", "jpg", "jpeg", "gif", "ico", "bmp"}
-
+    upload_image_ext = {'png', 'jpg', 'jpeg', 'gif', 'ico', 'bmp'}
     # 上传视频扩展
-    upload_video_ext = {"mp4", "mp3", "avi", "flv", "rmvb", "mov"}
+    upload_video_ext = {'mp4', 'mp3', 'avi', 'flv', 'rmvb', 'mov'}
+    # 上传路径URL前缀
+    upload_prefix = '/api/uploads'
 
     # 数据源配置
     database_url: str = 'mysql+pymysql://root:root@localhost:3306/likeadmin?charset=utf8mb4'
@@ -75,9 +73,7 @@ class Settings(BaseSettings):
     secret: str = 'UVTIyzCy'
     # Redis键前缀
     redis_prefix: str = 'Like:'
-
-    upload_prefix = "/api/uploads"
-
+    # 当前域名
     domain = 'http://127.0.0.1:8000'
 
 
