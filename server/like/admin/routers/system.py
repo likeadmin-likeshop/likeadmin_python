@@ -12,7 +12,8 @@ from like.admin.schemas.system import (
     SystemAuthMenuDetailIn, SystemAuthMenuCreateIn, SystemAuthMenuEditIn, SystemAuthMenuDelIn,
     SystemAuthAdminOut, SystemAuthRoleDetailOut, SystemAuthPostOut, SystemAuthPostAddIn, SystemAuthPostDetailIn,
     SystemAuthPostDelIn, SystemAuthPostEditIn, SystemAuthDeptDetailIn, SystemAuthDeptDeleteIn, SystemAuthDeptAddIn,
-    SystemAuthDeptEditIn, SystemLogOperateIn, SystemLogOperateOut, SystemLogLoginIn, SystemLogLoginOut)
+    SystemAuthDeptEditIn, SystemLogOperateIn, SystemLogOperateOut, SystemLogLoginIn, SystemLogLoginOut,
+    SystemAuthDeptListIn)
 from like.admin.service.system.auth_admin import ISystemAuthAdminService, SystemAuthAdminService
 from like.admin.service.system.auth_dept import ISystemAuthDeptService, SystemAuthDeptService
 from like.admin.service.system.auth_menu import ISystemAuthMenuService, SystemAuthMenuService
@@ -252,10 +253,9 @@ async def dept_all(dept_service: ISystemAuthDeptService = Depends(SystemAuthDept
 
 @router.get('/dept/list')
 @unified_resp
-async def dept_list(is_stop: Union[int, None] = Query(default=None),
-                    name: Union[str, None] = Query(default=None),
+async def dept_list(dept_list_in: SystemAuthDeptListIn = Depends(),
                     dept_service: ISystemAuthDeptService = Depends(SystemAuthDeptService.instance)):
-    return await dept_service.fetch_list(name=name, is_stop=is_stop)
+    return await dept_service.fetch_list(dept_list_in)
 
 
 @router.post('/dept/add')

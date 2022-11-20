@@ -5,7 +5,7 @@ from typing import List
 import pydantic
 from sqlalchemy import select
 
-from like.admin.schemas.system import SystemAuthDeptAddIn, SystemAuthDeptEditIn, SystemAuthDeptOut
+from like.admin.schemas.system import SystemAuthDeptAddIn, SystemAuthDeptEditIn, SystemAuthDeptOut, SystemAuthDeptListIn
 from like.dependencies.database import db
 from like.models import system_auth_dept
 from like.utils.array import ArrayUtil
@@ -18,23 +18,23 @@ class ISystemAuthDeptService(ABC):
         pass
 
     @abstractmethod
-    async def fetch_list(self, name: str = '', is_stop: int = None):
+    async def fetch_list(self, dept_list_in: SystemAuthDeptListIn):
         pass
 
     @abstractmethod
-    async def add(self, dept_add_in):
+    async def add(self, dept_add_in: SystemAuthDeptAddIn):
         pass
 
     @abstractmethod
-    async def delete(self, dept_id):
+    async def delete(self, dept_id: int):
         pass
 
     @abstractmethod
-    async def edit(self, dept_edit_in):
+    async def edit(self, dept_edit_in: SystemAuthDeptEditIn):
         pass
 
     @abstractmethod
-    async def detail(self, dept_id):
+    async def detail(self, dept_id: int):
         pass
 
 
@@ -51,11 +51,13 @@ class SystemAuthDeptService(ISystemAuthDeptService):
                 *self.order_by))
         return pydantic.parse_obj_as(List[SystemAuthDeptOut], dept_all)
 
-    async def fetch_list(self, name: str = '', is_stop: int = None):
+    async def fetch_list(self, dept_list_in: SystemAuthDeptListIn):
+        name = dept_list_in.name
+        is_stop = dept_list_in.isStop
         where = [system_auth_dept.c.is_delete == 0]
         if name:
             where.append(system_auth_dept.c.name.like('%{0}%'.format(name)))
-        if is_stop:
+        if is_stop is not None:
             where.append(system_auth_dept.c.is_stop == is_stop)
         depts = await db.fetch_all(
             select(self.select_columns).select_from(system_auth_dept).where(*where).order_by(*self.order_by))
@@ -89,7 +91,7 @@ class SystemAuthDeptService(ISystemAuthDeptService):
                                 .where(system_auth_dept.c.id == dept_edit_in.id)
                                 .values(**edit_post))
 
-    async def delete(self, dept_id):
+    async def delete(self, dept_id: int):
         del_dept = await  db.fetch_one(system_auth_dept.select().where
                                        (system_auth_dept.c.id == dept_id,
                                         system_auth_dept.c.is_delete == 0).limit(1))
@@ -106,7 +108,7 @@ class SystemAuthDeptService(ISystemAuthDeptService):
                                 .where(system_auth_dept.c.id == dept_id)
                                 .values(is_delete=1, delete_time=int(time.time())))
 
-    async def detail(self, dept_id):
+    async def detail(self, dept_id: int):
         post_detail = await db.fetch_one(system_auth_dept.select().where(
             system_auth_dept.c.id == dept_id,
             system_auth_dept.c.is_delete == 0).limit(1))

@@ -85,7 +85,7 @@ class SettingStorageService(ISettingStorageService):
                 "domain": params.domain,
             }
         await ConfigUtil.set("storage", alias, json.dumps(conf))
-        engine = ConfigUtil.get_val("storage", "default", "local")
+        engine = await ConfigUtil.get_val("storage", "default", "local")
         if status:
             await ConfigUtil.set("storage", "default", alias)
         elif engine == alias and not status:
