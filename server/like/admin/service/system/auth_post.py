@@ -77,7 +77,7 @@ class SystemAuthPostService(ISystemAuthPostService):
 
         assert not await db.fetch_one(system_auth_post.select().where(
             system_auth_post.c.code == post_edit_in.code or system_auth_post.c.name == post_edit_in.name,
-            system_auth_post.c.is_delete == 0).limit(1))
+            system_auth_post.c.is_delete == 0).limit(1)), '该岗位已存在'
 
         edit_post = post_edit_in.dict()
         edit_post['update_time'] = int(time.time())

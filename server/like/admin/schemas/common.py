@@ -4,6 +4,8 @@ from typing import List, Union
 from fastapi import Query, UploadFile
 from pydantic import BaseModel, Field
 
+from like.schema_base import EmptyStrToNone
+
 
 class CommonAlbumCateOut(BaseModel):
     """
@@ -47,9 +49,9 @@ class CommonAlbumDelIn(BaseModel):
 
 
 class CommonAlbumListIn(BaseModel):
-    type: Union[int, None] = Query(default=None)
+    type: Union[int, None, EmptyStrToNone] = Query(default=None)
     keyword: Union[str, None] = Query(default=None)
-    cid: Union[int, None] = Query(default=None)
+    cid: Union[int, None, EmptyStrToNone] = Query(default=None)
 
 
 class CommonAlbumCateListIn(BaseModel):

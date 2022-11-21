@@ -311,7 +311,7 @@ class SystemAuthDeptAddIn(BaseModel):
 
 
 class SystemAuthDeptListIn(BaseModel):
-    isStop: Union[int, None] = Query(default=None, )
+    isStop: Union[int, None, EmptyStrToNone] = Query(default=None)
     name: Union[str, None] = Query(default=None)
 
 

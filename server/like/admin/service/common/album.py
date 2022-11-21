@@ -209,9 +209,10 @@ class AlbumService(IAlbumService):
 
     async def cate_add(self, params: CommonAlbumCateEditIn):
 
-        assert await db.fetch_one(
-            select([common_album_cate.c.id, common_album_cate.c.name, ]).select_from(common_album_cate).where(
-                common_album_cate.c.id == params.pid, common_album_cate.c.is_delete == 0)), '父级分类不存在'
+        if params.pid and params.pid > 0:
+            assert await db.fetch_one(
+                select([common_album_cate.c.id, common_album_cate.c.name, ]).select_from(common_album_cate).where(
+                    common_album_cate.c.id == params.pid, common_album_cate.c.is_delete == 0)), '父级分类不存在'
 
         create_dict = {
             'type': params.type,
