@@ -4,7 +4,6 @@ from typing import Union
 from fastapi import APIRouter, Depends, Request, Header
 from fastapi.params import Query
 
-from like.admin.schemas.page import PageInationResult
 from like.admin.schemas.system import (
     SystemLoginIn, SystemLogoutIn, SystemAuthAdminListIn, SystemAuthAdminDetailIn, SystemAuthAdminCreateIn,
     SystemAuthAdminDelIn, SystemAuthAdminDisableIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn,
@@ -23,6 +22,7 @@ from like.admin.service.system.login import ISystemLoginService, SystemLoginServ
 from like.admin.service.system.logs import ISystemLogsServer, SystemLogsServer
 from like.dependencies.log import record_log
 from like.http_base import unified_resp
+from like.schema_base import PageInationResult
 
 logger = logging.getLogger(__name__)
 

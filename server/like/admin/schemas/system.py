@@ -3,25 +3,8 @@ from typing import List, Union, Literal
 
 from fastapi import Query
 from pydantic import BaseModel, Field
-from pydantic.validators import str_validator
 
-
-def empty_to_none(v: str) -> Union[str, None]:
-    """替换空字符为None"""
-    if v == '':
-        return None
-    return v
-
-
-class EmptyStrToNone(str):
-    """空字符串替换类型
-        针对非str类型，可传空字符串类型校验
-    """
-
-    @classmethod
-    def __get_validators__(cls):
-        yield str_validator
-        yield empty_to_none
+from like.schema_base import EmptyStrToNone
 
 
 class SystemLoginIn(BaseModel):
@@ -328,7 +311,7 @@ class SystemAuthDeptAddIn(BaseModel):
 
 
 class SystemAuthDeptListIn(BaseModel):
-    isStop: Union[int, None] = Query(default=None,)
+    isStop: Union[int, None] = Query(default=None, )
     name: Union[str, None] = Query(default=None)
 
 

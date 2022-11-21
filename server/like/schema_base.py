@@ -1,8 +1,9 @@
-from typing import TypeVar, Generic, Sequence
+from typing import Union, TypeVar, Generic, Sequence
 
 from fastapi import Query
 from fastapi_pagination.bases import AbstractParams, AbstractPage, RawParams
 from pydantic import BaseModel
+from pydantic.validators import str_validator
 
 T = TypeVar("T")
 C = TypeVar("C")
@@ -33,3 +34,21 @@ class PageInationResult(AbstractPage[T], Generic[T]):
     @classmethod
     def create(cls, items: Sequence[T], total: int, params: PageParams):
         return cls(lists=items, count=total, pageNo=params.pageNo, pageSize=params.pageSize)
+
+
+def empty_to_none(v: str) -> Union[str, None]:
+    """替换空字符为None"""
+    if v == '':
+        return None
+    return v
+
+
+class EmptyStrToNone(str):
+    """空字符串替换类型
+        针对非str类型，可传空字符串类型校验
+    """
+
+    @classmethod
+    def __get_validators__(cls):
+        yield str_validator
+        yield empty_to_none

@@ -36,14 +36,18 @@ def configure_router(app: FastAPI, prefix='/api'):
     from .front.routers import index
     from .front.routers import upload
     from .admin.routers import user, common, system, monitor, setting
+    from .generator.routers import gen
 
     app.include_router(index.router, prefix=prefix)
     app.include_router(upload.router, prefix=prefix)
+    # admin
     app.include_router(user.router, prefix=prefix)
     app.include_router(common.router, prefix=prefix)
     app.include_router(system.router, prefix=prefix)
     app.include_router(monitor.router, prefix=prefix)
     app.include_router(setting.router, prefix=prefix)
+    # gen
+    app.include_router(gen.router, prefix=prefix)
 
 
 def create_app() -> FastAPI:
