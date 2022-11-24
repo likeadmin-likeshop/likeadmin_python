@@ -100,6 +100,11 @@ const setFormData = (data: Record<any, any>) => {
             //@ts-ignore
             formData[key] = data[key]
         }
+        //TODO：因为后端返回字段为is_stop
+        else{
+            //@ts-ignore  
+            formData[key] = data['is_stop']
+        }
     }
 }
 

@@ -28,14 +28,14 @@ export function useCate(type: number) {
             type
         })
         const item: any[] = [
-            {
-                name: '全部',
-                id: ''
-            },
-            {
-                name: '未分组',
-                id: 0
-            }
+            // {
+            //     name: '全部',
+            //     id: ''
+            // },
+            // {
+            //     name: '未分组',
+            //     id: 0
+            // }
         ]
         cateLists.value = data
         cateLists.value.unshift(...item)

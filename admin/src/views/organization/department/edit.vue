@@ -149,18 +149,24 @@ const open = (type = 'add') => {
 }
 
 const setFormData = (data: Record<any, any>) => {
-    for (const key in formData) {
+    for (const key in formData) {       
         if (data[key] != null && data[key] != undefined) {
-            //@ts-ignore
+            //@ts-ignore          
             formData[key] = data[key]
         }
+        //TODO：因为后端返回字段为is_stop
+        else{
+            //@ts-ignore  
+            formData[key] = data['is_stop']
+        }
     }
+    
 }
 
 const getDetail = async (row: Record<string, any>) => {
     const data = await deptDetail({
         id: row.id
-    })
+    }) 
     setFormData(data)
 }
 
