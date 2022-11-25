@@ -14,13 +14,6 @@ export default defineConfig({
     // base: '/admin/',
     server: {
         host: '0.0.0.0',
-        proxy:{
-            '/apis':{
-                target: 'http://likeadmin-python.yixiangonline.com',
-                changeOrigin: true,
-                rewrite:(path)=> path.replace(/^\/apis/,'')
-            }
-        }
     },
     plugins: [
         vue(),

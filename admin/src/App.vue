@@ -47,6 +47,8 @@ watch(
         immediate: true
     }
 )
+console.log(import.meta.env);
+
 </script>
 
 <template>
