@@ -182,3 +182,12 @@ class GenUtil:
         if index < 0:
             return '0'
         return column_type[index + 1:column_type.find(')')]
+
+    @staticmethod
+    def get_table_pri_col(columns: List[Record]) -> Record:
+        """获取主键列名称"""
+        pri_col = None
+        for column in columns:
+            if column.is_pk == '1':
+                pri_col = column
+        return pri_col

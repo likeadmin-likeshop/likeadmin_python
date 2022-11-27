@@ -2,11 +2,10 @@ from os import path
 from typing import List
 
 from jinja2 import Environment, FileSystemLoader, Template
-from databases.interfaces import Record
 
-from like.utils.string import StringUtil
 from like.config import get_settings
 from like.models.gen import GenTable, GenTableColumn
+from like.utils.string import StringUtil
 from .config import GenConfig
 from .constants import GenConstants, SqlConstants
 
@@ -127,15 +126,6 @@ class TemplateUtil:
             'py/__init__.py',
             f'py/{module_name}/__init__.py',
         ]
-
-    @staticmethod
-    def get_table_pri_col(columns: List[Record]) -> GenTableColumn:
-        """获取主键列名称"""
-        pri_col = None
-        for column in columns:
-            if column.is_pk == '1':
-                pri_col = column
-        return pri_col
 
     @staticmethod
     def get_template_paths(gen_tpl: str) -> List[str]:

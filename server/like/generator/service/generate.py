@@ -1,19 +1,19 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import List
 from pathlib import Path
+from typing import List
 
 from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
 
 from like.dependencies.database import db
-from like.models.gen import gen_table, gen_table_column, GenTableColumn
+from like.exceptions.base import AppException
 from like.generator.constants import GenConstants
 from like.generator.schemas.generate import (DbTablesIn, EditTableIn, DbTableOut, GenTableOut)
 from like.generator.tpl_util import TemplateUtil
 from like.generator.utils.gen import GenUtil
 from like.http_base import HttpResp
-from like.exceptions.base import AppException
+from like.models.gen import gen_table, gen_table_column, GenTable, GenTableColumn
 
 
 class IGenerateService(ABC):
@@ -106,6 +106,19 @@ class GenerateService(IGenerateService):
     async def sync_table(self, id_: int):
         pass
 
+    async def get_sub_table_info(self, table: GenTable):
+        """根据主表获取子表主键和列信息"""
+        origin_pri_col = None
+        origin_cols = []
+        if table.sub_table_name and table.sub_table_fk:
+            origin_table = await db.fetch_one(GenUtil.get_db_tables_query_by_names([table.table_name]))
+            assert origin_table, '子表记录丢失!'
+            origin_columns = await db.fetch_all(GenUtil.get_db_table_columns_query_by_name(table.table_name))
+            origin_pri_col = GenTableColumn(**GenUtil.init_column(
+                GenUtil.init_table(origin_table), GenUtil.get_table_pri_col(origin_columns)))
+            origin_cols = [c.column_name for c in origin_columns]
+        return origin_pri_col, origin_cols
+
     async def preview_code(self, id_: int):
         """预览代码"""
         table = await db.fetch_one(gen_table.select().where(gen_table.c.id == id_))
@@ -113,15 +126,7 @@ class GenerateService(IGenerateService):
         columns = await db.fetch_all(
             gen_table_column.select().where(gen_table_column.c.table_id == id_).order_by(gen_table_column.c.sort))
         # 获取子表信息
-        origin_pri_col = None
-        origin_cols = []
-        if table.sub_table_name and table.sub_table_fk:
-            origin_table = await db.fetch_all(GenUtil.get_db_tables_query_by_names([table.table_name]))
-            assert origin_table, '子表记录丢失!'
-            origin_columns = await db.fetch_all(GenUtil.get_db_table_columns_query_by_name(table.table_name))
-            origin_pri_col = GenTableColumn(**GenUtil.init_column(
-                GenUtil.init_table(origin_table[0]), TemplateUtil.get_table_pri_col(origin_columns)))
-            origin_cols = [c.column_name for c in origin_columns]
+        origin_pri_col, origin_cols = await self.get_sub_table_info(table)
         # 获取模板变量信息
         kwargs = TemplateUtil.prepare_vars(table, columns, origin_pri_col, origin_cols)
         # 生成模板内容
@@ -141,15 +146,7 @@ class GenerateService(IGenerateService):
         columns = await db.fetch_all(
             gen_table_column.select().where(gen_table_column.c.table_id == table.id).order_by(gen_table_column.c.sort))
         # 获取子表信息
-        origin_pri_col = None
-        origin_cols = []
-        if table.sub_table_name and table.sub_table_fk:
-            origin_table = await db.fetch_all(GenUtil.get_db_tables_query_by_names([table.table_name]))
-            assert origin_table, '子表记录丢失!'
-            origin_columns = await db.fetch_all(GenUtil.get_db_table_columns_query_by_name(table.table_name))
-            origin_pri_col = GenTableColumn(**GenUtil.init_column(
-                GenUtil.init_table(origin_table[0]), TemplateUtil.get_table_pri_col(origin_columns)))
-            origin_cols = [c.column_name for c in origin_columns]
+        origin_pri_col, origin_cols = await self.get_sub_table_info(table)
         # 获取模板变量信息
         kwargs = TemplateUtil.prepare_vars(table, columns, origin_pri_col, origin_cols)
         # 获取生成根路径
