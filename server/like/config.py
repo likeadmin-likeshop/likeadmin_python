@@ -64,7 +64,12 @@ class Settings(BaseSettings):
     cors_allow_origins: str = '["*"]'
 
     # 全局配置
+    # 版本
     version: str = 'v1.0.0'
+    # 项目根路径
+    root_path: str = ROOT_PATH
+    # Mysql表前缀
+    table_prefix: str = 'la_'
     # 时区
     timezone: str = 'Asia/Shanghai'
     # 日期时间格式

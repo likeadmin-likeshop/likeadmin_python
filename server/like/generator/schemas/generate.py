@@ -11,9 +11,24 @@ class DbTablesIn(BaseModel):
     table_comment: Union[str, None] = Query(alias='tableComment', default=None)  # 昵称
 
 
+class ImportTableIn(BaseModel):
+    """表导入参数"""
+    tables: str = Query()  # 导入的表, 用","分隔
+
+
 class EditTableIn(BaseModel):
     """表编辑参数"""
     pass
+
+
+class PreviewCodeIn(BaseModel):
+    """预览代码参数"""
+    id: int = Query()  # 主键
+
+
+class GenCodeIn(BaseModel):
+    """生成代码参数"""
+    tables: str = Query()  # 导入的表, 用","分隔
 
 
 class DbTableOut(BaseModel):

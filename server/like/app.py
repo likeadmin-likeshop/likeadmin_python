@@ -33,6 +33,7 @@ def configure_middleware(app: FastAPI):
 
 def configure_router(app: FastAPI, prefix='/api'):
     """配置路由"""
+    from .dependencies.verify import verify_token
     from .front.routers import index
     from .front.routers import upload
     from .admin.routers import user, common, system, monitor, setting
@@ -41,22 +42,21 @@ def configure_router(app: FastAPI, prefix='/api'):
     app.include_router(index.router, prefix=prefix)
     app.include_router(upload.router, prefix=prefix)
     # admin
-    app.include_router(user.router, prefix=prefix)
-    app.include_router(common.router, prefix=prefix)
-    app.include_router(system.router, prefix=prefix)
-    app.include_router(monitor.router, prefix=prefix)
-    app.include_router(setting.router, prefix=prefix)
+    app.include_router(user.router, prefix=prefix, dependencies=[Depends(verify_token)])
+    app.include_router(common.router, prefix=prefix, dependencies=[Depends(verify_token)])
+    app.include_router(system.router, prefix=prefix, dependencies=[Depends(verify_token)])
+    app.include_router(monitor.router, prefix=prefix, dependencies=[Depends(verify_token)])
+    app.include_router(setting.router, prefix=prefix, dependencies=[Depends(verify_token)])
     # gen
-    app.include_router(gen.router, prefix=prefix)
+    app.include_router(gen.router, prefix=prefix, dependencies=[Depends(verify_token)])
 
 
 def create_app() -> FastAPI:
     """创建FastAPI应用,并初始化"""
     from .config import get_settings
     from .exceptions.global_exc import configure_exception
-    from .dependencies.verify import verify_token
 
-    app = FastAPI(dependencies=[Depends(verify_token)])
+    app = FastAPI()
 
     settings = get_settings()
     # 上传路径配置
