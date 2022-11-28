@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
-from like.generator.schemas.generate import DbTablesIn, ImportTableIn, PreviewCodeIn, GenCodeIn, DbTableOut
+from like.generator.schemas.generate import (
+    DbTablesIn, ImportTableIn, PreviewCodeIn, GenCodeIn, DownloadCodeIn, DbTableOut)
 from like.generator.service.generate import IGenerateService, GenerateService
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
@@ -74,5 +75,10 @@ async def gen_code(gen_in: GenCodeIn = Depends(),
 
 
 @router.get('/downloadCode')
-async def download_code():
-    return
+async def download_code(download_in: DownloadCodeIn = Depends(),
+                        gen_service: IGenerateService = Depends(GenerateService.instance)):
+    """下载代码"""
+    bio = await gen_service.download_code(download_in.tables.split(','))
+    resp = Response(bio.getvalue(), media_type='application/x-zip-compressed',
+                    headers={'Content-Disposition': 'attachment; filename=likeadmin-gen.zip'})
+    return resp

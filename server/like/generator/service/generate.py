@@ -2,6 +2,8 @@ import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Dict
+import zipfile
+import io
 
 from databases.interfaces import Record
 from fastapi_pagination.bases import AbstractPage
@@ -53,7 +55,7 @@ class IGenerateService(ABC):
         pass
 
     @abstractmethod
-    async def download_code(self, table_names: List[str]):
+    async def download_code(self, table_names: List[str]) -> io.BytesIO:
         pass
 
     @abstractmethod
@@ -61,7 +63,7 @@ class IGenerateService(ABC):
         pass
 
     @abstractmethod
-    async def gen_zip_code(self, table_name: str):
+    async def gen_zip_code(self, table_name: str, zf: zipfile.ZipFile):
         pass
 
 
@@ -142,9 +144,14 @@ class GenerateService(IGenerateService):
         tpl_code_map = await self.render_code_by_table(table)
         return {tpl.replace('.tpl', ''): code for tpl, code in tpl_code_map.items()}
 
-    async def download_code(self, table_names: List[str]):
+    async def download_code(self, table_names: List[str]) -> io.BytesIO:
         """下载代码"""
-        pass
+        bio = io.BytesIO()
+        zf = zipfile.ZipFile(bio, 'w')
+        for table_name in table_names:
+            await self.gen_zip_code(table_name, zf)
+        zf.close()
+        return bio
 
     async def gen_code(self, table_name: str):
         """生成代码 (自定义路径)"""
@@ -165,9 +172,19 @@ class GenerateService(IGenerateService):
         for module_file in TemplateUtil.get_module_file_paths(module_name):
             (base_path / module_file).touch()
 
-    async def gen_zip_code(self, table_name: str):
+    async def gen_zip_code(self, table_name: str, zf: zipfile.ZipFile):
         """生成代码 (压缩包下载)"""
-        pass
+        table = await db.fetch_one(
+            gen_table.select().where(gen_table.c.table_name == table_name).order_by(gen_table.c.id.desc()).limit(1))
+        assert table, '记录丢失！'
+        # 获取模板内容
+        tpl_code_map = await self.render_code_by_table(table)
+        # 生成代码文件
+        module_name = table.module_name
+        for tpl_path, code in tpl_code_map.items():
+            zf.writestr(TemplateUtil.get_file_path(tpl_path, module_name), code)
+        for module_file in TemplateUtil.get_module_file_paths(module_name):
+            zf.writestr(module_file, '')
 
     @classmethod
     async def instance(cls):

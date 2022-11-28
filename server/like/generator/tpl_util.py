@@ -101,7 +101,7 @@ class TemplateUtil:
         """获取生成根路径"""
         gen_path = table.gen_path
         if gen_path == '/':
-            return path.join(get_settings().root_path, 'target')
+            return path.join(get_settings().root_path, GenConfig.gen_root_path)
         return gen_path
 
     @staticmethod

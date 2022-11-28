@@ -12,3 +12,5 @@ class GenConfig:
     models_package: Final[str] = 'like.models'
     # 是否去除表前缀
     is_remove_table_prefix: Final[bool] = True
+    # 生成代码根路径
+    gen_root_path: Final[str] = 'target'

@@ -31,6 +31,11 @@ class GenCodeIn(BaseModel):
     tables: str = Query()  # 导入的表, 用","分隔
 
 
+class DownloadCodeIn(BaseModel):
+    """下载代码参数"""
+    tables: str = Query()  # 导入的表, 用","分隔
+
+
 class DbTableOut(BaseModel):
     """数据表返回信息"""
     tableName: str = Field(alias='table_name')  # 表的名称
