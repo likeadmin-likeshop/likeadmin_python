@@ -180,10 +180,16 @@ class GenerateService(IGenerateService):
         # 获取模板内容
         tpl_code_map = await self.render_code_by_table(table)
         # 生成代码文件
+        zf_file_names = zf.namelist()
         module_name = table.module_name
         for tpl_path, code in tpl_code_map.items():
-            zf.writestr(TemplateUtil.get_file_path(tpl_path, module_name), code)
+            code_path = TemplateUtil.get_file_path(tpl_path, module_name)
+            if code_path in zf_file_names:
+                continue
+            zf.writestr(code_path, code)
         for module_file in TemplateUtil.get_module_file_paths(module_name):
+            if module_file in zf_file_names:
+                continue
             zf.writestr(module_file, '')
 
     @classmethod
