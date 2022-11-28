@@ -1,8 +1,9 @@
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 
+from databases.interfaces import Record
 from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
 
@@ -48,7 +49,7 @@ class IGenerateService(ABC):
         pass
 
     @abstractmethod
-    async def preview_code(self, id_: int):
+    async def preview_code(self, id_: int) -> dict:
         pass
 
     @abstractmethod
@@ -106,7 +107,7 @@ class GenerateService(IGenerateService):
     async def sync_table(self, id_: int):
         pass
 
-    async def get_sub_table_info(self, table: GenTable):
+    async def get_sub_table_info(self, table: GenTable) -> (Record, List[Record]):
         """根据主表获取子表主键和列信息"""
         origin_pri_col = None
         origin_cols = []
@@ -119,23 +120,30 @@ class GenerateService(IGenerateService):
             origin_cols = [c.column_name for c in origin_columns]
         return origin_pri_col, origin_cols
 
-    async def preview_code(self, id_: int):
-        """预览代码"""
-        table = await db.fetch_one(gen_table.select().where(gen_table.c.id == id_))
-        assert table, '记录丢失！'
+    async def render_code_by_table(self, table: GenTable) -> Dict[str, str]:
+        """根据主表和模板文件渲染模板代码"""
         columns = await db.fetch_all(
-            gen_table_column.select().where(gen_table_column.c.table_id == id_).order_by(gen_table_column.c.sort))
+            gen_table_column.select().where(gen_table_column.c.table_id == table.id).order_by(gen_table_column.c.sort))
         # 获取子表信息
         origin_pri_col, origin_cols = await self.get_sub_table_info(table)
         # 获取模板变量信息
         kwargs = TemplateUtil.prepare_vars(table, columns, origin_pri_col, origin_cols)
         # 生成模板内容
-        file_code_map = {}
-        for tpl_path in TemplateUtil.get_template_paths(GenConstants.TPL_CRUD):
-            file_code_map[tpl_path.replace('.tpl', '')] = TemplateUtil.get_template(tpl_path).render(**kwargs)
-        return file_code_map
+        tpl_code_map = {}
+        for tpl_path in TemplateUtil.get_template_paths(table.gen_tpl):
+            tpl_code_map[tpl_path] = TemplateUtil.get_template(tpl_path).render(**kwargs)
+        return tpl_code_map
+
+    async def preview_code(self, id_: int) -> Dict[str, str]:
+        """预览代码"""
+        table = await db.fetch_one(gen_table.select().where(gen_table.c.id == id_))
+        assert table, '记录丢失！'
+        # 获取模板内容
+        tpl_code_map = await self.render_code_by_table(table)
+        return {tpl.replace('.tpl', ''): code for tpl, code in tpl_code_map.items()}
 
     async def download_code(self, table_names: List[str]):
+        """下载代码"""
         pass
 
     async def gen_code(self, table_name: str):
@@ -143,25 +151,22 @@ class GenerateService(IGenerateService):
         table = await db.fetch_one(
             gen_table.select().where(gen_table.c.table_name == table_name).order_by(gen_table.c.id.desc()).limit(1))
         assert table, '记录丢失！'
-        columns = await db.fetch_all(
-            gen_table_column.select().where(gen_table_column.c.table_id == table.id).order_by(gen_table_column.c.sort))
-        # 获取子表信息
-        origin_pri_col, origin_cols = await self.get_sub_table_info(table)
-        # 获取模板变量信息
-        kwargs = TemplateUtil.prepare_vars(table, columns, origin_pri_col, origin_cols)
+        # 获取模板内容
+        tpl_code_map = await self.render_code_by_table(table)
         # 获取生成根路径
         base_path = Path(TemplateUtil.get_gen_path(table))
-        # 生成代码
-        module_name = kwargs.get('module_name')
-        for tpl_path in TemplateUtil.get_template_paths(GenConstants.TPL_CRUD):
+        # 生成代码文件
+        module_name = table.module_name
+        for tpl_path, code in tpl_code_map.items():
             filepath = base_path / TemplateUtil.get_file_path(tpl_path, module_name)
             filepath.parent.mkdir(parents=True, exist_ok=True)
             with filepath.open('w', encoding=GenConstants.UTF8) as f:
-                f.write(TemplateUtil.get_template(tpl_path).render(**kwargs))
+                f.write(code)
         for module_file in TemplateUtil.get_module_file_paths(module_name):
             (base_path / module_file).touch()
 
     async def gen_zip_code(self, table_name: str):
+        """生成代码 (压缩包下载)"""
         pass
 
     @classmethod

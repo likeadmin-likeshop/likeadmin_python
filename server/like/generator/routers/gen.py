@@ -74,6 +74,5 @@ async def gen_code(gen_in: GenCodeIn = Depends(),
 
 
 @router.get('/downloadCode')
-@unified_resp
 async def download_code():
     return
