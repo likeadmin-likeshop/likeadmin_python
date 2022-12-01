@@ -80,6 +80,7 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         role_dict['menus'] = await self.auth_perm_service.select_menu_ids_by_role_id(role_id)
         return SystemAuthRoleDetailOut(**role_dict)
 
+    @db.transaction()
     async def add(self, create_in: SystemAuthRoleCreateIn):
         """新增角色"""
         assert not await db.fetch_one(
@@ -93,6 +94,7 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         result = await db.execute(system_auth_role.insert().values(role_dict))
         await self.auth_perm_service.batch_save_by_menu_ids(result, create_in.menu_ids)
 
+    @db.transaction()
     async def edit(self, edit_in: SystemAuthRoleEditIn):
         """编辑角色"""
         assert await db.fetch_one(
@@ -113,6 +115,7 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         await self.auth_perm_service.batch_save_by_menu_ids(edit_in.id, edit_in.menu_ids)
         await self.auth_perm_service.cache_role_menus_by_role_id(edit_in.id)
 
+    @db.transaction()
     async def delete(self, id_: int):
         """删除角色"""
         assert await db.fetch_one(

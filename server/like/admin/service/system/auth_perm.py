@@ -65,6 +65,7 @@ class SystemAuthPermService(ISystemAuthPermService):
             menus = [i.perms for i in auth_menus if i.perms]
         await RedisUtil.hset(AdminConfig.backstage_roles_key, str(role_id), ','.join(menus))
 
+    @db.transaction()
     async def batch_save_by_menu_ids(self, role_id: int, menu_ids: str):
         """批量写入角色菜单"""
         if menu_ids:
