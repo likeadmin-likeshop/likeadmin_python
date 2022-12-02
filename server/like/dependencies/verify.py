@@ -33,10 +33,6 @@ async def verify_token(request: Request):
     if exist_cnt == 0:
         raise AppException(HttpResp.TOKEN_INVALID)
 
-    # 禁止修改操作 (演示功能,限制POST请求)
-    if settings.disallow_modify and request.method == 'POST' and auths not in AdminConfig.show_whitelist_uri:
-        raise AppException(HttpResp.NO_PERMISSION, msg='演示环境不支持修改数据，请下载源码本地部署体验!')
-
     # 用户信息缓存
     uid_str = await RedisUtil.get(token)
     uid = int(uid_str)
@@ -77,3 +73,7 @@ async def verify_token(request: Request):
     menus = await RedisUtil.hget(AdminConfig.backstage_roles_key, role_id)
     if not (menus and auths in menus.split(',')):
         raise AppException(HttpResp.NO_PERMISSION)
+
+    # 禁止修改操作 (演示功能,限制POST请求)
+    if settings.disallow_modify and request.method == 'POST' and auths not in AdminConfig.show_whitelist_uri:
+        raise AppException(HttpResp.NO_PERMISSION, msg='演示环境不支持修改数据，请下载源码本地部署体验!')
