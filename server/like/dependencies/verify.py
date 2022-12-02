@@ -9,8 +9,11 @@ async def verify_token(request: Request):
     from like.exceptions.base import AppException
     from like.admin.config import AdminConfig
     from like.http_base import HttpResp
+    from like.config import get_settings
     from like.admin.service.system.auth_admin import SystemAuthAdminService
     from like.admin.service.system.auth_perm import SystemAuthPermService
+
+    settings = get_settings()
 
     # 路由转权限
     auths = request.url.path.replace('/api/', '').replace('/', ':')
@@ -29,6 +32,10 @@ async def verify_token(request: Request):
     exist_cnt = await RedisUtil.exists(token)
     if exist_cnt == 0:
         raise AppException(HttpResp.TOKEN_INVALID)
+
+    # 禁止修改操作 (演示功能,限制POST请求)
+    if settings.disallow_modify and request.method == 'POST' and auths not in AdminConfig.show_whitelist_uri:
+        raise AppException(HttpResp.NO_PERMISSION, msg='演示环境不支持修改数据，请下载源码本地部署体验!')
 
     # 用户信息缓存
     uid_str = await RedisUtil.get(token)

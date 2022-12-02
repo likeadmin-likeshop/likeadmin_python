@@ -32,3 +32,9 @@ class AdminConfig:
         'setting:dict:data:all',  # 所有字典数据
         'article:cate:all',  # 所有文章分类
     ]
+
+    # 演示白名单
+    show_whitelist_uri = [
+        'system:login',  # 登录接口
+        'system:logout',  # 退出登录
+    ]

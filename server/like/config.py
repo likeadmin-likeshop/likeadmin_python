@@ -73,6 +73,8 @@ class Settings(BaseSettings):
     secret: str = 'UVTIyzCy'
     # Redis键前缀
     redis_prefix: str = 'Like:'
+    # 禁止修改操作 (演示功能,限制POST请求)
+    disallow_modify: bool = False
     # 当前域名
     domain = 'http://127.0.0.1:8000'
 
