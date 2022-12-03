@@ -37,7 +37,7 @@ typing-extensions==4.4.0
 ua-parser==0.16.1
 user-agents==2.2.0
 uvicorn==0.18.3
-uvloop==0.17.0
+#uvloop==0.17.0
 watchfiles==0.17.0
 websockets==10.3
 wrapt==1.14.1
