@@ -1,9 +1,9 @@
+import io
 import logging
+import zipfile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Dict
-import zipfile
-import io
 
 from databases.interfaces import Record
 from fastapi_pagination.bases import AbstractPage
@@ -81,6 +81,7 @@ class GenerateService(IGenerateService):
     async def detail(self, id_: int) -> dict:
         pass
 
+    @db.transaction()
     async def import_table(self, table_names: List[str]):
         """导入表结构"""
         tables = await db.fetch_all(GenUtil.get_db_tables_query_by_names(table_names))
@@ -100,12 +101,15 @@ class GenerateService(IGenerateService):
             logging.error(e)
             raise AppException(HttpResp.FAILED, msg=f'导入失败： {e}')
 
+    @db.transaction()
     async def edit_table(self, edit_in: EditTableIn):
         pass
 
+    @db.transaction()
     async def delete_table(self, ids: List[int]):
         pass
 
+    @db.transaction()
     async def sync_table(self, id_: int):
         pass
 
