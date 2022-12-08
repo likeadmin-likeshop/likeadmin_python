@@ -1,5 +1,6 @@
 from datetime import date, datetime
-from typing import List, Union, Literal
+from enum import Enum
+from typing import List, Union
 
 from fastapi import Query
 from pydantic import BaseModel, Field
@@ -192,10 +193,16 @@ class SystemAuthMenuDetailIn(BaseModel):
     id: int = Query(gt=0)  # 主键
 
 
+class MenuType(str, Enum):
+    m = 'M'
+    c = 'C'
+    a = 'A'
+
+
 class SystemAuthMenuCreateIn(BaseModel):
     """新增菜单参数"""
     pid: int = Field(ge=0)  # 上级菜单
-    menu_type: Literal['M', 'C', 'A'] = Field(alias='menuType')  # 权限类型: [M=目录, C=菜单, A=按钮]
+    menu_type: MenuType = Field(alias='menuType')  # 权限类型: [M=目录, C=菜单, A=按钮]
     menu_name: str = Field(alias='menuName', min_length=1, max_length=30)  # 菜单名称
     menu_icon: Union[str, None] = Field(alias='menuIcon', max_length=100)  # 菜单图标
     menu_sort: int = Field(alias='menuSort', ge=0)  # 菜单排序

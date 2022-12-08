@@ -1,4 +1,4 @@
-from typing import Final, Union, Set, Any
+from typing import Union, Set
 
 from redis import Redis
 
@@ -12,8 +12,8 @@ Field = Union[int, float, str]
 
 class RedisUtil:
     """Redis操作工具类"""
-    prefix: Final[str] = get_settings().redis_prefix
-    redis: Final[Redis] = redis_be.redis
+    prefix: str = get_settings().redis_prefix
+    redis: Redis = redis_be.redis
 
     @staticmethod
     def get_key(key: str) -> str:

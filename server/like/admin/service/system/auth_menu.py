@@ -1,6 +1,6 @@
 import time
 from abc import ABC, abstractmethod
-from typing import Final, List, Union
+from typing import List, Union
 
 import pydantic
 from fastapi import Depends, Request
@@ -105,8 +105,8 @@ class SystemAuthMenuService(ISystemAuthMenuService):
         await RedisUtil.delete(AdminConfig.backstage_roles_key)
 
     def __init__(self, request: Request, auth_perm_service: ISystemAuthPermService):
-        self.request: Final[Request] = request
-        self.auth_perm_service: Final[ISystemAuthPermService] = auth_perm_service
+        self.request: Request = request
+        self.auth_perm_service: ISystemAuthPermService = auth_perm_service
 
     @classmethod
     async def instance(cls, request: Request,

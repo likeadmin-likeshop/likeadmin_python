@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Final
 
 from fastapi import UploadFile, Depends, Request
 
@@ -65,8 +64,8 @@ class UploadService(IUploadService):
         return result
 
     def __init__(self, request, album_service: IAlbumService):
-        self.album_service: Final[IAlbumService] = album_service
-        self.request: Final[Request] = request
+        self.album_service: IAlbumService = album_service
+        self.request: Request = request
 
     @classmethod
     async def instance(cls, request: Request, album_service: IAlbumService = Depends(AlbumService.instance)):
