@@ -4,16 +4,16 @@ import random
 import string
 import time
 import uuid
-from typing import Final, Union
+from typing import Union
 
 from like.config import get_settings
 
-ALL_RANDOM_STR: Final[str] = string.ascii_letters + string.digits
+ALL_RANDOM_STR: str = string.ascii_letters + string.digits
 
 
 class ToolsUtil:
     """常用工具集合类"""
-    secret: Final[str] = get_settings().secret
+    secret: str = get_settings().secret
 
     @staticmethod
     def random_string(length: int) -> str:

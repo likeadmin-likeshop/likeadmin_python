@@ -1,12 +1,10 @@
-from typing import Final
-
 from like.config import get_settings
 
 
 class UrlUtil:
     engine = 'local'
-    domain: Final[str] = get_settings().domain
-    upload_prefix: Final[str] = get_settings().upload_prefix
+    domain: str = get_settings().domain
+    upload_prefix: str = get_settings().upload_prefix
 
     @classmethod
     def to_absolute_url(cls, url: str) -> str:

@@ -1,6 +1,6 @@
 import time
 from abc import ABC, abstractmethod
-from typing import Final, List
+from typing import List
 
 import pydantic
 from fastapi import Depends
@@ -130,7 +130,7 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         await RedisUtil.hdel(AdminConfig.backstage_roles_key, str(id_))
 
     def __init__(self, auth_perm_service: ISystemAuthPermService):
-        self.auth_perm_service: Final[ISystemAuthPermService] = auth_perm_service
+        self.auth_perm_service: ISystemAuthPermService = auth_perm_service
 
     @classmethod
     async def instance(cls, auth_perm_service: ISystemAuthPermService = Depends(SystemAuthPermService.instance)):

@@ -1,7 +1,7 @@
 import json
 import time
 from abc import ABC, abstractmethod
-from typing import Union, Final
+from typing import Union
 
 from fastapi import Depends, Request
 from fastapi_pagination.bases import AbstractPage
@@ -299,9 +299,9 @@ class SystemAuthAdminService(ISystemAuthAdminService):
 
     def __init__(self, request: Request, auth_perm_service: ISystemAuthPermService,
                  auth_role_service: ISystemAuthRoleService):
-        self.request: Final[Request] = request
-        self.auth_perm_service: Final[ISystemAuthPermService] = auth_perm_service
-        self.auth_role_service: Final[ISystemAuthRoleService] = auth_role_service
+        self.request: Request = request
+        self.auth_perm_service: ISystemAuthPermService = auth_perm_service
+        self.auth_role_service: ISystemAuthRoleService = auth_role_service
 
     @classmethod
     async def instance(cls, request: Request,

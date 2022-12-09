@@ -1,13 +1,10 @@
 import time
 from abc import ABC, abstractmethod
-from typing import Final, List
 
-import pydantic
 from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
-from sqlalchemy import func, select
+from sqlalchemy import select
 
-from like.admin.config import AdminConfig
 from like.admin.schemas.system import (SystemLogOperateIn, SystemLogLoginIn, SystemLogOperateOut, SystemLogLoginOut)
 from like.dependencies.database import db
 from like.models import system_log_operate, system_log_login, system_auth_admin

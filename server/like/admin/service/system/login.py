@@ -1,7 +1,6 @@
 import logging
 import time
 from abc import ABC, abstractmethod
-from typing import Final
 
 import user_agents
 from fastapi import Request, Depends
@@ -89,8 +88,8 @@ class SystemLoginService(ISystemLoginService):
             logging.error('记录登录日志异常 %s', str(e))
 
     def __init__(self, request: Request, auth_service: ISystemAuthAdminService):
-        self.request: Final[Request] = request
-        self.auth_admin_service: Final[ISystemAuthAdminService] = auth_service
+        self.request: Request = request
+        self.auth_admin_service: ISystemAuthAdminService = auth_service
 
     @classmethod
     async def instance(cls, request: Request,
