@@ -50,11 +50,14 @@ def create_app() -> FastAPI:
     """创建FastAPI应用,并初始化"""
     from .config import get_settings
     from .exceptions.global_exc import configure_exception
-    from .dependencies.verify import verify_token
-
-    app = FastAPI(dependencies=[Depends(verify_token)])
+    from .dependencies.verify import verify_token, verify_show_mode
 
     settings = get_settings()
+    deps = [Depends(verify_token)]
+    if settings.disallow_modify:
+        deps.append(Depends(verify_show_mode))
+    app = FastAPI(dependencies=deps)
+
     # 上传路径配置
     app.mount(settings.upload_prefix, StaticFiles(directory=settings.upload_directory), name='upload')
     # 静态资源路径配置
