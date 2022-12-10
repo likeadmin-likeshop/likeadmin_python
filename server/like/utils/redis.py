@@ -74,7 +74,7 @@ class RedisUtil:
         """向hash表中放入数据,如果不存在将创建
             返回添加的数量
         """
-        return await cls.hmset(cls.get_key(key), mapping={field: value}, time=time)
+        return await cls.hmset(key, mapping={field: value}, time=time)
 
     @classmethod
     async def hget(cls, key: str, field: str) -> str:
