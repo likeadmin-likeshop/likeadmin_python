@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Depends, Response
+import json
+
+from fastapi import APIRouter, Depends, Response, Form
 
 from like.generator.schemas.generate import (
-    DbTablesIn, ImportTableIn, PreviewCodeIn, GenCodeIn, DownloadCodeIn, DbTableOut)
+    DbTablesIn, ListTableIn, DetailTableIn, ImportTableIn, PreviewCodeIn, GenCodeIn, DownloadCodeIn,
+    DbTableOut, GenTableOut)
 from like.generator.service.generate import IGenerateService, GenerateService
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
@@ -16,16 +19,20 @@ async def get_db(db_in: DbTablesIn = Depends(), gen_service: IGenerateService = 
     return await gen_service.db_tables(db_in)
 
 
-@router.get('/list')
+@router.get('/list', response_model=PageInationResult[GenTableOut])
 @unified_resp
-async def get_list():
-    return
+async def get_list(list_in: ListTableIn = Depends(),
+                   gen_service: IGenerateService = Depends(GenerateService.instance)):
+    """生成列表"""
+    return await gen_service.list(list_in)
 
 
 @router.get('/detail')
 @unified_resp
-async def get_detail():
-    return
+async def get_detail(detail_in: DetailTableIn = Depends(),
+                     gen_service: IGenerateService = Depends(GenerateService.instance)):
+    """生成详情"""
+    return await gen_service.detail(detail_in.id)
 
 
 @router.post('/importTable')
@@ -45,8 +52,9 @@ async def edit_table():
 
 @router.post('/delTable')
 @unified_resp
-async def del_table():
-    return
+async def del_table(ids: str = Form(), gen_service: IGenerateService = Depends(GenerateService.instance)):
+    """删除表结构"""
+    return await gen_service.delete_table(json.loads(ids))
 
 
 @router.post('/syncTable')

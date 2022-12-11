@@ -1,10 +1,12 @@
 import io
 import logging
+import time
 import zipfile
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import List, Dict
 
+import pydantic
 from databases.interfaces import Record
 from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
@@ -12,7 +14,8 @@ from fastapi_pagination.ext.databases import paginate
 from like.dependencies.database import db
 from like.exceptions.base import AppException
 from like.generator.constants import GenConstants
-from like.generator.schemas.generate import (DbTablesIn, EditTableIn, DbTableOut, GenTableOut)
+from like.generator.schemas.generate import (
+    DbTablesIn, ListTableIn, EditTableIn, DbTableOut, GenTableOut, GenTableBaseOut, GenTableGenOut, GenColumnOut)
 from like.generator.tpl_util import TemplateUtil
 from like.generator.utils.gen import GenUtil
 from like.http_base import HttpResp
@@ -27,7 +30,7 @@ class IGenerateService(ABC):
         pass
 
     @abstractmethod
-    async def list(self) -> AbstractPage[GenTableOut]:
+    async def list(self, list_in: ListTableIn) -> AbstractPage[GenTableOut]:
         pass
 
     @abstractmethod
@@ -39,15 +42,15 @@ class IGenerateService(ABC):
         pass
 
     @abstractmethod
+    async def sync_table(self, id_: int):
+        pass
+
+    @abstractmethod
     async def edit_table(self, edit_in: EditTableIn):
         pass
 
     @abstractmethod
     async def delete_table(self, ids: List[int]):
-        pass
-
-    @abstractmethod
-    async def sync_table(self, id_: int):
         pass
 
     @abstractmethod
@@ -75,11 +78,33 @@ class GenerateService(IGenerateService):
         pager = await paginate(db, GenUtil.get_db_tables_query(db_in.table_name, db_in.table_comment))
         return pager
 
-    async def list(self) -> AbstractPage[GenTableOut]:
-        return
+    async def list(self, list_in: ListTableIn) -> AbstractPage[GenTableOut]:
+        """生成列表"""
+        where = []
+        if list_in.table_name:
+            where.append(gen_table.c.table_name.like('%{0}%'.format(list_in.table_name)))
+        if list_in.table_comment:
+            where.append(gen_table.c.table_comment.like('%{0}%'.format(list_in.table_comment)))
+        if list_in.start_time:
+            where.append(gen_table.c.create_time >= int(time.mktime(list_in.start_time.timetuple())))
+        if list_in.end_time:
+            where.append(gen_table.c.create_time <= int(time.mktime(list_in.end_time.timetuple())))
+        query = gen_table.select().where(*where) \
+            .order_by(gen_table.c.id.desc())
+        pager = await paginate(db, query)
+        return pager
 
     async def detail(self, id_: int) -> dict:
-        pass
+        """生成详情"""
+        gen_tb = await db.fetch_one(gen_table.select().where(gen_table.c.id == id_).limit(1))
+        assert gen_tb, '查询的数据不存在!'
+        columns = await db.fetch_all(
+            gen_table_column.select().where(gen_table_column.c.table_id == id_).order_by(gen_table_column.c.sort))
+        return {
+            'base': GenTableBaseOut.from_orm(gen_tb),
+            'gen': GenTableGenOut.from_orm(gen_tb),
+            'column': pydantic.parse_obj_as(List[GenColumnOut], columns)
+        }
 
     @db.transaction()
     async def import_table(self, table_names: List[str]):
@@ -102,16 +127,19 @@ class GenerateService(IGenerateService):
             raise AppException(HttpResp.FAILED, msg=f'导入失败： {e}')
 
     @db.transaction()
+    async def sync_table(self, id_: int):
+        pass
+
+    @db.transaction()
     async def edit_table(self, edit_in: EditTableIn):
         pass
 
     @db.transaction()
     async def delete_table(self, ids: List[int]):
-        pass
-
-    @db.transaction()
-    async def sync_table(self, id_: int):
-        pass
+        """删除表结构"""
+        for id_ in ids:
+            await db.execute(gen_table.delete().where(gen_table.c.id == id_))
+            await db.execute(gen_table_column.delete().where(gen_table_column.c.table_id == id_))
 
     async def get_sub_table_info(self, table: GenTable) -> (Record, List[Record]):
         """根据主表获取子表主键和列信息"""
