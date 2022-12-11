@@ -33,22 +33,29 @@ def configure_middleware(app: FastAPI):
 
 def configure_router(app: FastAPI, prefix='/api'):
     """配置路由"""
-    from .dependencies.verify import verify_token
+    from .dependencies.verify import verify_token, verify_show_mode
+    from .config import get_settings
     from .front.routers import index
     from .front.routers import upload
     from .admin.routers import user, common, system, monitor, setting
     from .generator.routers import gen
 
+    settings = get_settings()
+    # 后台依赖
+    admin_deps = [Depends(verify_token)]
+    if settings.disallow_modify:
+        admin_deps.append(Depends(verify_show_mode))
+
     app.include_router(index.router, prefix=prefix)
     app.include_router(upload.router, prefix=prefix)
     # admin
-    app.include_router(user.router, prefix=prefix, dependencies=[Depends(verify_token)])
-    app.include_router(common.router, prefix=prefix, dependencies=[Depends(verify_token)])
-    app.include_router(system.router, prefix=prefix, dependencies=[Depends(verify_token)])
-    app.include_router(monitor.router, prefix=prefix, dependencies=[Depends(verify_token)])
-    app.include_router(setting.router, prefix=prefix, dependencies=[Depends(verify_token)])
+    app.include_router(user.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(common.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(system.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(monitor.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(setting.router, prefix=prefix, dependencies=admin_deps)
     # gen
-    app.include_router(gen.router, prefix=prefix, dependencies=[Depends(verify_token)])
+    app.include_router(gen.router, prefix=prefix, dependencies=admin_deps)
 
 
 def create_app() -> FastAPI:
@@ -56,9 +63,8 @@ def create_app() -> FastAPI:
     from .config import get_settings
     from .exceptions.global_exc import configure_exception
 
-    app = FastAPI()
-
     settings = get_settings()
+    app = FastAPI()
     # 上传路径配置
     app.mount(settings.upload_prefix, StaticFiles(directory=settings.upload_directory), name='upload')
     # 静态资源路径配置

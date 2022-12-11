@@ -1,4 +1,4 @@
-from typing import Final, Union, Set, Any
+from typing import Union, Set
 
 from redis import Redis
 
@@ -12,8 +12,8 @@ Field = Union[int, float, str]
 
 class RedisUtil:
     """Redis操作工具类"""
-    prefix: Final[str] = get_settings().redis_prefix
-    redis: Final[Redis] = redis_be.redis
+    prefix: str = get_settings().redis_prefix
+    redis: Redis = redis_be.redis
 
     @staticmethod
     def get_key(key: str) -> str:
@@ -74,7 +74,7 @@ class RedisUtil:
         """向hash表中放入数据,如果不存在将创建
             返回添加的数量
         """
-        return await cls.hmset(cls.get_key(key), mapping={field: value}, time=time)
+        return await cls.hmset(key, mapping={field: value}, time=time)
 
     @classmethod
     async def hget(cls, key: str, field: str) -> str:

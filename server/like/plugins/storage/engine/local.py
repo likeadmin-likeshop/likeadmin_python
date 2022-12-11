@@ -23,7 +23,9 @@ class LocalStorage:
             os.makedirs(save_path)
         try:
             async with aiofiles.open(file_name, 'wb') as file_out:
-                while content := await file_in.read(SIZE):
+                content = await file_in.read(SIZE)
+                while content:
                     await file_out.write(content)
+                    content = await file_in.read(SIZE)
         except Exception as e:
             raise AppException(HttpResp.FAILED, msg='上传文件失败:%s' % e)

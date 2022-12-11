@@ -48,13 +48,16 @@ def unified_resp(func: Callable[..., RT]) -> Callable[..., RT]:
             resp = await func(*args, **kwargs) or []
         else:
             resp = func(*args, **kwargs) or []
-        return JSONResponse(content=jsonable_encoder(
-            # 正常请求响应
-            {'code': HttpResp.SUCCESS.code, 'msg': HttpResp.SUCCESS.msg, 'data': resp},
-            by_alias=False,
-            # 自定义日期时间格式编码器
-            custom_encoder={
-                datetime: lambda dt: dt.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(get_settings().timezone))
-                .strftime(get_settings().datetime_fmt)}))
+        return JSONResponse(
+            content=jsonable_encoder(
+                # 正常请求响应
+                {'code': HttpResp.SUCCESS.code, 'msg': HttpResp.SUCCESS.msg, 'data': resp},
+                by_alias=False,
+                # 自定义日期时间格式编码器
+                custom_encoder={
+                    datetime: lambda dt: dt.replace(tzinfo=pytz.utc).astimezone(pytz.timezone(get_settings().timezone))
+                    .strftime(get_settings().datetime_fmt)}),
+            media_type='application/json;charset=utf-8'
+        )
 
     return wrapper

@@ -1,4 +1,4 @@
-from typing import Final, Optional
+from typing import Optional
 
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
@@ -9,7 +9,7 @@ from starlette.responses import Response
 from ..config import get_settings
 
 # Redis缓存实例
-redis_be: Final[RedisBackend] = RedisBackend(
+redis_be: RedisBackend = RedisBackend(
     aioredis.from_url(get_settings().redis_url, encoding='utf8', decode_responses=True))
 
 
