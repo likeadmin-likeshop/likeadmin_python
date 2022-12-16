@@ -11,6 +11,7 @@ from databases.interfaces import Record
 from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
 
+from like.config import get_settings
 from like.dependencies.database import db
 from like.exceptions.base import AppException
 from like.generator.constants import GenConstants
@@ -128,11 +129,27 @@ class GenerateService(IGenerateService):
 
     @db.transaction()
     async def sync_table(self, id_: int):
+        """同步表结构"""
         pass
 
     @db.transaction()
     async def edit_table(self, edit_in: EditTableIn):
-        pass
+        """编辑表结构"""
+        if edit_in.gen_tpl == GenConstants.TPL_TREE:
+            assert edit_in.tree_primary, '树主ID不能为空'
+            assert edit_in.tree_parent, '树父ID不能为空'
+        gen_tb = await db.fetch_one(gen_table.select().where(gen_table.c.id == edit_in.id).limit(1))
+        assert gen_tb, "数据已丢失"
+        edit_in.sub_table_name.replace(get_settings().table_prefix, '')
+        tb_dict = edit_in.dict()
+        tb_dict.pop('columns')
+        await db.execute(gen_table.update()
+                         .where(gen_table.c.id == edit_in.id)
+                         .values(tb_dict))
+        for column in edit_in.columns:
+            await db.execute(gen_table_column.update()
+                             .where(gen_table_column.c.id == column.id)
+                             .values(column.dict()))
 
     @db.transaction()
     async def delete_table(self, ids: List[int]):

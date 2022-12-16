@@ -1,4 +1,5 @@
-from typing import Final, List
+from typing import List
+from typing_extensions import Final
 
 
 class GenConstants:

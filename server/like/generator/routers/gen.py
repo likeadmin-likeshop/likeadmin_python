@@ -3,7 +3,7 @@ import json
 from fastapi import APIRouter, Depends, Response, Form
 
 from like.generator.schemas.generate import (
-    DbTablesIn, ListTableIn, DetailTableIn, ImportTableIn, PreviewCodeIn, GenCodeIn, DownloadCodeIn,
+    DbTablesIn, ListTableIn, DetailTableIn, ImportTableIn, PreviewCodeIn, GenCodeIn, DownloadCodeIn, EditTableIn,
     DbTableOut, GenTableOut)
 from like.generator.service.generate import IGenerateService, GenerateService
 from like.http_base import unified_resp
@@ -46,8 +46,10 @@ async def import_table(import_in: ImportTableIn = Depends(),
 
 @router.post('/editTable')
 @unified_resp
-async def edit_table():
-    return
+async def edit_table(edit_in: EditTableIn,
+                     gen_service: IGenerateService = Depends(GenerateService.instance)):
+    """编辑表结构"""
+    return await gen_service.edit_table(edit_in)
 
 
 @router.post('/delTable')
@@ -60,6 +62,7 @@ async def del_table(ids: str = Form(), gen_service: IGenerateService = Depends(G
 @router.post('/syncTable')
 @unified_resp
 async def sync_table():
+    """同步表结构"""
     return
 
 

@@ -1,8 +1,9 @@
 from datetime import date, datetime
-from typing import Union
+from typing import Union, List
 
 from fastapi import Query
 from pydantic import validator, BaseModel, Field
+from typing_extensions import Literal
 
 from like.schema_base import EmptyStrToNone
 
@@ -31,9 +32,40 @@ class ImportTableIn(BaseModel):
     tables: str = Query()  # 导入的表, 用","分隔
 
 
+class EditColumn(BaseModel):
+    """表编辑列"""
+    id: int = Field(gt=0)  # 主键
+    column_comment: str = Field(alias='columnComment', max_length=200)  # 列描述
+    java_field: str = Field(alias='javaField', max_length=100)  # 字段
+    is_required: int = Field(alias='isRequired', ge=0, le=1)  # 是否必填: [1=是, 0=否]
+    is_insert: int = Field(alias='isInsert', ge=0, le=1)  # 是否插入字段: [1=是, 0=否]
+    is_edit: int = Field(alias='isEdit', ge=0, le=1)  # 是否编辑字段: [1=是, 0=否]
+    is_list: int = Field(alias='isList', ge=0, le=1)  # 是否列表字段: [1=是, 0=否]
+    is_query: int = Field(alias='isQuery', ge=0, le=1)  # 是否查询字段: [1=是, 0=否]
+    query_type: str = Field(alias='queryType', max_length=30)  # 表名称
+    html_type: str = Field(alias='htmlType', max_length=30)  # 表名称
+    dict_type: str = Field(alias='dictType', max_length=200)  # 表名称
+
+
 class EditTableIn(BaseModel):
     """表编辑参数"""
-    pass
+    id: int = Field(gt=0)  # 账号
+    table_name: str = Field(alias='tableName', min_length=1, max_length=200)  # 表名称
+    entity_name: str = Field(alias='entityName', min_length=1, max_length=200)  # 实体类名称
+    table_comment: str = Field(alias='tableComment', min_length=1, max_length=200)  # 表描述
+    author_name: str = Field(alias='authorName', min_length=1, max_length=100)  # 作者名称
+    remarks: str = Field(max_length=60, default='')  # 备注
+    gen_tpl: Literal['crud', 'tree'] = Field(alias='genTpl')  # 生成模板方式: [crud=单表, tree=树表]
+    module_name: str = Field(alias='moduleName', min_length=1, max_length=60)  # 生成模块名
+    function_name: str = Field(alias='functionName', min_length=1, max_length=60)  # 生成功能名
+    gen_type: Literal[0, 1] = Field(alias='genType')  # 生成代码方式: [0=zip压缩包, 1=自定义路径]
+    gen_path: str = Field(alias='genPath', max_length=60, default='/')  # 备注
+    tree_primary: str = Field(alias='treePrimary', default='')  # 备注
+    tree_parent: str = Field(alias='treeParent', default='')  # 备注
+    tree_name: str = Field(alias='treeName', default='')  # 备注
+    sub_table_name: str = Field(alias='subTableName', default='')  # 备注
+    sub_table_fk: str = Field(alias='subTableFk', default='')  # 备注
+    columns: List[EditColumn]
 
 
 class PreviewCodeIn(BaseModel):
