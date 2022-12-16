@@ -2,12 +2,16 @@ import os
 import platform
 import sys
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Any
 
 import psutil
 
 from like.config import get_settings
 from like.utils.ip import IpUtil
+
+
+def get_attr(obj: Any, attr: str, default: Any = None) -> Any:
+    return getattr(obj, attr, default)
 
 
 class ServerInfo:
@@ -50,12 +54,13 @@ class ServerInfo:
         """获取CPU信息"""
         res = {'cpu_num': psutil.cpu_count(logical=True)}
         cpu_times = psutil.cpu_times()
-        total = cpu_times.user + cpu_times.nice + cpu_times.system + cpu_times.idle + cpu_times.iowait \
-                + cpu_times.irq + cpu_times.softirq + cpu_times.steal
+        total = cpu_times.user + cpu_times.nice + cpu_times.system + cpu_times.idle \
+                + get_attr(cpu_times, 'iowait', 0.0) + get_attr(cpu_times, 'irq', 0.0) \
+                + get_attr(cpu_times, 'softirq', 0.0) + get_attr(cpu_times, 'steal', 0.0)
         res['total'] = round(total, 2)
         res['sys'] = round(cpu_times.system / total, 2)
         res['used'] = round(cpu_times.user / total, 2)
-        res['wait'] = round(cpu_times.iowait / total, 2)
+        res['wait'] = round(get_attr(cpu_times, 'iowait', 0.0) / total, 2)
         res['free'] = round(cpu_times.idle / total, 2)
         return res
 
