@@ -8,4 +8,5 @@ __all__ = ['db']
 db: Database = Database(
     get_settings().database_url,
     min_size=get_settings().database_pool_min_size,
-    max_size=get_settings().database_pool_max_size)
+    max_size=get_settings().database_pool_max_size,
+    pool_recycle=get_settings().database_pool_recycle)
