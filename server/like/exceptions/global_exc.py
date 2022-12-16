@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic.error_wrappers import ValidationError
+from pymysql.err import OperationalError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .base import AppException
@@ -78,7 +79,20 @@ def configure_exception(app: FastAPI):
         logger.error(exc, exc_info=True)
         return JSONResponse(
             status_code=200,
-            content={'code': HttpResp.SYSTEM_ERROR.code, 'msg': HttpResp.SYSTEM_ERROR.code, 'data': []})
+            content={'code': HttpResp.SYSTEM_ERROR.code, 'msg': HttpResp.SYSTEM_ERROR.msg, 'data': []})
+
+    @app.exception_handler(OperationalError)
+    async def db_opr_error_handler(request: Request, exc: OperationalError):
+        """处理连接异常
+            code: 500
+        """
+        from like.dependencies.database import db
+        logger.error('db_opr_error_handler: url=[%s]', request.url.path)
+        logger.error(exc, exc_info=True)
+        await db._backend._pool.clear()
+        return JSONResponse(
+            status_code=200,
+            content={'code': HttpResp.SYSTEM_ERROR.code, 'msg': HttpResp.SYSTEM_ERROR.msg, 'data': []})
 
     @app.exception_handler(Exception)
     async def global_exception_handler(request: Request, exc: Exception):
