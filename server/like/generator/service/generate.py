@@ -130,7 +130,37 @@ class GenerateService(IGenerateService):
     @db.transaction()
     async def sync_table(self, id_: int):
         """同步表结构"""
-        pass
+        # 旧数据
+        gen_tb = await db.fetch_one(gen_table.select().where(gen_table.c.id == id_).limit(1))
+        assert gen_tb, '生成数据不存在！'
+        gen_tb_cols = await db.fetch_all(gen_table_column.select().where(gen_table_column.c.table_id == id_)
+                                         .order_by(gen_table_column.c.sort))
+        assert gen_tb_cols, '旧数据异常！'
+        prev_col_dict = {c.column_name: c for c in gen_tb_cols}
+        # 新数据
+        columns = await db.fetch_all(GenUtil.get_db_table_columns_query_by_name(gen_tb.table_name))
+        assert columns, '同步结构失败,原表结构不存在！'
+        # 处理新增和更新
+        tbl_dict = dict(gen_tb)
+        for db_col in columns:
+            col = GenUtil.init_column(tbl_dict, db_col)
+            if col['column_name'] in prev_col_dict:
+                prev_col = prev_col_dict.get(col['column_name'])
+                if col.get('is_list', 0):
+                    col['dict_type'] = prev_col.dict_type
+                    col['query_type'] = prev_col.query_type
+                if prev_col.is_required == 1 and prev_col.is_pk == 0 and prev_col.is_insert == 1 \
+                        or prev_col.is_edit == 1:
+                    col['html_type'] = prev_col.html_type
+                    col['is_required'] = prev_col.is_required
+                await db.execute(gen_table_column.update().where(gen_table_column.c.id == prev_col.id).values(**col))
+            else:
+                await db.execute(gen_table_column.insert().values(**col))
+        # 处理删除
+        col_names = [c.column_name for c in columns]
+        for prev_tb_col in gen_tb_cols:
+            if prev_tb_col.column_name not in col_names:
+                await db.execute(gen_table_column.delete().where(gen_table_column.c.id == prev_tb_col.id))
 
     @db.transaction()
     async def edit_table(self, edit_in: EditTableIn):
@@ -139,7 +169,7 @@ class GenerateService(IGenerateService):
             assert edit_in.tree_primary, '树主ID不能为空'
             assert edit_in.tree_parent, '树父ID不能为空'
         gen_tb = await db.fetch_one(gen_table.select().where(gen_table.c.id == edit_in.id).limit(1))
-        assert gen_tb, "数据已丢失"
+        assert gen_tb, "数据已丢失!"
         edit_in.sub_table_name.replace(get_settings().table_prefix, '')
         tb_dict = edit_in.dict()
         tb_dict.pop('columns')
