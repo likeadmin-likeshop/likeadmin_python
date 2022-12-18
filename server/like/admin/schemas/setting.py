@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Union
 
 from pydantic import BaseModel, Field
@@ -46,12 +47,12 @@ class SettingProtocolIn(BaseModel):
     privacy: CommonProtocol  # 隐私协议
 
 
-class SettingsStorageDetailIn(BaseModel):
+class SettingStorageDetailIn(BaseModel):
     """存储设置详情入参"""
     alias: str
 
 
-class SettingsStorageEditIn(BaseModel):
+class SettingStorageEditIn(BaseModel):
     """存储设置配置入参"""
     alias: str
     status: int
@@ -62,22 +63,68 @@ class SettingsStorageEditIn(BaseModel):
     region: Union[str, None]
 
 
-class SettingsStorageChangeIn(BaseModel):
+class SettingStorageChangeIn(BaseModel):
     """切换存储入参"""
     alias: str
     status: int
 
 
-class SettingsStorageOut(BaseModel):
+class SettingStorageOut(BaseModel):
     """存储设置列表返回"""
     alias: str
     status: int
     describe: str = ""
 
 
-class SettingsStorageDetailOut(SettingsStorageOut):
+class SettingStorageDetailOut(SettingStorageOut):
     """存储设置详情返回"""
     bucket: str = ""
     secretKey: str = ""
     accessKey: str = ""
     domain: str = ""
+
+
+class SettingDictTypeListIn(BaseModel):
+    """
+    字典类型-列表 入参
+    """
+    dictName: Union[str, None]
+    dictType: Union[str, None]
+    dictStatus: Union[int, None]
+
+
+class SettingDictTypeAddIn(BaseModel):
+    """
+    字典类型-新增 入参
+    """
+    dict_name: str = Field(alias='dictName')
+    dict_type: str = Field(alias='dictType')
+    dict_remark: Union[str, None] = Field(alias='dictRemark')
+    dict_status: int = Field(alias='dictStatus')
+
+
+class SettingDictTypeEditIn(SettingDictTypeAddIn):
+    """
+    字典类型-编辑 入参
+    """
+    id: int
+
+
+class SettingDictTypeDeleteIn(BaseModel):
+    """
+    字典类型-删除 入参
+    """
+    ids: List[int]
+
+
+class SettingDictTypeOut(BaseModel):
+    """
+    字典类型 返回
+    """
+    id: int
+    dictName: str = Field(alias='dict_name')
+    dictType: str = Field(alias='dict_type')
+    dictRemark: str = Field(alias='dict_remark')
+    dictStatus: int = Field(alias='dict_status')
+    createTime: datetime = Field(alias='create_time')
+    updateTime: datetime = Field(alias='update_time')

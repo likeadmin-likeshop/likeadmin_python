@@ -2,9 +2,12 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingsStorageDetailIn, \
-    SettingsStorageEditIn, SettingsStorageChangeIn
+from like.admin.schemas.page import PageInationResult
+from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingStorageDetailIn, \
+    SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn, \
+    SettingDictTypeEditIn, SettingDictTypeDeleteIn
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
+from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
 from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
 from like.admin.service.setting.website import ISettingWebsiteService, SettingWebsiteService
@@ -61,26 +64,66 @@ async def protocol_save(protocol_in: SettingProtocolIn,
 
 @router.get('/storage/list')
 @unified_resp
-async def list(service: ISettingStorageService = Depends(SettingStorageService.instance)):
+async def storage_list(service: ISettingStorageService = Depends(SettingStorageService.instance)):
     return await service.list()
 
 
 @router.get('/storage/detail')
 @unified_resp
-async def detail(storage_detail_in: SettingsStorageDetailIn = Depends(),
-                 service: ISettingStorageService = Depends(SettingStorageService.instance)):
+async def storage_detail(storage_detail_in: SettingStorageDetailIn = Depends(),
+                         service: ISettingStorageService = Depends(SettingStorageService.instance)):
     return await service.detail(storage_detail_in.alias)
 
 
 @router.post('/storage/edit')
 @unified_resp
-async def edit(storage_edit_in: SettingsStorageEditIn,
-               service: ISettingStorageService = Depends(SettingStorageService.instance)):
+async def storage_edit(storage_edit_in: SettingStorageEditIn,
+                       service: ISettingStorageService = Depends(SettingStorageService.instance)):
     return await service.edit(storage_edit_in)
 
 
 @router.post('/storage/change')
 @unified_resp
-async def change(storage_change_in: SettingsStorageChangeIn,
-                 service: ISettingStorageService = Depends(SettingStorageService.instance)):
+async def storage_change(storage_change_in: SettingStorageChangeIn,
+                         service: ISettingStorageService = Depends(SettingStorageService.instance)):
     return await service.change(storage_change_in.alias, storage_change_in.status)
+
+
+@router.get('/dict/type/all')
+@unified_resp
+async def dict_type_all(service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.all()
+
+
+@router.get('/dict/type/list', response_model=PageInationResult[SettingDictTypeOut])
+@unified_resp
+async def dict_type_list(list_in: SettingDictTypeListIn = Depends(),
+                         service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.list(list_in)
+
+
+@router.get('/dict/type/detail')
+@unified_resp
+async def dict_type_detail(id: int, service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.detail(id)
+
+
+@router.post('/dict/type/add')
+@unified_resp
+async def dict_type_add(add_in: SettingDictTypeAddIn,
+                        service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.add(add_in)
+
+
+@router.post('/dict/type/edit')
+@unified_resp
+async def dict_type_edit(edit_in: SettingDictTypeEditIn,
+                         service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.edit(edit_in)
+
+
+@router.post('/dict/type/del')
+@unified_resp
+async def dict_type_del(delete_in: SettingDictTypeDeleteIn,
+                        service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.delete(delete_in)

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 
 import pydantic
 
-from like.admin.schemas.setting import SettingsStorageEditIn, SettingsStorageDetailOut, SettingsStorageOut
+from like.admin.schemas.setting import SettingStorageEditIn, SettingStorageDetailOut, SettingStorageOut
 from like.utils.config import ConfigUtil
 
 SettingsStorageConfDict = {
@@ -29,7 +29,7 @@ class ISettingStorageService(ABC):
         pass
 
     @abstractmethod
-    async def edit(self, params: SettingsStorageEditIn):
+    async def edit(self, params: SettingStorageEditIn):
         pass
 
     @abstractmethod
@@ -42,7 +42,7 @@ class SettingStorageService(ISettingStorageService):
 
     async def list(self):
         engine = await ConfigUtil.get_val("storage", "default", "local")
-        return [SettingsStorageOut(
+        return [SettingStorageOut(
             **{"alias": alias, "name": conf['name'], "describe": conf['describe'], 'status': int(engine == alias)}) for
             alias, conf in SettingsStorageConfDict.items()]
 
@@ -65,9 +65,9 @@ class SettingStorageService(ISettingStorageService):
                 detail.update({
                     "region": config.get("region")
                 })
-        return pydantic.parse_obj_as(SettingsStorageDetailOut, detail)
+        return pydantic.parse_obj_as(SettingStorageDetailOut, detail)
 
-    async def edit(self, params: SettingsStorageEditIn):
+    async def edit(self, params: SettingStorageEditIn):
         alias = params.alias
         status = params.status
         assert alias, 'alias参数缺失'
