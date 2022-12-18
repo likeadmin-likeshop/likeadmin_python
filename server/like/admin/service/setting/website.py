@@ -25,21 +25,21 @@ class SettingWebsiteService(ISettingWebsiteService):
         config = await ConfigUtil.get('website')
         return {
             'name': config.get('name', ''),
-            'logo': UrlUtil.to_absolute_url(config.get('logo', '')),
-            'favicon': UrlUtil.to_absolute_url(config.get('favicon', '')),
-            'backdrop': UrlUtil.to_absolute_url(config.get('backdrop', '')),
+            'logo': await UrlUtil.to_absolute_url(config.get('logo', '')),
+            'favicon': await UrlUtil.to_absolute_url(config.get('favicon', '')),
+            'backdrop': await UrlUtil.to_absolute_url(config.get('backdrop', '')),
             'shopName': config.get('shopName', ''),
-            'shopLogo': UrlUtil.to_absolute_url(config.get('shopLogo', '')),
+            'shopLogo': await UrlUtil.to_absolute_url(config.get('shopLogo', '')),
         }
 
     async def save(self, website_in: SettingWebsiteIn):
         """保存网站信息"""
         await ConfigUtil.set('website', 'name', website_in.name)
-        await ConfigUtil.set('website', 'logo', UrlUtil.to_relative_url(website_in.logo))
-        await ConfigUtil.set('website', 'favicon', UrlUtil.to_relative_url(website_in.favicon))
-        await ConfigUtil.set('website', 'backdrop', UrlUtil.to_relative_url(website_in.backdrop))
+        await ConfigUtil.set('website', 'logo', await UrlUtil.to_relative_url(website_in.logo))
+        await ConfigUtil.set('website', 'favicon', await UrlUtil.to_relative_url(website_in.favicon))
+        await ConfigUtil.set('website', 'backdrop', await UrlUtil.to_relative_url(website_in.backdrop))
         await ConfigUtil.set('website', 'shopName', website_in.shop_name)
-        await ConfigUtil.set('website', 'shopLogo', UrlUtil.to_relative_url(website_in.shop_logo))
+        await ConfigUtil.set('website', 'shopLogo', await UrlUtil.to_relative_url(website_in.shop_logo))
 
     @classmethod
     async def instance(cls):

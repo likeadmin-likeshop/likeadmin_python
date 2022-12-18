@@ -13,9 +13,9 @@ SIZE = 2048
 class LocalStorage:
 
     @classmethod
-    async def upload(cls, file_in: UploadFile, key: str, folder: str):
+    async def upload(cls, file_in: UploadFile, key: str):
         directory = get_settings().upload_directory
-        _date, save_name = key.split('/')
+        folder, _date, save_name = key.split('/')
         save_path = os.path.join(directory, folder, _date).replace('\\', '/')
         file_name = os.path.join(save_path, save_name).replace('\\', '/')
 
