@@ -5,9 +5,11 @@ from fastapi import APIRouter, Depends
 from like.admin.schemas.page import PageInationResult
 from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingStorageDetailIn, \
     SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn, \
-    SettingDictTypeEditIn, SettingDictTypeDeleteIn
+    SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn, \
+    SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
-from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService
+from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService, \
+    SettingDictDataService, ISettingDictDataService
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
 from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
 from like.admin.service.setting.website import ISettingWebsiteService, SettingWebsiteService
@@ -104,8 +106,9 @@ async def dict_type_list(list_in: SettingDictTypeListIn = Depends(),
 
 @router.get('/dict/type/detail')
 @unified_resp
-async def dict_type_detail(id: int, service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
-    return await service.detail(id)
+async def dict_type_detail(detail_in: SettingDictTypeDetailIn = Depends(),
+                           service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.detail(detail_in)
 
 
 @router.post('/dict/type/add')
@@ -126,4 +129,46 @@ async def dict_type_edit(edit_in: SettingDictTypeEditIn,
 @unified_resp
 async def dict_type_del(delete_in: SettingDictTypeDeleteIn,
                         service: ISettingDictTypeService = Depends(SettingDictTypeService.instance)):
+    return await service.delete(delete_in)
+
+
+@router.get('/dict/data/all')
+@unified_resp
+async def dict_data_all(all_in: SettingDictDataListIn = Depends(),
+                        service: ISettingDictDataService = Depends(SettingDictDataService.instance)):
+    return await service.all(all_in)
+
+
+@router.get('/dict/data/list', response_model=PageInationResult[SettingDictDataOut])
+@unified_resp
+async def dict_data_list(list_in: SettingDictDataListIn = Depends(),
+                         service: ISettingDictDataService = Depends(SettingDictDataService.instance)):
+    return await service.list(list_in)
+
+
+@router.get('/dict/data/detail')
+@unified_resp
+async def dict_data_detail(detail_in: SettingDictDataDetailIn = Depends(),
+                           service: ISettingDictDataService = Depends(SettingDictDataService.instance)):
+    return await service.detail(detail_in)
+
+
+@router.post('/dict/data/add')
+@unified_resp
+async def dict_data_add(add_in: SettingDictDataAddIn,
+                        service: ISettingDictDataService = Depends(SettingDictDataService.instance)):
+    return await service.add(add_in)
+
+
+@router.post('/dict/data/edit')
+@unified_resp
+async def dict_data_edit(edit_in: SettingDictDataEditIn,
+                         service: ISettingDictDataService = Depends(SettingDictDataService.instance)):
+    return await service.edit(edit_in)
+
+
+@router.post('/dict/data/del')
+@unified_resp
+async def dict_data_del(delete_in: SettingDictDataDeletelIn,
+                        service: ISettingDictDataService = Depends(SettingDictDataService.instance)):
     return await service.delete(delete_in)

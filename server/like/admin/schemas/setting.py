@@ -3,6 +3,8 @@ from typing import List, Union
 
 from pydantic import BaseModel, Field
 
+from like.admin.schemas.system import EmptyStrToNone
+
 
 class SettingWebsiteIn(BaseModel):
     """
@@ -88,9 +90,9 @@ class SettingDictTypeListIn(BaseModel):
     """
     字典类型-列表 入参
     """
-    dictName: Union[str, None]
-    dictType: Union[str, None]
-    dictStatus: Union[int, None]
+    dictName: Union[str, None, EmptyStrToNone]
+    dictType: Union[str, None, EmptyStrToNone]
+    dictStatus: Union[int, None, EmptyStrToNone]
 
 
 class SettingDictTypeAddIn(BaseModel):
@@ -106,6 +108,13 @@ class SettingDictTypeAddIn(BaseModel):
 class SettingDictTypeEditIn(SettingDictTypeAddIn):
     """
     字典类型-编辑 入参
+    """
+    id: int
+
+
+class SettingDictTypeDetailIn(BaseModel):
+    """
+    字典类型-删除 入参
     """
     id: int
 
@@ -126,5 +135,63 @@ class SettingDictTypeOut(BaseModel):
     dictType: str = Field(alias='dict_type')
     dictRemark: str = Field(alias='dict_remark')
     dictStatus: int = Field(alias='dict_status')
+    createTime: datetime = Field(alias='create_time')
+    updateTime: datetime = Field(alias='update_time')
+
+
+class SettingDictDataListIn(BaseModel):
+    """
+    字典数据-列表 入参
+    """
+    dictType: str
+    name: Union[str, None, EmptyStrToNone]
+    value: Union[str, None, EmptyStrToNone]
+    status: Union[int, None, EmptyStrToNone]
+
+
+class SettingDictDataDetailIn(BaseModel):
+    """
+    字典数据-详情 入参
+    """
+    id: int
+
+
+class SettingDictDataDeletelIn(BaseModel):
+    """
+    字典数据-删除 入参
+    """
+    ids: List[int]
+
+
+class SettingDictDataAddIn(BaseModel):
+    """
+    字典数据-新增 入参
+    """
+    type_id: int = Field(alias='typeId')
+    name: str
+    value: str
+    remark: str
+    sort: int
+    status: int
+
+
+class SettingDictDataEditIn(SettingDictDataAddIn):
+    """
+    字典数据-编辑 入参
+    """
+    id: int
+
+
+class SettingDictDataOut(BaseModel):
+    """
+    字典类型 返回
+    """
+    id: int
+    typeId: int = Field(alias='type_id')
+    name: str
+    value: str
+    remark: str
+    sort: int
+    status: int
     createTime: datetime = Field(alias='create_time')
     updateTime: datetime = Field(alias='update_time')
