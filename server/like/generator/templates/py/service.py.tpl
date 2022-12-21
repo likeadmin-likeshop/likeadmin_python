@@ -107,7 +107,7 @@ class {{{ entity_name }}}Service(I{{{ entity_name }}}Service):
         res = {{{ entity_name }}}Out.from_orm(model)
         {%- for column in columns %}
         {%- if column.is_edit and column.java_field in ['image', 'avatar', 'logo', 'img'] %}
-        res.{{{ column.java_field }}} = UrlUtil.to_relative_url(res.{{{ column.java_field }}})
+        res.{{{ column.java_field }}} = await UrlUtil.to_relative_url(res.{{{ column.java_field }}})
         {%- endif %}
         {%- endfor %}
         return res
@@ -118,7 +118,7 @@ class {{{ entity_name }}}Service(I{{{ entity_name }}}Service):
             {%- for column in columns %}
             {%- if (column.is_insert or column.column_name in ['create_time', 'update_time']) and column.is_pk == 0 %}
             {%- if column.java_field in ['image', 'avatar', 'logo', 'img'] %}
-            '{{{ column.java_field }}}': UrlUtil.to_relative_url(add_in.{{{ column.java_field}}}),
+            '{{{ column.java_field }}}': await UrlUtil.to_relative_url(add_in.{{{ column.java_field}}}),
             {%- elif column.column_name not in date_fields and column.java_field != 'is_delete' %}
             '{{{ column.java_field }}}': add_in.{{{ column.java_field}}},
             {%- elif column.java_type == 'datetime' %}
@@ -139,7 +139,7 @@ class {{{ entity_name }}}Service(I{{{ entity_name }}}Service):
                 {%- for column in columns %}
                 {%- if (column.is_edit or column.column_name == 'update_time') and column.is_pk == 0 %}
                 {%- if column.java_field in ['image', 'avatar', 'logo', 'img'] %}
-                '{{{ column.java_field }}}': UrlUtil.to_relative_url(edit_in.{{{ column.java_field}}}),
+                '{{{ column.java_field }}}': await UrlUtil.to_relative_url(edit_in.{{{ column.java_field}}}),
                 {%- elif column.column_name not in date_fields and column.java_field != 'is_delete' %}
                 '{{{ column.java_field }}}': edit_in.{{{ column.java_field}}},
                 {%- elif column.java_type == 'datetime' and column.column_name == 'update_time' %}

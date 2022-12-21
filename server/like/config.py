@@ -48,6 +48,8 @@ class Settings(BaseSettings):
     database_pool_min_size: int = 5
     # 数据库连接池最大值
     database_pool_max_size: int = 20
+    # 数据库连接最大空闲时间
+    database_pool_recycle: int = 300
 
     # Redis源配置
     redis_url: str = 'redis://localhost:6379'
