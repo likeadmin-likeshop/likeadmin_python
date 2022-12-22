@@ -11,6 +11,6 @@ def init_cors_middleware(app: FastAPI):
         CORSMiddleware,
         allow_origins=json.loads(get_settings().cors_allow_origins),
         allow_headers=['*'],
-        allow_methods=['GET', 'POST', 'DELETE', 'PUT'],
+        allow_methods=['OPTIONS', 'GET', 'POST', 'DELETE', 'PUT'],
         max_age=3600
     )
