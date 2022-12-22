@@ -1,4 +1,4 @@
-from typing import Final
+from typing_extensions import Final
 
 from like.config import get_settings
 from like.utils.config import ConfigUtil

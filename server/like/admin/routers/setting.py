@@ -2,7 +2,6 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from like.admin.schemas.page import PageInationResult
 from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingStorageDetailIn, \
     SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn, \
     SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn, \
@@ -14,6 +13,7 @@ from like.admin.service.setting.protocol import ISettingProtocolService, Setting
 from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
 from like.admin.service.setting.website import ISettingWebsiteService, SettingWebsiteService
 from like.http_base import unified_resp
+from like.schema_base import PageInationResult
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix='/setting')
