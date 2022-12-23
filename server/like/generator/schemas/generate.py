@@ -68,6 +68,11 @@ class EditTableIn(BaseModel):
     columns: List[EditColumn]
 
 
+class SyncTableIn(BaseModel):
+    """同步表结构参数"""
+    id: int = Query()  # 主键
+
+
 class PreviewCodeIn(BaseModel):
     """预览代码参数"""
     id: int = Query()  # 主键
