@@ -73,6 +73,11 @@ class SyncTableIn(BaseModel):
     id: int = Query()  # 主键
 
 
+class DelTableIn(BaseModel):
+    """删除表结构参数"""
+    ids: List[int] = Field()  # 主键
+
+
 class PreviewCodeIn(BaseModel):
     """预览代码参数"""
     id: int = Query()  # 主键

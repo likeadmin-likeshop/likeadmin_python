@@ -1,9 +1,7 @@
-import json
-
-from fastapi import APIRouter, Depends, Response, Form
+from fastapi import APIRouter, Depends, Response
 
 from like.generator.schemas.generate import (
-    DbTablesIn, ListTableIn, DetailTableIn, ImportTableIn, SyncTableIn, PreviewCodeIn,
+    DbTablesIn, ListTableIn, DetailTableIn, ImportTableIn, SyncTableIn, DelTableIn, PreviewCodeIn,
     GenCodeIn, DownloadCodeIn, EditTableIn,
     DbTableOut, GenTableOut)
 from like.generator.service.generate import IGenerateService, GenerateService
@@ -55,9 +53,9 @@ async def edit_table(edit_in: EditTableIn,
 
 @router.post('/delTable')
 @unified_resp
-async def del_table(ids: str = Form(), gen_service: IGenerateService = Depends(GenerateService.instance)):
+async def del_table(del_in: DelTableIn, gen_service: IGenerateService = Depends(GenerateService.instance)):
     """删除表结构"""
-    return await gen_service.delete_table(json.loads(ids))
+    return await gen_service.delete_table(del_in.ids)
 
 
 @router.post('/syncTable')
