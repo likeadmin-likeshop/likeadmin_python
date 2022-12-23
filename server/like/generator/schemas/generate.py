@@ -36,7 +36,7 @@ class EditColumn(BaseModel):
     """表编辑列"""
     id: int = Field(gt=0)  # 主键
     column_comment: str = Field(alias='columnComment', max_length=200)  # 列描述
-    java_field: str = Field(alias='javaField', max_length=100)  # 字段
+    java_field: str = Field(alias='pyField', max_length=100)  # 字段
     is_required: int = Field(alias='isRequired', ge=0, le=1)  # 是否必填: [1=是, 0=否]
     is_insert: int = Field(alias='isInsert', ge=0, le=1)  # 是否插入字段: [1=是, 0=否]
     is_edit: int = Field(alias='isEdit', ge=0, le=1)  # 是否编辑字段: [1=是, 0=否]
