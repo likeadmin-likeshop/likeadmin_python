@@ -70,6 +70,8 @@ class Settings(BaseSettings):
     version: str = 'v1.0.0'
     # 项目根路径
     root_path: str = ROOT_PATH
+    # 默认请求超时
+    request_timeout: int = 15
     # Mysql表前缀
     table_prefix: str = 'la_'
     # 时区

@@ -35,6 +35,7 @@ class HttpResp:
     REQUEST_404_ERROR = HttpCode(404, '请求接口不存在')
 
     SYSTEM_ERROR = HttpCode(500, '系统错误')
+    SYSTEM_TIMEOUT_ERROR = HttpCode(504, '请求超时')
 
 
 def unified_resp(func: Callable[..., RT]) -> Callable[..., RT]:
