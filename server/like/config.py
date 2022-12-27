@@ -67,7 +67,7 @@ class Settings(BaseSettings):
 
     # 全局配置
     # 版本
-    version: str = 'v1.0.0'
+    version: str = 'v1.1.0'
     # 项目根路径
     root_path: str = ROOT_PATH
     # 默认请求超时
