@@ -7,10 +7,9 @@ from like.utils.config import ConfigUtil
 class UrlUtil:
     domain: Final[str] = get_settings().domain
     upload_prefix: Final[str] = get_settings().upload_prefix
-    engine = 'local'
 
     @classmethod
-    async def to_absolute_url(cls, url: str, engine='local') -> str:
+    async def to_absolute_url(cls, url: str, engine='') -> str:
         """
         转绝对路径
         转前: /uploads/11.png

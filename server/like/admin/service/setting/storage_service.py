@@ -84,6 +84,8 @@ class SettingStorageService(ISettingStorageService):
                 "accessKey": params.accessKey,
                 "domain": params.domain,
             }
+            if alias == "qcloud":
+                conf.update({"region": params.region})
         await ConfigUtil.set("storage", alias, json.dumps(conf))
         engine = await ConfigUtil.get_val("storage", "default", "local")
         if status:

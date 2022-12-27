@@ -8,6 +8,7 @@ from like.http_base import HttpResp
 from like.plugins.storage.engine.aliyun import AliyunStorage
 from like.plugins.storage.engine.local import LocalStorage
 from like.plugins.storage.engine.qiniu import QiniuStorage
+from like.plugins.storage.engine.qcloud import QCloudStorage
 from like.utils.config import ConfigUtil
 from like.utils.datetime import get_now_str, FORMAT_DATE2
 from like.utils.tools import ToolsUtil
@@ -25,12 +26,13 @@ class StorageDriver(object):
         if engine == 'local':
             await LocalStorage.upload(file_in, key)
             key = key.replace('\\', '/')
-
         elif engine == 'qiniu':
             result = await QiniuStorage().upload_data(key, file_in.file)
             key = result['key']
         elif engine == 'aliyun':
             key = await AliyunStorage().upload_data(key, file_in.file)
+        elif engine == 'qcloud':
+            key = await QCloudStorage().upload_data(key, file_in.file)
         else:
             raise AppException(HttpResp.FAILED, msg="engine:%s 暂未接入, 暂时不支持" % engine)
 
