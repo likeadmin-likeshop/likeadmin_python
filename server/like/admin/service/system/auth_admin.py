@@ -91,8 +91,8 @@ class SystemAuthAdminService(ISystemAuthAdminService):
             if menu_ids:
                 menus = await db.fetch_all(
                     system_auth_menu.select()
-                    .where(system_auth_menu.c.id == menu_ids, system_auth_menu.c.is_disable == 0,
-                           system_auth_menu.c.menu_type.in_['C', 'A'])
+                    .where(system_auth_menu.c.id.in_(menu_ids), system_auth_menu.c.is_disable == 0,
+                           system_auth_menu.c.menu_type.in_(['C', 'A']))
                     .order_by(system_auth_menu.c.menu_sort, system_auth_menu.c.id))
                 if menus:
                     auths.extend((i.perms.strip() for i in menus if i))
