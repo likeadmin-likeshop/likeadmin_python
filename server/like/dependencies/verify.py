@@ -40,7 +40,7 @@ async def verify_token(request: Request):
     mapping = json.loads(await RedisUtil.hget(AdminConfig.backstage_manage_key, uid_str))
     if not (mapping and mapping.get('is_delete') == 0):
         await RedisUtil.delete(token)
-        await RedisUtil.hdel(f'{AdminConfig.backstage_manage_key}{uid}')
+        await RedisUtil.hdel(AdminConfig.backstage_manage_key, f'{uid}')
         raise AppException(HttpResp.TOKEN_INVALID)
 
     # 校验用户被禁用
