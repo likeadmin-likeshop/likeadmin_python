@@ -173,7 +173,7 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         await db.execute(system_auth_admin.insert().values(**create_dict))
 
     async def edit(self, admin_edit_in: SystemAuthAdminEditIn):
-        """管理员更新"""
+        """管理员编辑"""
         assert await db.fetch_one(
             system_auth_admin.select()
             .where(system_auth_admin.c.id == admin_edit_in.id, system_auth_admin.c.is_delete == 0)
