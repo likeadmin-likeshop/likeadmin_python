@@ -38,7 +38,7 @@ def configure_router(app: FastAPI, prefix='/api'):
     from .config import get_settings
     from .front.routers import index
     from .front.routers import upload
-    from .admin.routers import user, common, system, monitor, setting
+    from .admin.routers import user, common, system, monitor, setting, channel
     from .generator.routers import gen
 
     settings = get_settings()
@@ -55,6 +55,7 @@ def configure_router(app: FastAPI, prefix='/api'):
     app.include_router(system.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(monitor.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(setting.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(channel.router, prefix=prefix, dependencies=admin_deps)
     # gen
     app.include_router(gen.router, prefix=prefix, dependencies=admin_deps)
 
