@@ -36,7 +36,6 @@ def record_log(title: str = '', req_type: RequestType = RequestType.Default) -> 
         args = ''
         # 请求方式
         req_method = request.method
-        logger.error('record_log before')
         # 获取请求参数
         if req_method == 'POST':
             if req_type == RequestType.File:
@@ -58,7 +57,6 @@ def record_log(title: str = '', req_type: RequestType = RequestType.Default) -> 
             err = e
             error = str(e)
             status = 2
-        logger.error('record_log after')
         # 结束时间
         end_time = time.time()
         # 执行时间(毫秒)
