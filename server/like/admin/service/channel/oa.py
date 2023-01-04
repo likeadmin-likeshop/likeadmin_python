@@ -24,6 +24,7 @@ class ChannelOaService(IChannelOaService):
     async def detail(self) -> dict:
         """公众号渠道设置详情"""
         config = await ConfigUtil.get('oa_channel')
+        config.pop('menus')
         config['qrCode'] = await UrlUtil.to_absolute_url(config.get('qrCode', ''))
         config['name'] = config.get('name', '')
         config['primaryId'] = config.get('primaryId', '')
