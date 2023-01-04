@@ -9,7 +9,7 @@ class WeChatUtil:
     """微信工具"""
 
     @staticmethod
-    def official() -> WeChatClient:
+    async def official() -> WeChatClient:
         """微信公众号"""
         config = await ConfigUtil.get('oa_channel')
         return WeChatClient(

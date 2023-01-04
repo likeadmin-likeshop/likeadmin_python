@@ -67,9 +67,8 @@ class ChannelOaMenuService(IChannelOaMenuService):
                         sub.pop('pagepath')
         await ConfigUtil.set('oa_channel', 'menus', json.dumps(menus))
         if is_publish:
-            # TODO: 发布公众号菜单
-            client = WeChatUtil.official()
-            client.menu.add_conditional({
+            client = await WeChatUtil.official()
+            client.menu.create({
                 'button': menus
             })
 
