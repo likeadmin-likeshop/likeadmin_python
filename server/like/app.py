@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi_pagination import add_pagination
@@ -66,6 +68,9 @@ def create_app() -> FastAPI:
 
     settings = get_settings()
     app = FastAPI()
+    # 上传路径创建
+    if not os.path.exists(settings.upload_directory):
+        os.makedirs(settings.upload_directory)
     # 上传路径配置
     app.mount(settings.upload_prefix, StaticFiles(directory=settings.upload_directory), name='upload')
     # 静态资源路径配置
