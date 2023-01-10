@@ -8,6 +8,8 @@ from like.admin.service.common.upload import IUploadService, UploadService
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
 
+from server.like.dependencies.log import record_log
+
 router = APIRouter(prefix='/common')
 
 
@@ -25,21 +27,21 @@ async def index_config(index_service: IIndexService = Depends(IndexService.insta
     return await index_service.config()
 
 
-@router.post('/album/albumRename')
+@router.post('/album/albumRename', dependencies=[Depends(record_log(title='相册文件重命名'))])
 @unified_resp
 async def album_rename(params: CommonAlbumRenameIn, common_service: IAlbumService = Depends(AlbumService.instance)):
     """文件命名"""
     return await common_service.album_rename(params)
 
 
-@router.post('/album/albumMove')
+@router.post('/album/albumMove', dependencies=[Depends(record_log(title='相册文件移动'))])
 @unified_resp
 async def album_move(params: CommonAlbumMoveIn, common_service: IAlbumService = Depends(AlbumService.instance)):
     """文件移动"""
     return await common_service.album_move(params)
 
 
-@router.post('/album/albumDel')
+@router.post('/album/albumDel', dependencies=[Depends(record_log(title='相册文件删除'))])
 @unified_resp
 async def album_del(params: CommonAlbumDelIn, common_service: IAlbumService = Depends(AlbumService.instance)):
     """文件删除"""
@@ -54,21 +56,21 @@ async def album_list(params: CommonAlbumListIn = Depends(),
     return await common_service.album_list(params)
 
 
-@router.post('/album/cateRename')
+@router.post('/album/cateRename', dependencies=[Depends(record_log(title='相册分类重命名'))])
 @unified_resp
 async def cate_rename(params: CommonAlbumRenameIn, common_service: IAlbumService = Depends(AlbumService.instance)):
     """类目命名"""
     return await common_service.cate_rename(params)
 
 
-@router.post('/album/cateAdd')
+@router.post('/album/cateAdd', dependencies=[Depends(record_log(title='相册分类新增'))])
 @unified_resp
 async def cate_add(params: CommonAlbumCateEditIn, common_service: IAlbumService = Depends(AlbumService.instance)):
     """类目新增"""
     return await common_service.cate_add(params)
 
 
-@router.post('/album/cateDel')
+@router.post('/album/cateDel', dependencies=[Depends(record_log(title='相册分类删除'))])
 @unified_resp
 async def cate_del(params: CommonAlbumCateDelIn, common_service: IAlbumService = Depends(AlbumService.instance)):
     """类目删除"""
@@ -83,7 +85,7 @@ async def cate_list(params: CommonAlbumCateListIn = Depends(),
     return await common_service.cate_list(params)
 
 
-@router.post('/upload/image')
+@router.post('/upload/image', dependencies=[Depends(record_log(title='上传图片'))])
 @unified_resp
 async def upload_image(file: UploadFile, cid: int = Form(default=0),
                        upload_service: IUploadService = Depends(UploadService.instance)):
@@ -91,7 +93,7 @@ async def upload_image(file: UploadFile, cid: int = Form(default=0),
     return await upload_service.upload_image(file, cid)
 
 
-@router.post('/upload/video')
+@router.post('/upload/video', dependencies=[Depends(record_log(title='上传视频'))])
 @unified_resp
 async def upload_video(file: UploadFile, cid: int = Form(default=0),
                        upload_service: IUploadService = Depends(UploadService.instance)):
