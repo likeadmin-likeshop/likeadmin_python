@@ -21,6 +21,15 @@ class ToolsUtil:
         return ''.join(random.choices(ALL_RANDOM_STR, k=length))
 
     @staticmethod
+    def random_int(length: int) -> int:
+        """
+        返回指定长度的随机整数
+        :param length:
+        :return:
+        """
+        return random.randint(0, 10 ** length)
+
+    @staticmethod
     def make_uuid() -> str:
         """制作UUID"""
         return uuid.uuid4().hex

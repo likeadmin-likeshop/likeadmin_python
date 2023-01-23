@@ -55,7 +55,7 @@ class SystemAuthAdmin(Base, TimestampMixin):
     sort = Column(mysql.SMALLINT(5), nullable=False, server_default=text('0'), comment='排序编号')
     is_multipoint = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
                            comment='多端登录: 0=否, 1=是')
-    is_disable = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+    is_disable = Column(mysql.TINYINT(0, unsigned=True), nullable=False, server_default=text('0'),
                         comment='是否禁用: [0=否, 1=是]')
     is_delete = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
                        comment='是否删除: [0=否, 1=是]')
@@ -91,7 +91,7 @@ class SystemAuthMenu(Base):
                       comment='是否缓存: 0=否, 1=是')
     is_show = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('1'),
                      comment='是否显示: 0=否, 1=是')
-    is_disable = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+    is_disable = Column(mysql.TINYINT(0, unsigned=True), nullable=False, server_default=text('0'),
                         comment='是否禁用: 0=否, 1=是')
     create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
     update_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='更新时间')
@@ -128,7 +128,7 @@ class SystemAuthRole(Base):
     id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment='主键')
     name = Column(String(100), nullable=False, server_default='', comment='角色名称')
     remark = Column(String(200), nullable=False, server_default='', comment='备注信息')
-    is_disable = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+    is_disable = Column(mysql.TINYINT(0, unsigned=True), nullable=False, server_default=text('0'),
                         comment='是否禁用: 0=否, 1=是')
     sort = Column(mysql.SMALLINT(5), nullable=False, server_default=text('0'), comment='角色排序')
     create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')

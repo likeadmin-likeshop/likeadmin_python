@@ -5,7 +5,7 @@ from .base import Base
 
 __all__ = [
     'User',
-    'users',
+    'user_table',
 ]
 
 
@@ -34,7 +34,7 @@ class User(Base):
                  comment='用户性别: [1=男, 2=女]')
     channel = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
                      comment='注册渠道: [1=微信小程序, 2=微信公众号, 3=手机H5, 4=电脑PC, 5=苹果APP, 6=安卓APP]')
-    is_disable = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+    is_disable = Column(mysql.TINYINT(0, unsigned=True), nullable=False, server_default=text('0'),
                         comment='是否禁用: [0=否, 1=是]')
     is_delete = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
                        comment='是否删除: [0=否, 1=是]')
@@ -46,4 +46,4 @@ class User(Base):
     delete_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='删除时间')
 
 
-users = User.__table__
+user_table = User.__table__

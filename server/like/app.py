@@ -36,27 +36,33 @@ def configure_middleware(app: FastAPI):
 
 def configure_router(app: FastAPI, prefix='/api'):
     """配置路由"""
-    from .dependencies.verify import verify_token, verify_show_mode
+    from .dependencies.verify import verify_token, verify_show_mode, front_login_verify
     from .config import get_settings
-    from .front.routers import index
-    from .front.routers import upload
-    from .admin.routers import user, common, system, monitor, setting
+    from .front.routers import index, upload, article as front_article, login
+    from .admin.routers import user, common, system, monitor, setting, article as admin_article
     from .generator.routers import gen
 
     settings = get_settings()
+    # front 依赖
+    front_deps = [Depends(front_login_verify)]
+    # front
+    app.include_router(index.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(upload.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(front_article.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(login.router, prefix=prefix, dependencies=front_deps)
+
     # 后台依赖
     admin_deps = [Depends(verify_token)]
     if settings.disallow_modify:
         admin_deps.append(Depends(verify_show_mode))
 
-    app.include_router(index.router, prefix=prefix)
-    app.include_router(upload.router, prefix=prefix)
     # admin
     app.include_router(user.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(common.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(system.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(monitor.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(setting.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(admin_article.router, prefix=prefix, dependencies=admin_deps)
     # gen
     app.include_router(gen.router, prefix=prefix, dependencies=admin_deps)
 

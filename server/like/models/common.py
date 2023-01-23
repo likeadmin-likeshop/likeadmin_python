@@ -9,7 +9,7 @@ __all__ = [
 
 
 class Album(Base, TimestampMixin):
-    """用户实体"""
+    """相册管理表"""
     __tablename__ = 'la_album'
     __table_args__ = {
         'mysql_engine': 'InnoDB',
@@ -21,7 +21,7 @@ class Album(Base, TimestampMixin):
     }
 
     id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment='主键ID')
-    cid = Column(mysql.INTEGER(10, unsigned=True), nullable=False, comment='类目ID')
+    cid = Column(mysql.INTEGER(10, unsigned=True), nullable=False, index=True, comment='类目ID')
     aid = Column(mysql.INTEGER(10, unsigned=True), nullable=False, comment='管理员ID')
     uid = Column(mysql.INTEGER(10, unsigned=True), nullable=False, comment='用户ID')
 
