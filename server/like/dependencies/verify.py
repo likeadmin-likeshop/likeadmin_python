@@ -89,9 +89,7 @@ async def front_login_verify(request: Request):
     # 免登录接口
     if auths in FrontConfig.not_login_uri:
         return
-
     token = await APIKeyHeader(name="token")(request)
-
     # Token是否为空
     if not token:
         raise AppException(HttpResp.TOKEN_EMPTY)
