@@ -5,10 +5,9 @@ from like.admin.schemas.common import CommonAlbumOut, CommonAlbumListIn, CommonA
 from like.admin.service.common.album import IAlbumService, AlbumService
 from like.admin.service.common.index import IIndexService, IndexService
 from like.admin.service.common.upload import IUploadService, UploadService
+from like.dependencies.log import record_log
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
-
-from server.like.dependencies.log import record_log
 
 router = APIRouter(prefix='/common')
 
