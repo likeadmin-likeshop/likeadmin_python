@@ -65,3 +65,11 @@ class ChannelMpIn(BaseModel):
     app_id: str = Field(default='', alias='appId', max_length=100)  # appId
     app_secret: str = Field(default='', alias='appSecret', max_length=200)  # appSecret
     qr_code: str = Field(default='', alias='qrCode', max_length=300)  # 小程序码
+
+
+class ChannelWxIn(BaseModel):
+    """
+    开放平台渠道参数
+    """
+    app_id: str = Field(default='', alias='appId', max_length=100)  # appId
+    app_secret: str = Field(default='', alias='appSecret', max_length=200)  # appSecret

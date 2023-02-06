@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends
 
-from like.admin.schemas.channel import ChannelOaIn, ChannelOaMenusIn, ChannelH5In, ChannelMpIn
+from like.admin.schemas.channel import ChannelOaIn, ChannelOaMenusIn, ChannelH5In, ChannelMpIn, ChannelWxIn
 from like.admin.service.channel.h5 import IChannelH5Service, ChannelH5Service
 from like.admin.service.channel.mp import IChannelMpService, ChannelMpService
 from like.admin.service.channel.oa import IChannelOaService, ChannelOaService
 from like.admin.service.channel.oa_menu import IChannelOaMenuService, ChannelOaMenuService
+from like.admin.service.channel.wx import IChannelWxService, ChannelWxService
 from like.http_base import unified_resp
 
 router = APIRouter(prefix='/channel')
@@ -73,3 +74,17 @@ async def mp_detail(mp_service: IChannelMpService = Depends(ChannelMpService.ins
 async def mp_save(mp_in: ChannelMpIn, mp_service: IChannelMpService = Depends(ChannelMpService.instance)):
     """微信小程序渠道设置保存"""
     return await mp_service.save(mp_in)
+
+
+@router.get('/wx/detail')
+@unified_resp
+async def wx_detail(wx_service: IChannelWxService = Depends(ChannelWxService.instance)):
+    """开放平台渠道设置详情"""
+    return await wx_service.detail()
+
+
+@router.post('/wx/save')
+@unified_resp
+async def wx_save(wx_in: ChannelWxIn, wx_service: IChannelWxService = Depends(ChannelWxService.instance)):
+    """开放平台渠道设置保存"""
+    return await wx_service.save(wx_in)
