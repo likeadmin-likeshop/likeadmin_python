@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
-from like.admin.schemas.channel import ChannelOaIn, ChannelOaMenusIn
+from like.admin.schemas.channel import ChannelOaIn, ChannelOaMenusIn, ChannelH5In
+from like.admin.service.channel.h5 import IChannelH5Service, ChannelH5Service
 from like.admin.service.channel.oa import IChannelOaService, ChannelOaService
 from like.admin.service.channel.oa_menu import IChannelOaMenuService, ChannelOaMenuService
 from like.http_base import unified_resp
@@ -43,3 +44,17 @@ async def oa_menu_publish(menus_in: ChannelOaMenusIn,
                           menu_service: IChannelOaMenuService = Depends(ChannelOaMenuService.instance)):
     """公众号保存并发布菜单"""
     return await menu_service.save(menus_in, True)
+
+
+@router.get('/h5/detail')
+@unified_resp
+async def h5_detail(h5_service: IChannelH5Service = Depends(ChannelH5Service.instance)):
+    """H5渠道设置详情"""
+    return await h5_service.detail()
+
+
+@router.post('/h5/save')
+@unified_resp
+async def h5_save(h5_in: ChannelH5In, h5_service: IChannelH5Service = Depends(ChannelH5Service.instance)):
+    """H5渠道设置保存"""
+    return await h5_service.save(h5_in)

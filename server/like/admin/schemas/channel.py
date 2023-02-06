@@ -45,3 +45,12 @@ class ChannelOaMenusIn(BaseModel):
     公众号保存菜单参数
     """
     __root__: List[ChannelOaMenusItem]
+
+
+class ChannelH5In(BaseModel):
+    """
+    H5渠道参数
+    """
+    status: Literal[0, 1] = Field(alias='status')  # 是否关闭
+    close: Literal[0, 1] = Field(alias='close')  # 关闭类型
+    url: str = Field(default='', max_length=500)  # 关闭访问URL
