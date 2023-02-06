@@ -54,3 +54,14 @@ class ChannelH5In(BaseModel):
     status: Literal[0, 1] = Field(alias='status')  # 是否关闭
     close: Literal[0, 1] = Field(alias='close')  # 关闭类型
     url: str = Field(default='', max_length=500)  # 关闭访问URL
+
+
+class ChannelMpIn(BaseModel):
+    """
+    小程序渠道参数
+    """
+    name: str = Field(default='', max_length=100)  # 小程序名称
+    primary_id: str = Field(default='', alias='primaryId', max_length=100)  # 原始ID
+    app_id: str = Field(default='', alias='appId', max_length=100)  # appId
+    app_secret: str = Field(default='', alias='appSecret', max_length=200)  # appSecret
+    qr_code: str = Field(default='', alias='qrCode', max_length=300)  # 小程序码

@@ -20,7 +20,7 @@ class ChannelH5Service(IChannelH5Service):
     """H5渠道设置服务实现类"""
 
     async def detail(self) -> dict:
-        """公众号渠道设置详情"""
+        """H5渠道配置详情"""
         config = await ConfigUtil.get('h5_channel')
         config['status'] = int(config.get('status')) if config.get('status').isdigit() else 0
         config['close'] = int(config.get('close')) if config.get('close').isdigit() else 0
@@ -28,7 +28,7 @@ class ChannelH5Service(IChannelH5Service):
         return config
 
     async def save(self, h5_in: ChannelH5In):
-        """公众号渠道设置保存"""
+        """H5渠道配置保存"""
         await ConfigUtil.set('h5_channel', 'status', str(h5_in.status))
         await ConfigUtil.set('h5_channel', 'close', str(h5_in.close))
         await ConfigUtil.set('h5_channel', 'url', h5_in.url)
