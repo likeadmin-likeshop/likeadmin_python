@@ -1,5 +1,6 @@
 from typing import List, Union
 
+from fastapi import Query
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
@@ -77,14 +78,23 @@ class ChannelWxIn(BaseModel):
     app_secret: str = Field(default='', alias='appSecret', max_length=200)  # appSecret
 
 
-class ChannelOaReplyDefaultIn(BaseModel):
+class ChannelOaReplyDefaultDetailIn(BaseModel):
+    """渠道公众号默认回复详情参数"""
+    id: int = Query(gt=0)  # 主键
+
+
+class ChannelOaReplyDefaultCreateIn(BaseModel):
     """渠道公众号默认回复参数"""
-    id: int  # 主键
     name: str  # 规则名称
     content: str  # 回复内容
-    content_type: int = Field(alias='contentType')  # 内容类型
-    matching_type: Union[Literal[0, 1], None, EmptyStrToNone] = Field(default=None, alias='matchingType')  # 匹配方式
-    status: int  # 状态
+    content_type: Literal[1, 2] = Field(alias='contentType')  # 内容类型
+    matching_type: Union[Literal[1, 2], None] = Field(default=1, alias='matchingType')  # 匹配方式
+    status: Literal[0, 1]  # 状态
+
+
+class ChannelOaReplyDefaultEditIn(ChannelOaReplyDefaultCreateIn):
+    """渠道公众号默认回复参数"""
+    id: int = Field(gt=0)  # 主键
 
 
 class ChannelOaReplyOut(BaseModel):

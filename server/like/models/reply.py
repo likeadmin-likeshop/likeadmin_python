@@ -25,9 +25,9 @@ class OfficialReply(Base):
     keyword = Column(String(64), nullable=False, server_default='', comment='关键词')
     reply_type = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
                         comment='回复类型: [1=关注回复 2=关键字回复, 3=默认回复]')
-    matching_type = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+    matching_type = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('1'),
                            comment='匹配方式: [1=全匹配, 2=模糊匹配]')
-    content_type = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+    content_type = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('1'),
                           comment='内容类型: [1=文本]')
     status = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
                     comment='启动状态: [1=启动, 0=关闭]')

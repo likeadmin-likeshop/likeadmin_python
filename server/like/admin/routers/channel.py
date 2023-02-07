@@ -1,14 +1,16 @@
 from fastapi import APIRouter, Depends
 
-from like.dependencies.log import record_log
 from like.admin.schemas.channel import (
-    ChannelOaIn, ChannelOaMenusIn, ChannelH5In, ChannelMpIn, ChannelWxIn, ChannelOaReplyOut)
+    ChannelOaIn, ChannelOaMenusIn, ChannelH5In, ChannelMpIn, ChannelWxIn, ChannelOaReplyDefaultDetailIn,
+    ChannelOaReplyDefaultCreateIn,
+    ChannelOaReplyOut)
 from like.admin.service.channel.h5 import IChannelH5Service, ChannelH5Service
 from like.admin.service.channel.mp import IChannelMpService, ChannelMpService
 from like.admin.service.channel.oa import IChannelOaService, ChannelOaService
 from like.admin.service.channel.oa_menu import IChannelOaMenuService, ChannelOaMenuService
 from like.admin.service.channel.oa_reply_default import IChannelOaReplyDefaultService, ChannelOaReplyDefaultService
 from like.admin.service.channel.wx import IChannelWxService, ChannelWxService
+from like.dependencies.log import record_log
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
 
@@ -100,3 +102,21 @@ async def oa_reply_default_list(
         ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
     """公众号默认回复列表"""
     return await ord_service.list()
+
+
+@router.get('/oaReplyDefault/detail')
+@unified_resp
+async def oa_reply_default_detail(
+        detail_in: ChannelOaReplyDefaultDetailIn = Depends(),
+        ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
+    """公众号默认回复详情"""
+    return await ord_service.detail(detail_in.id)
+
+
+@router.post('/oaReplyDefault/add')
+@unified_resp
+async def oa_reply_default_add(
+        create_in: ChannelOaReplyDefaultCreateIn,
+        ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
+    """公众号默认回复新增"""
+    return await ord_service.add(create_in)
