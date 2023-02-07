@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from like.dependencies.log import record_log
 from like.admin.schemas.channel import (
     ChannelOaIn, ChannelOaMenusIn, ChannelH5In, ChannelMpIn, ChannelWxIn, ChannelOaReplyOut)
 from like.admin.service.channel.h5 import IChannelH5Service, ChannelH5Service
@@ -21,7 +22,7 @@ async def oa_detail(oa_service: IChannelOaService = Depends(ChannelOaService.ins
     return await oa_service.detail()
 
 
-@router.post('/oa/save')
+@router.post('/oa/save', dependencies=[Depends(record_log(title='公众号渠道设置保存'))])
 @unified_resp
 async def oa_save(oa_in: ChannelOaIn, oa_service: IChannelOaService = Depends(ChannelOaService.instance)):
     """公众号渠道设置保存"""
@@ -58,7 +59,7 @@ async def h5_detail(h5_service: IChannelH5Service = Depends(ChannelH5Service.ins
     return await h5_service.detail()
 
 
-@router.post('/h5/save')
+@router.post('/h5/save', dependencies=[Depends(record_log(title='H5渠道设置保存'))])
 @unified_resp
 async def h5_save(h5_in: ChannelH5In, h5_service: IChannelH5Service = Depends(ChannelH5Service.instance)):
     """H5渠道设置保存"""
@@ -72,7 +73,7 @@ async def mp_detail(mp_service: IChannelMpService = Depends(ChannelMpService.ins
     return await mp_service.detail()
 
 
-@router.post('/mp/save')
+@router.post('/mp/save', dependencies=[Depends(record_log(title='微信小程序渠道设置保存'))])
 @unified_resp
 async def mp_save(mp_in: ChannelMpIn, mp_service: IChannelMpService = Depends(ChannelMpService.instance)):
     """微信小程序渠道设置保存"""
@@ -86,7 +87,7 @@ async def wx_detail(wx_service: IChannelWxService = Depends(ChannelWxService.ins
     return await wx_service.detail()
 
 
-@router.post('/wx/save')
+@router.post('/wx/save', dependencies=[Depends(record_log(title='开放平台渠道设置保存'))])
 @unified_resp
 async def wx_save(wx_in: ChannelWxIn, wx_service: IChannelWxService = Depends(ChannelWxService.instance)):
     """开放平台渠道设置保存"""
