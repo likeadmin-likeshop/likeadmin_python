@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 
 from like.admin.schemas.channel import (
     ChannelOaIn, ChannelOaMenusIn, ChannelH5In, ChannelMpIn, ChannelWxIn, ChannelOaReplyDefaultDetailIn,
-    ChannelOaReplyDefaultCreateIn,
+    ChannelOaReplyDefaultCreateIn, ChannelOaReplyDefaultEditIn, ChannelOaReplyDefaultDelIn,
+    ChannelOaReplyDefaultStatusIn,
     ChannelOaReplyOut)
 from like.admin.service.channel.h5 import IChannelH5Service, ChannelH5Service
 from like.admin.service.channel.mp import IChannelMpService, ChannelMpService
@@ -120,3 +121,30 @@ async def oa_reply_default_add(
         ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
     """公众号默认回复新增"""
     return await ord_service.add(create_in)
+
+
+@router.post('/oaReplyDefault/edit')
+@unified_resp
+async def oa_reply_default_edit(
+        edit_in: ChannelOaReplyDefaultEditIn,
+        ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
+    """公众号默认回复编辑"""
+    return await ord_service.edit(edit_in)
+
+
+@router.post('/oaReplyDefault/del')
+@unified_resp
+async def oa_reply_default_del(
+        del_in: ChannelOaReplyDefaultDelIn,
+        ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
+    """公众号默认回复删除"""
+    return await ord_service.delete(del_in.id)
+
+
+@router.post('/oaReplyDefault/status')
+@unified_resp
+async def oa_reply_default_status(
+        status_in: ChannelOaReplyDefaultStatusIn,
+        ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
+    """公众号默认回复状态"""
+    return await ord_service.status(status_in.id)

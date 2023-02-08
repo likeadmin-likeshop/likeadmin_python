@@ -4,8 +4,6 @@ from fastapi import Query
 from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
-from like.schema_base import EmptyStrToNone
-
 
 class ChannelOaIn(BaseModel):
     """
@@ -84,7 +82,7 @@ class ChannelOaReplyDefaultDetailIn(BaseModel):
 
 
 class ChannelOaReplyDefaultCreateIn(BaseModel):
-    """渠道公众号默认回复参数"""
+    """渠道公众号默认回复新增参数"""
     name: str  # 规则名称
     content: str  # 回复内容
     content_type: Literal[1, 2] = Field(alias='contentType')  # 内容类型
@@ -93,7 +91,17 @@ class ChannelOaReplyDefaultCreateIn(BaseModel):
 
 
 class ChannelOaReplyDefaultEditIn(ChannelOaReplyDefaultCreateIn):
-    """渠道公众号默认回复参数"""
+    """渠道公众号默认回复编辑参数"""
+    id: int = Field(gt=0)  # 主键
+
+
+class ChannelOaReplyDefaultDelIn(BaseModel):
+    """渠道公众号默认回复删除参数"""
+    id: int = Field(gt=0)  # 主键
+
+
+class ChannelOaReplyDefaultStatusIn(BaseModel):
+    """渠道公众号默认回复状态参数"""
     id: int = Field(gt=0)  # 主键
 
 
