@@ -78,7 +78,6 @@ class ChannelOaReplyFollowService(IChannelOaReplyFollowService):
             await db.execute(official_reply.update().where(official_reply.c.reply_type == 1).values({'status': 0}))
         edit_dict = edit_in.dict()
         edit_dict['reply_type'] = 1
-        edit_dict['create_time'] = int(time.time())
         edit_dict['update_time'] = int(time.time())
         await db.execute(official_reply.update().where(official_reply.c.id == edit_in.id).values(**edit_dict))
 

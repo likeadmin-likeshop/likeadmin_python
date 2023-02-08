@@ -5,6 +5,8 @@ from like.admin.schemas.channel import (
     ChannelOaReplyDefaultCreateIn, ChannelOaReplyDefaultEditIn, ChannelOaReplyDefaultDelIn,
     ChannelOaReplyDefaultStatusIn, ChannelOaReplyFollowDetailIn, ChannelOaReplyFollowCreateIn,
     ChannelOaReplyFollowEditIn, ChannelOaReplyFollowDelIn, ChannelOaReplyFollowStatusIn,
+    ChannelOaReplyKeywordDetailIn, ChannelOaReplyKeywordCreateIn, ChannelOaReplyKeywordEditIn,
+    ChannelOaReplyKeywordDelIn, ChannelOaReplyKeywordStatusIn,
     ChannelOaReplyOut)
 from like.admin.service.channel.h5 import IChannelH5Service, ChannelH5Service
 from like.admin.service.channel.mp import IChannelMpService, ChannelMpService
@@ -12,6 +14,7 @@ from like.admin.service.channel.oa import IChannelOaService, ChannelOaService
 from like.admin.service.channel.oa_menu import IChannelOaMenuService, ChannelOaMenuService
 from like.admin.service.channel.oa_reply_default import IChannelOaReplyDefaultService, ChannelOaReplyDefaultService
 from like.admin.service.channel.oa_reply_follow import IChannelOaReplyFollowService, ChannelOaReplyFollowService
+from like.admin.service.channel.oa_reply_keyword import IChannelOaReplyKeywordService, ChannelOaReplyKeywordService
 from like.admin.service.channel.wx import IChannelWxService, ChannelWxService
 from like.dependencies.log import record_log
 from like.http_base import unified_resp
@@ -203,3 +206,56 @@ async def oa_reply_follow_status(
         orf_service: IChannelOaReplyFollowService = Depends(ChannelOaReplyFollowService.instance)):
     """公众号关注回复状态"""
     return await orf_service.status(status_in.id)
+
+
+@router.get('/oaReplyKeyword/list', response_model=PageInationResult[ChannelOaReplyOut])
+@unified_resp
+async def oa_reply_keyword_list(
+        ork_service: IChannelOaReplyKeywordService = Depends(ChannelOaReplyKeywordService.instance)):
+    """公众号关键词回复列表"""
+    return await ork_service.list()
+
+
+@router.get('/oaReplyKeyword/detail')
+@unified_resp
+async def oa_reply_keyword_detail(
+        detail_in: ChannelOaReplyKeywordDetailIn = Depends(),
+        ork_service: IChannelOaReplyKeywordService = Depends(ChannelOaReplyKeywordService.instance)):
+    """公众号关键词回复详情"""
+    return await ork_service.detail(detail_in.id)
+
+
+@router.post('/oaReplyKeyword/add')
+@unified_resp
+async def oa_reply_keyword_add(
+        create_in: ChannelOaReplyKeywordCreateIn,
+        ork_service: IChannelOaReplyKeywordService = Depends(ChannelOaReplyKeywordService.instance)):
+    """公众号关键词回复新增"""
+    return await ork_service.add(create_in)
+
+
+@router.post('/oaReplyKeyword/edit')
+@unified_resp
+async def oa_reply_keyword_edit(
+        edit_in: ChannelOaReplyKeywordEditIn,
+        ork_service: IChannelOaReplyKeywordService = Depends(ChannelOaReplyKeywordService.instance)):
+    """公众号关键词回复编辑"""
+    return await ork_service.edit(edit_in)
+
+
+@router.post('/oaReplyKeyword/del')
+@unified_resp
+async def oa_reply_keyword_del(
+        del_in: ChannelOaReplyKeywordDelIn,
+        ork_service: IChannelOaReplyKeywordService = Depends(ChannelOaReplyKeywordService.instance)):
+    """公众号关键词回复删除"""
+    return await ork_service.delete(del_in.id)
+
+
+@router.post('/oaReplyKeyword/status')
+@unified_resp
+async def oa_reply_keyword_status(
+        status_in: ChannelOaReplyKeywordStatusIn,
+        ork_service: IChannelOaReplyKeywordService = Depends(ChannelOaReplyKeywordService.instance)):
+    """公众号关键词回复状态"""
+    return await ork_service.status(status_in.id)
