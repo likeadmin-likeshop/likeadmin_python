@@ -105,6 +105,36 @@ class ChannelOaReplyDefaultStatusIn(BaseModel):
     id: int = Field(gt=0)  # 主键
 
 
+class ChannelOaReplyFollowDetailIn(BaseModel):
+    """渠道公众号关注回复详情参数"""
+    id: int = Query(gt=0)  # 主键
+
+
+class ChannelOaReplyFollowCreateIn(BaseModel):
+    """渠道公众号关注回复新增参数"""
+    name: str  # 规则名称
+    content: str  # 回复内容
+    content_type: Literal[1, 2] = Field(alias='contentType')  # 内容类型
+    matching_type: Union[Literal[1, 2], None] = Field(default=1, alias='matchingType')  # 匹配方式
+    status: Literal[0, 1]  # 状态
+    sort: int  # 排序编号
+
+
+class ChannelOaReplyFollowEditIn(ChannelOaReplyFollowCreateIn):
+    """渠道公众号关注回复编辑参数"""
+    id: int = Field(gt=0)  # 主键
+
+
+class ChannelOaReplyFollowDelIn(BaseModel):
+    """渠道公众号关注回复删除参数"""
+    id: int = Field(gt=0)  # 主键
+
+
+class ChannelOaReplyFollowStatusIn(BaseModel):
+    """渠道公众号关注回复状态参数"""
+    id: int = Field(gt=0)  # 主键
+
+
 class ChannelOaReplyOut(BaseModel):
     """渠道公众号回复返回信息"""
     id: int  # 主键

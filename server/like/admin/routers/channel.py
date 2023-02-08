@@ -3,13 +3,15 @@ from fastapi import APIRouter, Depends
 from like.admin.schemas.channel import (
     ChannelOaIn, ChannelOaMenusIn, ChannelH5In, ChannelMpIn, ChannelWxIn, ChannelOaReplyDefaultDetailIn,
     ChannelOaReplyDefaultCreateIn, ChannelOaReplyDefaultEditIn, ChannelOaReplyDefaultDelIn,
-    ChannelOaReplyDefaultStatusIn,
+    ChannelOaReplyDefaultStatusIn, ChannelOaReplyFollowDetailIn, ChannelOaReplyFollowCreateIn,
+    ChannelOaReplyFollowEditIn, ChannelOaReplyFollowDelIn, ChannelOaReplyFollowStatusIn,
     ChannelOaReplyOut)
 from like.admin.service.channel.h5 import IChannelH5Service, ChannelH5Service
 from like.admin.service.channel.mp import IChannelMpService, ChannelMpService
 from like.admin.service.channel.oa import IChannelOaService, ChannelOaService
 from like.admin.service.channel.oa_menu import IChannelOaMenuService, ChannelOaMenuService
 from like.admin.service.channel.oa_reply_default import IChannelOaReplyDefaultService, ChannelOaReplyDefaultService
+from like.admin.service.channel.oa_reply_follow import IChannelOaReplyFollowService, ChannelOaReplyFollowService
 from like.admin.service.channel.wx import IChannelWxService, ChannelWxService
 from like.dependencies.log import record_log
 from like.http_base import unified_resp
@@ -148,3 +150,56 @@ async def oa_reply_default_status(
         ord_service: IChannelOaReplyDefaultService = Depends(ChannelOaReplyDefaultService.instance)):
     """公众号默认回复状态"""
     return await ord_service.status(status_in.id)
+
+
+@router.get('/oaReplyFollow/list', response_model=PageInationResult[ChannelOaReplyOut])
+@unified_resp
+async def oa_reply_follow_list(
+        orf_service: IChannelOaReplyFollowService = Depends(ChannelOaReplyFollowService.instance)):
+    """公众号关注回复列表"""
+    return await orf_service.list()
+
+
+@router.get('/oaReplyFollow/detail')
+@unified_resp
+async def oa_reply_follow_detail(
+        detail_in: ChannelOaReplyFollowDetailIn = Depends(),
+        orf_service: IChannelOaReplyFollowService = Depends(ChannelOaReplyFollowService.instance)):
+    """公众号关注回复详情"""
+    return await orf_service.detail(detail_in.id)
+
+
+@router.post('/oaReplyFollow/add')
+@unified_resp
+async def oa_reply_follow_add(
+        create_in: ChannelOaReplyFollowCreateIn,
+        orf_service: IChannelOaReplyFollowService = Depends(ChannelOaReplyFollowService.instance)):
+    """公众号关注回复新增"""
+    return await orf_service.add(create_in)
+
+
+@router.post('/oaReplyFollow/edit')
+@unified_resp
+async def oa_reply_follow_edit(
+        edit_in: ChannelOaReplyFollowEditIn,
+        orf_service: IChannelOaReplyFollowService = Depends(ChannelOaReplyFollowService.instance)):
+    """公众号关注回复编辑"""
+    return await orf_service.edit(edit_in)
+
+
+@router.post('/oaReplyFollow/del')
+@unified_resp
+async def oa_reply_follow_del(
+        del_in: ChannelOaReplyFollowDelIn,
+        orf_service: IChannelOaReplyFollowService = Depends(ChannelOaReplyFollowService.instance)):
+    """公众号关注回复删除"""
+    return await orf_service.delete(del_in.id)
+
+
+@router.post('/oaReplyFollow/status')
+@unified_resp
+async def oa_reply_follow_status(
+        status_in: ChannelOaReplyFollowStatusIn,
+        orf_service: IChannelOaReplyFollowService = Depends(ChannelOaReplyFollowService.instance)):
+    """公众号关注回复状态"""
+    return await orf_service.status(status_in.id)
