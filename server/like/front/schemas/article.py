@@ -16,6 +16,7 @@ class ArticleListInSortEnum(str, Enum):
     new = 'new'  # 最新
     default = ''  # 默认
 
+
 class ArticleBaseOut(BaseModel):
     """
     文章 输出
@@ -27,6 +28,7 @@ class ArticleBaseOut(BaseModel):
     visit: int  # 浏览
     collect: bool = Field(default=False)
     createTime: datetime = Field(alias='create_time')  # 创建时间
+
 
 class ArticleDetailOut(ArticleBaseOut):
     """

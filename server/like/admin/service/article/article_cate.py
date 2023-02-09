@@ -7,7 +7,7 @@ from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
 from sqlalchemy import select
 
-from like.admin.schemas.article import ArticleCateOut, ArticleCateListIn, ArticleCateAddin, \
+from like.admin.schemas.article import ArticleCateOut, ArticleCateListIn, ArticleCateAddIn, \
     ArticleCateEditIn, ArticleCateDetailIn, ArticleCateChangeIn, ArticleCateDeleteIn
 from like.dependencies.database import db
 from like.models.article import article_cate_table
@@ -45,7 +45,7 @@ class IArticleCateService(ABC):
         pass
 
     @abstractmethod
-    async def add(self, add_in: ArticleCateAddin):
+    async def add(self, add_in: ArticleCateAddIn):
         """
         分类新增
         :return:
@@ -126,7 +126,7 @@ class ArticleCateService(IArticleCateService):
         assert cate_detail, '分类不存在！'
         return pydantic.parse_obj_as(ArticleCateOut, cate_detail)
 
-    async def add(self, add_in: ArticleCateAddin) -> ArticleCateOut:
+    async def add(self, add_in: ArticleCateAddIn) -> ArticleCateOut:
         """
         分类新增
         :return:
