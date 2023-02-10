@@ -4,7 +4,7 @@ from sqlalchemy.dialects import mysql
 from .base import Base, TimestampMixin
 
 __all__ = [
-    "DictType", "settings_dict_type", "DictData", "settings_dict_data"
+    "DictType", "settings_dict_type", "DictData", "settings_dict_data", 'HotSearch', 'hot_search',
 ]
 
 
@@ -58,4 +58,22 @@ class DictData(Base, TimestampMixin):
                        comment="是否删除: [0=否, 1=是]")
 
 
+class HotSearch(Base):
+    """热门搜索实体"""
+    __tablename__ = "la_hot_search"
+    __table_args__ = {
+        "mysql_engine": "InnoDB",
+        "mysql_charset": "utf8mb4",
+        "mysql_collate": "utf8mb4_general_ci",
+        "mysql_row_format": "Dynamic",
+        "mysql_auto_increment": "1",
+        "comment": "热门搜索配置表",
+    }
+
+    id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment="主键")
+    name = Column(String(200), nullable=False, server_default="", comment="关键词")
+    sort = Column(mysql.SMALLINT(5), nullable=False, server_default=text("0"), comment="排序号")
+
+
 settings_dict_data = DictData.__table__
+hot_search = HotSearch.__table__

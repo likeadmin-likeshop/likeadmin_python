@@ -5,11 +5,13 @@ from fastapi import APIRouter, Depends
 from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingStorageDetailIn, \
     SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn, \
     SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn, \
-    SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut
+    SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut, \
+    SettingHotSearchIn
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
 from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService, \
     SettingDictDataService, ISettingDictDataService
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
+from like.admin.service.setting.search import ISettingSearchService, SettingSearchService
 from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
 from like.admin.service.setting.website import ISettingWebsiteService, SettingWebsiteService
 from like.http_base import unified_resp
@@ -172,3 +174,18 @@ async def dict_data_edit(edit_in: SettingDictDataEditIn,
 async def dict_data_del(delete_in: SettingDictDataDeletelIn,
                         service: ISettingDictDataService = Depends(SettingDictDataService.instance)):
     return await service.delete(delete_in)
+
+
+@router.get('/search/detail')
+@unified_resp
+async def search_detail(search_service: ISettingSearchService = Depends(SettingSearchService.instance)):
+    """热门搜索详情"""
+    return await search_service.detail()
+
+
+@router.post('/search/save')
+@unified_resp
+async def search_save(hot_search_in: SettingHotSearchIn,
+                      search_service: ISettingSearchService = Depends(SettingSearchService.instance)):
+    """热门搜索保存"""
+    return await search_service.save(hot_search_in)

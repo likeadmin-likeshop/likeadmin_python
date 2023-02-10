@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Union
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from like.admin.schemas.system import EmptyStrToNone
 
@@ -195,3 +196,31 @@ class SettingDictDataOut(BaseModel):
     status: int
     createTime: datetime = Field(alias='create_time')
     updateTime: datetime = Field(alias='update_time')
+
+
+class HotSearchItem(BaseModel):
+    """
+    热门搜索通用参数
+    """
+    name: str  # 关键词
+    sort: int  # 排序号
+
+
+class SettingHotSearchIn(BaseModel):
+    """
+    热门搜索参数
+    """
+    is_hot_search: Literal[0, 1] = Field(alias='isHotSearch')  # 是否开启搜索 0/1
+    list: List[HotSearchItem]
+
+
+class SettingHotSearchOut(BaseModel):
+    """
+    热门搜索返回
+    """
+    id: int
+    name: str  # 关键词
+    sort: int  # 排序号
+
+    class Config:
+        orm_mode = True
