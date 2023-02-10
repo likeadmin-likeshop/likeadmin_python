@@ -6,10 +6,11 @@ from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, Set
     SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn, \
     SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn, \
     SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut, \
-    SettingHotSearchIn
+    SettingHotSearchIn, SettingLoginIn
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
 from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService, \
     SettingDictDataService, ISettingDictDataService
+from like.admin.service.setting.login import ISettingLoginService, SettingLoginService
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
 from like.admin.service.setting.search import ISettingSearchService, SettingSearchService
 from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
@@ -189,3 +190,18 @@ async def search_save(hot_search_in: SettingHotSearchIn,
                       search_service: ISettingSearchService = Depends(SettingSearchService.instance)):
     """热门搜索保存"""
     return await search_service.save(hot_search_in)
+
+
+@router.get('/login/detail')
+@unified_resp
+async def login_detail(login_service: ISettingLoginService = Depends(SettingLoginService.instance)):
+    """登录设置详情"""
+    return await login_service.detail()
+
+
+@router.post('/login/save')
+@unified_resp
+async def login_save(login_in: SettingLoginIn,
+                     login_service: ISettingLoginService = Depends(SettingLoginService.instance)):
+    """登录设置保存"""
+    return await login_service.save(login_in)

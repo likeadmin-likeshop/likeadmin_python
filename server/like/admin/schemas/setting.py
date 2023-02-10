@@ -224,3 +224,14 @@ class SettingHotSearchOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class SettingLoginIn(BaseModel):
+    """
+    登录设置保存参数
+    """
+    login_way: str = Field(default='', alias='loginWay')  # 登录方式, 逗号隔开
+    force_bind_mobile: int = Field(default=0, alias='forceBindMobile')  # 强制绑定手机 0/1
+    open_agreement: int = Field(default=0, alias='openAgreement')  # 是否开启协议 0/1
+    open_other_auth: int = Field(default=0, alias='openOtherAuth')  # 第三方登录 0/1
+    auto_login_auth: str = Field(default='', alias='autoLoginAuth')  # 第三方自动登录 逗号隔开
