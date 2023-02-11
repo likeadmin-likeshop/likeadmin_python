@@ -2,11 +2,12 @@ import logging
 
 from fastapi import APIRouter, Depends
 
-from like.admin.schemas.setting import SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingStorageDetailIn, \
-    SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn, \
-    SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn, \
-    SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut, \
-    SettingHotSearchIn, SettingLoginIn
+from like.admin.schemas.setting import (
+    SettingWebsiteIn, SettingCopyrightIn, SettingProtocolIn, SettingStorageDetailIn,
+    SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn,
+    SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn,
+    SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut,
+    SettingHotSearchIn, SettingLoginIn, SettingUserIn)
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
 from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService, \
     SettingDictDataService, ISettingDictDataService
@@ -14,6 +15,7 @@ from like.admin.service.setting.login import ISettingLoginService, SettingLoginS
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
 from like.admin.service.setting.search import ISettingSearchService, SettingSearchService
 from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
+from like.admin.service.setting.user import ISettingUserService, SettingUserService
 from like.admin.service.setting.website import ISettingWebsiteService, SettingWebsiteService
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
@@ -205,3 +207,18 @@ async def login_save(login_in: SettingLoginIn,
                      login_service: ISettingLoginService = Depends(SettingLoginService.instance)):
     """登录设置保存"""
     return await login_service.save(login_in)
+
+
+@router.get('/user/detail')
+@unified_resp
+async def user_detail(user_service: ISettingUserService = Depends(SettingUserService.instance)):
+    """用户设置详情"""
+    return await user_service.detail()
+
+
+@router.post('/user/save')
+@unified_resp
+async def user_save(user_in: SettingUserIn,
+                    user_service: ISettingUserService = Depends(SettingUserService.instance)):
+    """用户设置保存"""
+    return await user_service.save(user_in)

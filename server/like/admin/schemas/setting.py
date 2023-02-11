@@ -235,3 +235,10 @@ class SettingLoginIn(BaseModel):
     open_agreement: int = Field(default=0, alias='openAgreement')  # 是否开启协议 0/1
     open_other_auth: int = Field(default=0, alias='openOtherAuth')  # 第三方登录 0/1
     auto_login_auth: str = Field(default='', alias='autoLoginAuth')  # 第三方自动登录 逗号隔开
+
+
+class SettingUserIn(BaseModel):
+    """
+    用户设置保存参数
+    """
+    default_avatar: str = Field(default='', alias='defaultAvatar')  # 默认头像
