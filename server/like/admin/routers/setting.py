@@ -7,13 +7,14 @@ from like.admin.schemas.setting import (
     SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn,
     SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn,
     SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut,
-    SettingHotSearchIn, SettingLoginIn, SettingUserIn)
+    SettingHotSearchIn, SettingLoginIn, SettingUserIn, SettingSmsDetailIn, SettingSmsSaveIn)
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
 from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService, \
     SettingDictDataService, ISettingDictDataService
 from like.admin.service.setting.login import ISettingLoginService, SettingLoginService
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
 from like.admin.service.setting.search import ISettingSearchService, SettingSearchService
+from like.admin.service.setting.sms import ISettingSmsService, SettingSmsService
 from like.admin.service.setting.storage_service import SettingStorageService, ISettingStorageService
 from like.admin.service.setting.user import ISettingUserService, SettingUserService
 from like.admin.service.setting.website import ISettingWebsiteService, SettingWebsiteService
@@ -222,3 +223,26 @@ async def user_save(user_in: SettingUserIn,
                     user_service: ISettingUserService = Depends(SettingUserService.instance)):
     """用户设置保存"""
     return await user_service.save(user_in)
+
+
+@router.get('/sms/list')
+@unified_resp
+async def sms_list(sms_service: ISettingSmsService = Depends(SettingSmsService.instance)):
+    """短信引擎列表"""
+    return await sms_service.list()
+
+
+@router.get('/sms/detail')
+@unified_resp
+async def sms_detail(detail_in: SettingSmsDetailIn = Depends(),
+                     sms_service: ISettingSmsService = Depends(SettingSmsService.instance)):
+    """短信引擎详情"""
+    return await sms_service.detail(detail_in.alias)
+
+
+@router.post('/sms/save')
+@unified_resp
+async def sms_save(save_in: SettingSmsSaveIn,
+                   sms_service: ISettingSmsService = Depends(SettingSmsService.instance)):
+    """短信引擎保存"""
+    return await sms_service.save(save_in)

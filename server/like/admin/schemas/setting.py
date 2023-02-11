@@ -242,3 +242,24 @@ class SettingUserIn(BaseModel):
     用户设置保存参数
     """
     default_avatar: str = Field(default='', alias='defaultAvatar')  # 默认头像
+
+
+class SettingSmsDetailIn(BaseModel):
+    """
+    短信引擎详情参数
+    """
+    alias: str   # 别名
+
+
+class SettingSmsSaveIn(BaseModel):
+    """
+    短信引擎保存参数
+    """
+    name: str   # 名称
+    alias: str   # 别名
+    status: Literal[0, 1]  # 状态
+    sign: Union[str, None] = Field()
+    appId: Union[str, None] = Field(alias='appId')
+    appKey: Union[str, None] = Field(alias='appKey')
+    secretId: Union[str, None] = Field(alias='secretId')
+    secretKey: Union[str, None] = Field(alias='secretKey')
