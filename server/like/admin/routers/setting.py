@@ -7,11 +7,13 @@ from like.admin.schemas.setting import (
     SettingStorageEditIn, SettingStorageChangeIn, SettingDictTypeOut, SettingDictTypeListIn, SettingDictTypeAddIn,
     SettingDictTypeEditIn, SettingDictTypeDeleteIn, SettingDictTypeDetailIn, SettingDictDataListIn,
     SettingDictDataDetailIn, SettingDictDataAddIn, SettingDictDataEditIn, SettingDictDataDeletelIn, SettingDictDataOut,
-    SettingHotSearchIn, SettingLoginIn, SettingUserIn, SettingSmsDetailIn, SettingSmsSaveIn)
+    SettingHotSearchIn, SettingLoginIn, SettingUserIn, SettingSmsDetailIn, SettingSmsSaveIn,
+    SettingNoticeListIn, SettingNoticeDetailIn, SettingNoticeSaveIn)
 from like.admin.service.setting.copyright import ISettingCopyrightService, SettingCopyrightService
 from like.admin.service.setting.dict_manager import SettingDictTypeService, ISettingDictTypeService, \
     SettingDictDataService, ISettingDictDataService
 from like.admin.service.setting.login import ISettingLoginService, SettingLoginService
+from like.admin.service.setting.notice import ISettingNoticeService, SettingNoticeService
 from like.admin.service.setting.protocol import ISettingProtocolService, SettingProtocolService
 from like.admin.service.setting.search import ISettingSearchService, SettingSearchService
 from like.admin.service.setting.sms import ISettingSmsService, SettingSmsService
@@ -246,3 +248,27 @@ async def sms_save(save_in: SettingSmsSaveIn,
                    sms_service: ISettingSmsService = Depends(SettingSmsService.instance)):
     """短信引擎保存"""
     return await sms_service.save(save_in)
+
+
+@router.get('/notice/list')
+@unified_resp
+async def notice_list(list_in: SettingNoticeListIn = Depends(),
+                      notice_service: ISettingNoticeService = Depends(SettingNoticeService.instance)):
+    """通知设置列表"""
+    return await notice_service.list(list_in.recipient)
+
+
+@router.get('/notice/detail')
+@unified_resp
+async def notice_detail(detail_in: SettingNoticeDetailIn = Depends(),
+                        notice_service: ISettingNoticeService = Depends(SettingNoticeService.instance)):
+    """通知设置详情"""
+    return await notice_service.detail(detail_in.id)
+
+
+@router.post('/notice/save')
+@unified_resp
+async def notice_save(save_in: SettingNoticeSaveIn,
+                      notice_service: ISettingNoticeService = Depends(SettingNoticeService.instance)):
+    """通知设置保存"""
+    return await notice_service.save(save_in)
