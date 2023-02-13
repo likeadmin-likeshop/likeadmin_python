@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 
-from like.front.config import LoginTypeEnum
+from like.common.enums import LoginTypeEnum
 from like.front.schemas.login import FrontLoginCheckIn, FrontRegisterIn
 from like.front.service.login import ILoginService, LoginService
 from like.http_base import unified_resp

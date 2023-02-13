@@ -176,7 +176,6 @@ class ArticleService(IArticleService):
             article_collects = await self.get_user_collect_article_ids(user_id=self.user_id,
                                                                        article_ids=article_detail.id)
             result.collect = bool(article_detail.id in article_collects)
-        # TODO visit +1
         await self.update_article_visit(article_detail.id)
         return result
 

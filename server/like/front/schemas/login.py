@@ -1,7 +1,7 @@
 from fastapi import Query
 from pydantic import BaseModel
 
-from like.front.config import LoginClientEnum, LoginTypeEnum
+from like.common.enums import LoginTypeEnum, LoginClientEnum
 
 
 class FrontLoginCheckOut(BaseModel):
@@ -26,7 +26,7 @@ class FrontLoginCheckIn(BaseModel):
     """
     手机端-登录管理 入参
     """
-    scene: LoginTypeEnum  # 登录方式
+    scene: LoginTypeEnum # 登录方式
     client: LoginClientEnum  # 登录端
     username: str = Query(default=None)
     mobile: str = Query(default=None)
