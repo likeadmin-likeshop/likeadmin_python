@@ -79,6 +79,14 @@ class ArticleService(IArticleService):
 
     order_by = [article_cate_table.c.sort.desc(), article_cate_table.c.id.desc()]
 
+    async def list_limit(self, limit) -> List[ArticleDetailOut]:
+        where = [article_table.c.is_delete == 0, article_table.c.is_show == 1]
+        article_list = select(self.select_columns).where(*where).select_from(
+            article_table.outerjoin(article_cate_table, article_table.c.cid == article_cate_table.c.id)).order_by(
+            article_table.c.id.desc()).limit(limit)
+        articles = await db.fetch_all(article_list)
+        return pydantic.parse_obj_as(List[ArticleDetailOut], articles)
+
     async def list(self, list_in: ArticleListIn) -> List[ArticleListOut]:
         """
         返回用户收藏的文章ID
@@ -100,7 +108,7 @@ class ArticleService(IArticleService):
 
         article_list = select(colums).where(*where).select_from(
             article_table.outerjoin(article_cate_table, article_table.c.cid == article_cate_table.c.id)).order_by(
-            article_table.c.sort.desc(), article_table.c.cid.desc()
+            article_table.c.sort.desc(), article_table.c.id.desc()
         )
         article_list_pages = await paginate(db, article_list)
         for row in article_list_pages.lists:

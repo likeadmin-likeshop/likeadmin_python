@@ -39,7 +39,7 @@ def configure_router(app: FastAPI, prefix='/api'):
     from .dependencies.verify import verify_token, verify_show_mode, front_login_verify
     from .config import get_settings
     from .front.routers import index, upload, article as front_article, login
-    from .admin.routers import user, common, system, monitor, setting, article as admin_article
+    from .admin.routers import user, common, system, monitor, setting, article as admin_article, decorate
     from .generator.routers import gen
 
     settings = get_settings()
@@ -63,6 +63,8 @@ def configure_router(app: FastAPI, prefix='/api'):
     app.include_router(monitor.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(setting.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(admin_article.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(decorate.router, prefix=prefix, dependencies=admin_deps)
+
     # gen
     app.include_router(gen.router, prefix=prefix, dependencies=admin_deps)
 

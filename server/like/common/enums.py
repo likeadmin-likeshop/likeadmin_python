@@ -55,6 +55,7 @@ class LoginClientEnum(int, Enum):
     IOS = 5  # ("苹果APP"),
     APK = 6  # ("安卓APP");
 
+
 def get_login_client(val):
     if not isinstance(val, int):
         return '未知'
@@ -67,3 +68,12 @@ def get_login_client(val):
         6: '安卓APP',
     }
     return _dict.get(val, '未知')
+
+
+class PageTypeEnum(int, Enum):
+    """
+    页面装修-页面类型枚举
+    """
+    HOME = 1  # 首页
+    USER_CENTER = 2  # 个人中心
+    CUSTOMER_SERVICE = 3  # 客服设置

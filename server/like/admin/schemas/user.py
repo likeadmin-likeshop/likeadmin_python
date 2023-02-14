@@ -4,7 +4,7 @@ from typing import Union
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from like.common.enums import LoginClientEnum, SexEnum
+from like.common.enums import LoginClientEnum
 from like.schema_base import EmptyStrToNone
 
 
