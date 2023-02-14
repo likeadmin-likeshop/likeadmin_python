@@ -52,7 +52,7 @@ def configure_admin_router(app: FastAPI, prefix='/api'):
     """配置后台路由"""
     from .dependencies.verify import verify_token, verify_show_mode
     from .config import get_settings
-    from .admin.routers import user, common, system, monitor, setting, channel, article
+    from .admin.routers import user, common, system, monitor, setting, channel, article, decorate
     from .generator.routers import gen
 
     settings = get_settings()
@@ -68,6 +68,7 @@ def configure_admin_router(app: FastAPI, prefix='/api'):
     app.include_router(setting.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(article.router, prefix=prefix, dependencies=admin_deps)
     app.include_router(channel.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(decorate.router, prefix=prefix, dependencies=admin_deps)
     # gen
     app.include_router(gen.router, prefix=prefix, dependencies=admin_deps)
 
