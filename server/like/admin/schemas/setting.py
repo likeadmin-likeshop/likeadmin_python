@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import List, Union
 
+from fastapi import Query
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from like.admin.schemas.system import EmptyStrToNone
 
@@ -195,3 +197,154 @@ class SettingDictDataOut(BaseModel):
     status: int
     createTime: datetime = Field(alias='create_time')
     updateTime: datetime = Field(alias='update_time')
+
+
+class HotSearchItem(BaseModel):
+    """
+    热门搜索通用参数
+    """
+    name: str  # 关键词
+    sort: int  # 排序号
+
+
+class SettingHotSearchIn(BaseModel):
+    """
+    热门搜索参数
+    """
+    is_hot_search: Literal[0, 1] = Field(alias='isHotSearch')  # 是否开启搜索 0/1
+    list: List[HotSearchItem]
+
+
+class SettingHotSearchOut(BaseModel):
+    """
+    热门搜索返回
+    """
+    id: int
+    name: str  # 关键词
+    sort: int  # 排序号
+
+    class Config:
+        orm_mode = True
+
+
+class SettingLoginIn(BaseModel):
+    """
+    登录设置保存参数
+    """
+    login_way: str = Field(default='', alias='loginWay')  # 登录方式, 逗号隔开
+    force_bind_mobile: int = Field(default=0, alias='forceBindMobile')  # 强制绑定手机 0/1
+    open_agreement: int = Field(default=0, alias='openAgreement')  # 是否开启协议 0/1
+    open_other_auth: int = Field(default=0, alias='openOtherAuth')  # 第三方登录 0/1
+    auto_login_auth: str = Field(default='', alias='autoLoginAuth')  # 第三方自动登录 逗号隔开
+
+
+class SettingUserIn(BaseModel):
+    """
+    用户设置保存参数
+    """
+    default_avatar: str = Field(default='', alias='defaultAvatar')  # 默认头像
+
+
+class SettingSmsDetailIn(BaseModel):
+    """
+    短信引擎详情参数
+    """
+    alias: str  # 别名
+
+
+class SettingSmsSaveIn(BaseModel):
+    """
+    短信引擎保存参数
+    """
+    name: str  # 名称
+    alias: str  # 别名
+    status: Literal[0, 1]  # 状态
+    sign: Union[str, None] = Field()
+    appId: Union[str, None] = Field(alias='appId')
+    appKey: Union[str, None] = Field(alias='appKey')
+    secretId: Union[str, None] = Field(alias='secretId')
+    secretKey: Union[str, None] = Field(alias='secretKey')
+
+
+class SettingNoticeListIn(BaseModel):
+    """
+    通知设置列表参数
+    """
+    recipient: int = Query(ge=1, le=2)  # 类型: 1=用户, 2=平台
+
+
+class SettingNoticeListOut(BaseModel):
+    """
+    通知设置列表返回
+    """
+    id: int
+    name: str  # 场景名称
+    type: str  # 通知类型: [1=业务, 2=验证]
+    systemStatus: int = Field(default=0, alias='system_status')  # 系统的通知
+    smsStatus: int = Field(default=0, alias='sms_status')  # 短信的通知
+    oaStatus: int = Field(default=0, alias='oa_status')  # 公众号通知
+    mnpStatus: int = Field(default=0, alias='mnp_status')  # 小程序通知
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+    updateTime: datetime = Field(alias='update_time')  # 更新时间
+
+    class Config:
+        orm_mode = True
+
+
+class SettingNoticeDetailIn(BaseModel):
+    """
+    通知设置详情参数
+    """
+    id: int = Query(gt=0)  # 主键
+
+
+class SettingNoticeDetailOut(BaseModel):
+    """
+    通知设置详情返回
+    """
+    id: int
+    name: str  # 场景名称
+    type: str  # 通知类型: [1=业务, 2=验证]
+    remarks: str  # 场景描述
+    systemNotice: dict = Field(default=0, alias='system_notice')  # 系统的通知
+    smsNotice: dict = Field(default=0, alias='sms_notice')  # 短信的通知
+    oaNotice: dict = Field(default=0, alias='oa_notice')  # 公众号通知
+    mnpNotice: dict = Field(default=0, alias='mnp_notice')  # 小程序通知
+
+    class Config:
+        orm_mode = True
+
+
+class SettingNoticeTpl(BaseModel):
+    """
+    通知设置项模板
+    """
+    tpl_name: Union[str, None] = Field(alias='tplName')
+    tpl_keyword: Union[str, None] = Field(alias='tplKeyword')
+    tpl_content: Union[str, None] = Field(alias='tplContent')
+
+
+class SettingNoticeItem(BaseModel):
+    """
+    通知设置项
+    """
+    status: Union[Literal[0, 1, '0', '1'], None]  # 状态
+    name: Union[str, None]  # 名称
+    remark: Union[str, None]
+    first: Union[str, None]
+    title: Union[str, None]
+    content: Union[str, None]
+    template_id: Union[str, None] = Field(alias='templateId')
+    template_sn: Union[str, None] = Field(alias='templateSn')
+    tpl: Union[List[SettingNoticeTpl], None]
+
+
+class SettingNoticeSaveIn(BaseModel):
+    """
+    通知设置保存参数
+    """
+    id: int
+    system_notice: SettingNoticeItem = Field(alias='systemNotice')
+    sms_notice: SettingNoticeItem = Field(alias='smsNotice')
+    oa_notice: SettingNoticeItem = Field(alias='oaNotice')
+    mnp_notice: SettingNoticeItem = Field(alias='mnpNotice')

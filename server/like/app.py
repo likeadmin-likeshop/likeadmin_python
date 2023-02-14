@@ -34,48 +34,10 @@ def configure_middleware(app: FastAPI):
     init_timeout_middleware(app)
 
 
-def configure_router(app: FastAPI, prefix='/api'):
-    """配置路由"""
-    from .dependencies.verify import verify_token, verify_show_mode, front_login_verify
+def configure_static(app: FastAPI):
+    """配置静态资源"""
     from .config import get_settings
-    from .front.routers import index, upload, article as front_article, login
-    from .admin.routers import user, common, system, monitor, setting, article as admin_article, decorate
-    from .generator.routers import gen
-
     settings = get_settings()
-    # front 依赖
-    front_deps = [Depends(front_login_verify)]
-    # front
-    app.include_router(index.router, prefix=prefix, dependencies=front_deps)
-    app.include_router(upload.router, prefix=prefix, dependencies=front_deps)
-    app.include_router(front_article.router, prefix=prefix, dependencies=front_deps)
-    app.include_router(login.router, prefix=prefix, dependencies=front_deps)
-
-    # 后台依赖
-    admin_deps = [Depends(verify_token)]
-    if settings.disallow_modify:
-        admin_deps.append(Depends(verify_show_mode))
-
-    # admin
-    app.include_router(user.router, prefix=prefix, dependencies=admin_deps)
-    app.include_router(common.router, prefix=prefix, dependencies=admin_deps)
-    app.include_router(system.router, prefix=prefix, dependencies=admin_deps)
-    app.include_router(monitor.router, prefix=prefix, dependencies=admin_deps)
-    app.include_router(setting.router, prefix=prefix, dependencies=admin_deps)
-    app.include_router(admin_article.router, prefix=prefix, dependencies=admin_deps)
-    app.include_router(decorate.router, prefix=prefix, dependencies=admin_deps)
-
-    # gen
-    app.include_router(gen.router, prefix=prefix, dependencies=admin_deps)
-
-
-def create_app() -> FastAPI:
-    """创建FastAPI应用,并初始化"""
-    from .config import get_settings
-    from .exceptions.global_exc import configure_exception
-
-    settings = get_settings()
-    app = FastAPI()
     # 上传路径创建
     if not os.path.exists(settings.upload_directory):
         os.makedirs(settings.upload_directory)
@@ -85,9 +47,68 @@ def create_app() -> FastAPI:
     if settings.enabled_static:
         app.mount(settings.static_path, StaticFiles(directory=settings.static_directory), name='static')
 
+
+def configure_admin_router(app: FastAPI, prefix='/api'):
+    """配置后台路由"""
+    from .dependencies.verify import verify_token, verify_show_mode
+    from .config import get_settings
+    from .admin.routers import user, common, system, monitor, setting, channel, article
+    from .generator.routers import gen
+
+    settings = get_settings()
+    # 后台依赖
+    admin_deps = [Depends(verify_token)]
+    if settings.disallow_modify:
+        admin_deps.append(Depends(verify_show_mode))
+    # admin
+    app.include_router(user.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(common.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(system.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(monitor.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(setting.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(article.router, prefix=prefix, dependencies=admin_deps)
+    app.include_router(channel.router, prefix=prefix, dependencies=admin_deps)
+    # gen
+    app.include_router(gen.router, prefix=prefix, dependencies=admin_deps)
+
+
+def configure_front_router(app: FastAPI, prefix='/api'):
+    """配置前台路由"""
+    from .dependencies.verify import front_login_verify
+    from .front.routers import index, upload, article as front_article, login
+
+    # front 依赖
+    front_deps = [Depends(front_login_verify)]
+    # front
+    app.include_router(index.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(upload.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(front_article.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(login.router, prefix=prefix, dependencies=front_deps)
+
+
+def create_app() -> FastAPI:
+    """创建FastAPI后台应用,并初始化"""
+    from .exceptions.global_exc import configure_exception
+
+    app = FastAPI()
+    configure_static(app)
     configure_exception(app)
     configure_event(app)
     configure_middleware(app)
-    configure_router(app)
+    configure_admin_router(app)
+    add_pagination(app)
+    return app
+
+
+def create_front() -> FastAPI:
+    """创建FastAPI前台应用,并初始化"""
+    from .exceptions.global_exc import configure_exception
+
+    app = FastAPI()
+    configure_static(app)
+    configure_exception(app)
+    configure_event(app)
+    configure_middleware(app)
+    configure_front_router(app)
     add_pagination(app)
     return app
