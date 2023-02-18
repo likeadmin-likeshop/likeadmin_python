@@ -82,6 +82,8 @@ class Settings(BaseSettings):
     secret: str = 'UVTIyzCy'
     # Redis键前缀
     redis_prefix: str = 'Like:'
+    # 短信验证码
+    redis_sms_code: str = 'smsCode:'
     # 禁止修改操作 (演示功能,限制POST请求)
     disallow_modify: bool = False
     # 当前域名

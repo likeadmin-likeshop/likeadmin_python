@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Union
 
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 
 class UserCenterOut(BaseModel):
@@ -28,3 +29,23 @@ class UserInfoOut(UserCenterOut):
 
     class Config:
         orm_mode = True
+
+
+class UserEditIn(BaseModel):
+    """编辑信息参数"""
+    field: str  # 字段
+    value: str  # 值
+
+
+class UserChangePwdIn(BaseModel):
+    """修改密码参数"""
+    password: str = Field(min_length=6, max_length=20,
+                          regex='^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$')  # 密码,必须是6-20位字母+数字组合
+    old_password: str = Field(alias='oldPassword')  # 当前密码
+
+
+class UserBindMobileIn(BaseModel):
+    """绑定手机参数"""
+    type: Literal['bind', 'change']
+    mobile: str = Field(regex='^[1][3,4,5,6,7,8,9][0-9]{9}$')  # 手机号
+    code: str  # 验证码
