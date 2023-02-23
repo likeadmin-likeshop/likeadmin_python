@@ -78,6 +78,15 @@ class PageTypeEnum(int, Enum):
     USER_CENTER = 2  # 个人中心
     CUSTOMER_SERVICE = 3  # 客服设置
 
+
+class PolicyTypeEnum(str, Enum):
+    """
+    政策协议类型枚举
+    """
+    SERVICE = "service"
+    PRIVACY = "privacy"
+
+
 class SmsEnum(int, Enum):
     LOGIN = 101,
     BIND_MOBILE = 102,

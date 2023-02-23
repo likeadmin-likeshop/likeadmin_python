@@ -7,18 +7,26 @@ from sqlalchemy import select
 
 from like.dependencies.database import db
 from like.front.schemas.article import ArticleDetailOut
-from like.front.schemas.index import IndexOut
+from like.front.schemas.index import IndexOut, PolicyIn, CommonProtocol
 from like.models.article import article_table
 from like.models.decorate import decorate_page
+from like.utils.config import ConfigUtil
 from like.utils.urls import UrlUtil
 
 
 class IIndexService(ABC):
 
     @abstractmethod
-    def index(self):
+    async def index(self) -> IndexOut:
         """
         首页数据
+        :return:
+        """
+
+    @abstractmethod
+    def policy(self, policy_in: PolicyIn) -> CommonProtocol:
+        """
+        隐私政策
         :return:
         """
 
@@ -51,6 +59,15 @@ class IndexService(ABC):
 
         domain = UrlUtil.domain
         return pydantic.parse_obj_as(IndexOut, {"domain": domain, "pages": pages, "article": articles})
+
+    async def policy(self, policy_in: PolicyIn) -> CommonProtocol:
+        """
+        隐私政策
+        :param policy_in:
+        :return:
+        """
+        map = await ConfigUtil.get_map("protocol", policy_in.type)
+        return pydantic.parse_obj_as(CommonProtocol, map)
 
     @classmethod
     async def instance(cls):
