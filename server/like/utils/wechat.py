@@ -1,4 +1,5 @@
 from wechatpy import WeChatClient
+from wechatpy.client.api import WeChatWxa
 
 from like.utils.config import ConfigUtil
 
@@ -17,9 +18,10 @@ class WeChatUtil:
             config.get('appSecret', ''))
 
     @staticmethod
-    async def mnp():
+    async def mnp() -> WeChatWxa:
         """微信小程序"""
         config = await ConfigUtil.get("mp_channel")
-        return WeChatClient(
+        client = WeChatClient(
             config.get('appId', ''),
             config.get('appSecret', ''))
+        return client.wxa

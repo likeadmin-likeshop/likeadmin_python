@@ -5,14 +5,15 @@ from typing import Union
 from fastapi import Request
 from sqlalchemy import select
 
-from like.common.enums import SmsEnum
+from like.common.enums import SmsEnum, LoginClientEnum
 from like.common.sms_captcha import SmsCaptchaManager
 from like.dependencies.database import db
 from like.front.config import FrontConfig
 from like.front.schemas.login import FrontLoginCheckOut, FrontRegisterIn
-from like.models.user import user_table, User
+from like.models.user import user_table, User, user_auth_table
 from like.utils.redis import RedisUtil
 from like.utils.tools import ToolsUtil
+from like.utils.wechat import WeChatUtil
 
 
 class ILoginService(ABC):
@@ -51,14 +52,14 @@ class ILoginService(ABC):
         :return:
         """
         pass
-    #
-    # @abstractmethod
-    # async def office_login(self):
-    #     """
-    #     公众号登录
-    #     :return:
-    #     """
-    #     pass
+
+    @abstractmethod
+    async def office_login(self, code, client) -> FrontLoginCheckOut:
+        """
+        公众号登录
+        :return:
+        """
+        pass
     #
     # @abstractmethod
     # async def captcha(self):
@@ -112,6 +113,49 @@ class LoginService(ILoginService):
                 self.table.c.is_delete == 0, self.table.c.id == user_id).limit(1))
         return User(**user) if user else None
 
+    async def user_service(self, open_id: str, union_id: str, client: int) -> FrontLoginCheckOut:
+        """
+        用户创建服务
+        :return:
+        """
+        user_auth = await db.fetch_one(
+            user_auth_table.select().where(
+                user_auth_table.c.unionid == union_id, user_auth_table.c.open_id == open_id).limit(1))
+        user = None
+        if user_auth:
+            user = await db.fetch_one(
+                select(self.select_columns).select_from(self.table).where(
+                    self.table.c.is_delete == 0, self.table.c.id == user_auth.id).limit(1))
+
+        if not user:
+            user = await self.insert_new_user()
+
+        if not user_auth:
+            user_auth = await self.insert_new_user_auth(user.id, union_id, client, open_id)
+
+        if not user_auth.union_id:
+            await self.update_user_auth(user.id, unionid=union_id)
+
+        await self.update_user_info(user.id, self.request.client.host, int(time.time()))
+
+        return self.make_login_token(user.id, user.mobile)
+
+    async def update_user_auth(self, user_id, **kwargs):
+        return await db.execute(user_auth_table.update()
+                                .where(self.table.c.user_id == user_id)
+                                .values(**kwargs))
+
+    async def insert_new_user_auth(self, user_id, union_id, client, open_id):
+        user_auth_dict = {
+            "user_id": user_id,
+            "unionid": union_id,
+            "client": client,
+            "openid": open_id,
+            'create_time': int(time.time()),
+            'update_time': int(time.time())
+        }
+        return await db.execute(user_auth_table.insert().values(**user_auth_dict))
+
     async def update_user_info(self, user_id: int, ip: str, login_time: int):
         update_dict = {}
         if ip:
@@ -136,6 +180,25 @@ class LoginService(ILoginService):
             if not user:
                 break
         return sn
+
+    async def insert_new_user(self):
+        """
+        插入一个新用户
+        :return:
+        """
+        sn = await self.rand_make_sn()
+        user_info = {
+            'sn': sn,
+            'nickname': '用户%s' % sn,
+            'username': "u%s" % sn,
+            'avatar': "/api/static/default_avatar.png",
+            'channel': LoginClientEnum.PC,
+            'last_login_time': int(time.time()),
+            'last_login_ip': self.request.client.host,
+            'create_time': int(time.time()),
+            'update_time': int(time.time())
+        }
+        return await db.execute(self.table.insert().values(**user_info))
 
     async def register(self, param: FrontRegisterIn):
         """
@@ -207,7 +270,22 @@ class LoginService(ILoginService):
         小程序登录
         :return:
         """
-        pass
+        wx_client = await WeChatUtil.mnp()
+        session_result = wx_client.code_to_session(code)
+        open_id = session_result.get("openid")
+        union_id = session_result.get("unionid")
+        return await self.user_service(open_id, union_id, client=client)
+
+    async def office_login(self, code, client) -> FrontLoginCheckOut:
+        """
+        公众号登录
+        :return:
+        """
+        wx_client = await WeChatUtil.official()
+        session_result = wx_client.menu.query_auth(code)
+        open_id = session_result.get("openid")
+        union_id = session_result.get("unionid")
+        return await self.user_service(open_id, union_id, client=client)
 
     @classmethod
     async def instance(cls, request: Request):

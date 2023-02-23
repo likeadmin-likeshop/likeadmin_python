@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 
 from like.common.enums import LoginTypeEnum
 from like.front.schemas.login import FrontLoginCheckIn, FrontRegisterIn
@@ -23,7 +23,10 @@ async def login_check(
         return await login_service.account_login(params.username, params.password)
     elif scene == LoginTypeEnum.mobile:
         return await login_service.mobile_login(params.mobile, params.code)
-
+    elif scene == LoginTypeEnum.mnp:
+        return await login_service.mnp_login(params.code, params.client)
+    elif scene == LoginTypeEnum.office:
+        return await login_service.office_login(params.code, params.client)
 
 
 @router.post('/register')
