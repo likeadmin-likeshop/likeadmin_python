@@ -24,7 +24,7 @@ class IIndexService(ABC):
         """
 
     @abstractmethod
-    def policy(self, policy_in: PolicyIn) -> CommonProtocol:
+    async def policy(self, policy_in: PolicyIn) -> CommonProtocol:
         """
         隐私政策
         :return:

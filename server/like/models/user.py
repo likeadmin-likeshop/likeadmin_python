@@ -5,7 +5,7 @@ from like.models.base import TimestampMixin, Base
 
 __all__ = [
     'User', 'UserAuth',
-    'user_table', 'user_auth'
+    'user_table', 'user_auth_table'
 ]
 
 
