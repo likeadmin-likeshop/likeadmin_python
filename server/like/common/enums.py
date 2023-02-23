@@ -77,3 +77,9 @@ class PageTypeEnum(int, Enum):
     HOME = 1  # 首页
     USER_CENTER = 2  # 个人中心
     CUSTOMER_SERVICE = 3  # 客服设置
+
+class SmsEnum(int, Enum):
+    LOGIN = 101,
+    BIND_MOBILE = 102,
+    CHANGE_MOBILE = 103,
+    FIND_PASSWORD = 104

@@ -86,6 +86,8 @@ class Settings(BaseSettings):
     disallow_modify: bool = False
     # 当前域名
     domain = 'http://127.0.0.1:8000'
+    # 短信验证码
+    redisSmsCode = "smsCode:"
 
 
 @lru_cache()

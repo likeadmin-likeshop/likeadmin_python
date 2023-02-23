@@ -15,3 +15,11 @@ class WeChatUtil:
         return WeChatClient(
             config.get('appId', ''),
             config.get('appSecret', ''))
+
+    @staticmethod
+    async def mnp():
+        """微信小程序"""
+        config = await ConfigUtil.get("mp_channel")
+        return WeChatClient(
+            config.get('appId', ''),
+            config.get('appSecret', ''))

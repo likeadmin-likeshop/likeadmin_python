@@ -21,6 +21,9 @@ async def login_check(
     scene = params.scene
     if scene == LoginTypeEnum.account:
         return await login_service.account_login(params.username, params.password)
+    elif scene == LoginTypeEnum.mobile:
+        return await login_service.mobile_login(params.mobile, params.code)
+
 
 
 @router.post('/register')

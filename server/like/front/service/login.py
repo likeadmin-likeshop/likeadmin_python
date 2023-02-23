@@ -5,6 +5,8 @@ from typing import Union
 from fastapi import Request
 from sqlalchemy import select
 
+from like.common.enums import SmsEnum
+from like.common.sms_captcha import SmsCaptchaManager
 from like.dependencies.database import db
 from like.front.config import FrontConfig
 from like.front.schemas.login import FrontLoginCheckOut, FrontRegisterIn
@@ -33,6 +35,34 @@ class ILoginService(ABC):
         :return:
         """
         pass
+
+    @abstractmethod
+    async def mobile_login(self, mobile, code) -> FrontLoginCheckOut:
+        """
+        手机号登录
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    async def mnp_login(self, code, client) -> FrontLoginCheckOut:
+        """
+        微信小程序登录
+        :return:
+        """
+        pass
+    #
+    # @abstractmethod
+    # async def office_login(self):
+    #     """
+    #     公众号登录
+    #     :return:
+    #     """
+    #     pass
+    #
+    # @abstractmethod
+    # async def captcha(self):
+    #     pass
 
 
 class LoginService(ILoginService):
@@ -64,6 +94,14 @@ class LoginService(ILoginService):
         user = await db.fetch_one(
             select(self.select_columns).select_from(self.table).where(
                 self.table.c.is_delete == 0, self.table.c.username == username).limit(1))
+        return User(**user) if user else None
+
+    async def query_user_by_mobile(self, mobile: int) -> Union[User, None]:
+        if not mobile:
+            return None
+        user = await db.fetch_one(
+            select(self.select_columns).select_from(self.table).where(
+                self.table.c.is_delete == 0, self.table.c.mobile == mobile).limit(1))
         return User(**user) if user else None
 
     async def query_user_by_uid(self, user_id: int) -> Union[User, None]:
@@ -142,6 +180,34 @@ class LoginService(ILoginService):
         ip = self.request.client.host
         await self.update_user_info(user.id, ip=ip, login_time=int(time.time()))
         return await self.make_login_token(user_id=user.id, mobile=user.mobile)
+
+    async def mobile_login(self, mobile, code) -> FrontLoginCheckOut:
+        """
+        手机号登录
+        :return:
+        """
+        assert mobile, 'mobile参数缺失'
+        assert code, 'code参数缺失'
+        scene = SmsEnum.LOGIN
+        sms_code = await SmsCaptchaManager.get_code(mobile, scene)
+        assert sms_code and str(code) == str(sms_code), "验证码错误"
+
+        await SmsCaptchaManager.del_code(mobile, scene)
+
+        user = await self.query_user_by_mobile(mobile)
+
+        assert user, '账号不存在'
+        assert not user.is_disable, '账号已被禁用'
+        ip = self.request.client.host
+        await self.update_user_info(user.id, ip=ip, login_time=int(time.time()))
+        return await self.make_login_token(user_id=user.id, mobile=user.mobile)
+
+    async def mnp_login(self, code, client) -> FrontLoginCheckOut:
+        """
+        小程序登录
+        :return:
+        """
+        pass
 
     @classmethod
     async def instance(cls, request: Request):
