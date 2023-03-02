@@ -1,9 +1,7 @@
 from like.common.sms_captcha import SmsCaptchaManager
-from like.config import get_settings
 from like.plugins.notice.template.sms_template import SmsTemplate
 from like.plugins.sms.sms_driver import SmsDriver
 from like.utils.config import ConfigUtil
-from like.utils.redis import RedisUtil
 
 
 class SmsNotice(object):
@@ -44,7 +42,30 @@ class SmsNotice(object):
         if engine != "tencent":
             return params
 
-        # todo getSmsParams
+        # 找出模板中的变量keys
+        keys = []
+        arr_indexs = []
+        index_2_key = {}
+        for k, v in params.items():
+            search_replace = "${" + k + "}"
+            if content.index(search_replace) != 1 and k not in keys:
+                keys.append(k)
+
+        if keys:
+            for key in keys:
+                index = content.index(key)
+                arr_indexs.append(index)
+                index_2_key[index] = key
+
+        # 从小到大排序
+        arr_indexs.sort()
+
+        values = []
+        for index in arr_indexs:
+            key = index_2_key[index]
+            values.append(params[key])
+
+        return values
 
     def get_content(self, params, content):
         """

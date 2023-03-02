@@ -18,6 +18,7 @@ class SmsBase(with_metaclass(AbstractFactoryClass)):
     @classmethod
     def init(cls):
         from like.plugins.sms.engine.aliyun_sms import AliyunSms
-        _ = AliyunSms
+        from like.plugins.sms.engine.tencent_sms import TencentSms
+        _ = AliyunSms, TencentSms
         for sub_class in cls.__subclasses__():
             SmsBase.register(sub_class.engine, sub_class)
