@@ -1,7 +1,12 @@
 <template>
     <div>
         <div class="file-item relative" :style="{ height: fileSize, width: fileSize }">
-            <el-image class="image" v-if="type == 'image'" fit="contain" :src="uri"></el-image>
+            <el-image
+                class="image"
+                v-if="type == 'image'"
+                fit="contain"
+                :src="getImageUrl(uri)"
+            ></el-image>
             <video class="video" v-else-if="type == 'video'" :src="uri"></video>
             <div
                 v-if="type == 'video'"
@@ -16,6 +21,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import useAppStore from '@/stores/modules/app'
 export default defineComponent({
     props: {
         // 图片地址
@@ -33,7 +39,11 @@ export default defineComponent({
             default: 'image'
         }
     },
-    emits: ['close']
+    emits: ['close'],
+    setup() {
+        const { getImageUrl } = useAppStore()
+        return { getImageUrl }
+    }
 })
 </script>
 

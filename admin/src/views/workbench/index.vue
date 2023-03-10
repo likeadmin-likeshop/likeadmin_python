@@ -1,7 +1,7 @@
 <template>
     <div class="workbench">
         <div class="md:flex">
-            <el-card class="!border-none mb-4 md:mr-4" shadow="never">
+            <el-card class="!border-none mb-4 md:mr-4 w-[400px]" shadow="never">
                 <template #header>
                     <span class="card-title">版本信息</span>
                 </template>
@@ -142,7 +142,7 @@ import menu_file from './image/menu_file.png'
 import menu_auth from './image/menu_auth.png'
 import menu_web from './image/menu_web.png'
 import qq_group from './image/qq_group.png'
-import customer_service from './image/customer_service.png'
+import customer_service from './image/BrowserPreview_tmp.png'
 // 表单数据
 const workbenchData: any = reactive({
     version: {

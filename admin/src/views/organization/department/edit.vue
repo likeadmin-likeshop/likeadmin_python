@@ -106,25 +106,25 @@ const formRules = {
             message: '请输入部门名称',
             trigger: ['blur']
         }
-    ],
-    duty: [
-        {
-            required: true,
-            message: '请输入负责人姓名',
-            trigger: ['blur']
-        }
-    ],
-    mobile: [
-        {
-            required: true,
-            message: '请输入联系电话',
-            trigger: ['blur']
-        },
-        {
-            validator: checkMobile,
-            trigger: ['blur']
-        }
     ]
+    // duty: [
+    //     {
+    //         required: true,
+    //         message: '请输入负责人姓名',
+    //         trigger: ['blur']
+    //     }
+    // ],
+    // mobile: [
+    //     {
+    //         required: true,
+    //         message: '请输入联系电话',
+    //         trigger: ['blur']
+    //     },
+    //     {
+    //         validator: checkMobile,
+    //         trigger: ['blur']
+    //     }
+    // ]
 }
 
 const { optionsData } = useDictOptions<{
@@ -149,24 +149,23 @@ const open = (type = 'add') => {
 }
 
 const setFormData = (data: Record<any, any>) => {
-    for (const key in formData) {       
+    for (const key in formData) {
         if (data[key] != null && data[key] != undefined) {
-            //@ts-ignore          
+            //@ts-ignore
             formData[key] = data[key]
         }
         //TODO：因为后端返回字段为is_stop
-        else{
-            //@ts-ignore  
+        else {
+            //@ts-ignore
             formData[key] = data['is_stop']
         }
     }
-    
 }
 
 const getDetail = async (row: Record<string, any>) => {
     const data = await deptDetail({
         id: row.id
-    }) 
+    })
     setFormData(data)
 }
 

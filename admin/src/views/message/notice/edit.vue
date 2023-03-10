@@ -104,8 +104,14 @@ const getDetails = async () => {
         id: route.query.id
     })
     Object.keys(data).forEach((key) => {
-        //@ts-ignore
-        formData[key] = data[key]
+        if (key == 'smsNotice') {
+            formData[key] = data[key]
+            formData['smsNotice'].templateId = data[key].template_id
+        } else {
+            //@ts-ignore
+
+            formData[key] = data[key]
+        }
     })
     loading.value = false
 }

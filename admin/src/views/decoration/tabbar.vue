@@ -10,7 +10,11 @@
                             :key="index"
                             :style="{ color: tabbar.style.defaultColor }"
                         >
-                            <img class="w-[22px] h-[22px]" :src="item.unselected" alt="" />
+                            <img
+                                class="w-[22px] h-[22px]"
+                                :src="getImageUrl(item.unselected)"
+                                alt=""
+                            />
                             <div class="leading-3 text-[12px] mt-[4px]">{{ item.name }}</div>
                         </div>
                     </div>
@@ -136,7 +140,8 @@
 import { getDecorateTabbar, setDecorateTabbar } from '@/api/decoration'
 import feedback from '@/utils/feedback'
 import Draggable from 'vuedraggable'
-
+import useAppStore from '@/stores/modules/app'
+const { getImageUrl } = useAppStore()
 const max = 5
 const min = 2
 const tabbar = reactive({

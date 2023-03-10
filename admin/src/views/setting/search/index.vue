@@ -106,8 +106,12 @@ const getData = async () => {
     try {
         const data = await getSearch()
         for (const key in formData) {
-            //@ts-ignore
-            formData[key] = data[key]
+            if (key == 'isHotSearch') {
+                formData.isHotSearch = data['is_hot_search']
+            } else {
+                //@ts-ignore
+                formData[key] = data[key]
+            }
         }
     } catch (error) {
         console.log('获取=>', error)
