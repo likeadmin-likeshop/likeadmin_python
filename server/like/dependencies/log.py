@@ -5,6 +5,7 @@ from enum import Enum, unique
 from typing import Callable
 
 from fastapi import Request
+from starlette.datastructures import UploadFile
 
 __all__ = ['RequestType', 'record_log']
 
@@ -18,6 +19,12 @@ class RequestType(Enum):
     """请求参数类"""
     File = 'file'  # 文件类型
     Default = 'default'  # 默认数据类型
+
+
+def file_from_to_str(v: any):
+    if isinstance(v, UploadFile):
+        return v.filename
+    return v
 
 
 def record_log(title: str = '', req_type: RequestType = RequestType.Default) -> Callable:
@@ -41,9 +48,9 @@ def record_log(title: str = '', req_type: RequestType = RequestType.Default) -> 
             if req_type == RequestType.File:
                 # 文件类型
                 forms = await request.form()
-                # args = json.dumps({k: v.filename for k, v in forms.items()}, ensure_ascii=False)
                 # 获取文件名称作为参数
-                args = ','.join([i.filename for i in forms.values()])
+                args = json.dumps({k: file_from_to_str(v) for k, v in forms.items()}, ensure_ascii=False)
+                # args = ','.join([file_from_to_str(i) for i in forms.values()])
             else:
                 form_params = await request.json()
                 args = json.dumps([form_params], ensure_ascii=False)

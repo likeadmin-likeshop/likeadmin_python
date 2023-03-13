@@ -5,7 +5,7 @@ from like.admin.schemas.common import CommonAlbumOut, CommonAlbumListIn, CommonA
 from like.admin.service.common.album import IAlbumService, AlbumService
 from like.admin.service.common.index import IIndexService, IndexService
 from like.admin.service.common.upload import IUploadService, UploadService
-from like.dependencies.log import record_log
+from like.dependencies.log import record_log, RequestType
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
 
@@ -84,7 +84,7 @@ async def cate_list(params: CommonAlbumCateListIn = Depends(),
     return await common_service.cate_list(params)
 
 
-@router.post('/upload/image', dependencies=[Depends(record_log(title='上传图片'))])
+@router.post('/upload/image', dependencies=[Depends(record_log(title='上传图片', req_type=RequestType.File))])
 @unified_resp
 async def upload_image(file: UploadFile, cid: int = Form(default=0),
                        upload_service: IUploadService = Depends(UploadService.instance)):
@@ -92,7 +92,7 @@ async def upload_image(file: UploadFile, cid: int = Form(default=0),
     return await upload_service.upload_image(file, cid)
 
 
-@router.post('/upload/video', dependencies=[Depends(record_log(title='上传视频'))])
+@router.post('/upload/video', dependencies=[Depends(record_log(title='上传视频', req_type=RequestType.File))])
 @unified_resp
 async def upload_video(file: UploadFile, cid: int = Form(default=0),
                        upload_service: IUploadService = Depends(UploadService.instance)):
