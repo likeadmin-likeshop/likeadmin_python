@@ -37,6 +37,7 @@ class SettingSearchService(ISettingSearchService):
     async def save(self, hot_search_in: SettingHotSearchIn):
         """热门搜索新增"""
         await ConfigUtil.set('search', 'isHotSearch', str(hot_search_in.is_hot_search))
+        await db.execute(hot_search.delete().where(hot_search.c.id > 0))
         await db.execute(hot_search.insert().values(hot_search_in.dict()['list']))
 
     @classmethod
