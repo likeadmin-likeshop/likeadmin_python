@@ -9,16 +9,6 @@ interface Options {
     }
 }
 
-// {
-//     dict: {
-//         api: dictData,
-//         params: { name: 'user' },
-//         transformData(data: any) {
-//             return data.list
-//         }
-//     }
-// }
-
 export function useDictOptions<T = any>(options: Options) {
     const optionsData: any = reactive({})
     const optionsKey = Object.keys(options)
@@ -45,12 +35,6 @@ export function useDictOptions<T = any>(options: Options) {
         refresh
     }
 }
-
-// useDictOptions<{
-//     dict: any[]
-// }>({
-//     dict: dictData
-// })
 
 export function useDictData<T = any>(dict: string[]) {
     const options: Options = {}

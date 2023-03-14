@@ -1,5 +1,5 @@
 <template>
-    <el-form ref="menuFormRef" :rules="rules" :model="menuForm" label-width="120px" class="pr-10">
+    <el-form ref="menuFormRef" :rules="rules" :model="menuForm" label-width="100px">
         <!-- 菜单名称 -->
         <el-form-item :label="modular === 'master' ? '主菜单名称' : '子菜单名称'" prop="name">
             <el-input v-model="menuForm.name" />
@@ -8,15 +8,15 @@
         <!-- 菜单类型 -->
         <el-form-item label="主菜单类型" prop="menuType" v-if="modular === 'master'">
             <el-radio-group v-model="menuForm.menuType">
-                <el-radio :label="1">不配置子菜单</el-radio>
-                <el-radio :label="2">配置子菜单</el-radio>
+                <el-radio :label="false">不配置子菜单</el-radio>
+                <el-radio :label="true">配置子菜单</el-radio>
             </el-radio-group>
         </el-form-item>
-        <el-form-item label="" v-if="menuForm.menuType === 2 && modular === 'master'">
+        <el-form-item label="" v-if="menuForm.menuType && modular === 'master'">
             <slot></slot>
         </el-form-item>
 
-        <template v-if="menuForm.menuType === 1">
+        <template v-if="!menuForm.menuType">
             <!-- 跳转链接 -->
             <el-form-item label="跳转链接" prop="visitType">
                 <el-radio-group v-model="menuForm.visitType">
@@ -54,6 +54,7 @@ const emit = defineEmits([
     'update:menuType',
     'update:visitType',
     'update:url',
+    'update:appId',
     'update:pagePath'
 ])
 
@@ -61,7 +62,7 @@ const props = withDefaults(
     defineProps<{
         modular?: string
         name?: string
-        menuType?: number
+        menuType?: boolean
         visitType?: string
         url?: string
         appId?: string
@@ -70,7 +71,7 @@ const props = withDefaults(
     {
         modular: 'master',
         name: '',
-        menuType: 1,
+        menuType: false,
         visitType: 'view',
         url: '',
         appId: '',

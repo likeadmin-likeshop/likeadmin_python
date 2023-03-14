@@ -30,6 +30,7 @@
                 </el-form-item>
                 <el-form-item label="归属部门" prop="deptId">
                     <el-tree-select
+                        multiple
                         class="flex-1"
                         v-model="formData.deptId"
                         :data="optionsData.dept"
@@ -49,6 +50,7 @@
                 </el-form-item>
                 <el-form-item label="岗位" prop="postId">
                     <el-select
+                        multiple
                         class="flex-1"
                         clearable
                         v-model="formData.postId"
@@ -65,6 +67,7 @@
 
                 <el-form-item label="角色" prop="role">
                     <el-select
+                        multiple
                         v-model="formData.role"
                         :disabled="isRoot"
                         class="flex-1"
@@ -147,7 +150,7 @@ const formData = reactive({
     isDisable: 0,
     isMultipoint: 1,
     //服务端为必传参数，先给默认值
-    sort:'1'
+    sort: '1'
 })
 
 const isRoot = computed(() => {
@@ -183,15 +186,15 @@ const formRules = reactive({
             trigger: ['blur']
         }
     ],
-    deptId:[
-    {
+    deptId: [
+        {
             required: true,
             message: '请输入名称',
             trigger: ['blur']
         }
     ],
-    postId:[
-    {
+    postId: [
+        {
             required: true,
             message: '请输入名称',
             trigger: ['blur']
