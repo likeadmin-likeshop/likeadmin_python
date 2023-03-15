@@ -5,3 +5,4 @@ from .common import *
 from .gen import *
 from .reply import *
 from .notice import *
+from .article import *
