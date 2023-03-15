@@ -76,15 +76,16 @@ def configure_admin_router(app: FastAPI, prefix='/api'):
 def configure_front_router(app: FastAPI, prefix='/api'):
     """配置前台路由"""
     from .dependencies.verify import front_login_verify
-    from .front.routers import index, upload, article as front_article, login, sms
+    from .front.routers import index, upload, article, login, user, sms
 
     # front 依赖
     front_deps = [Depends(front_login_verify)]
     # front
     app.include_router(index.router, prefix=prefix, dependencies=front_deps)
     app.include_router(upload.router, prefix=prefix, dependencies=front_deps)
-    app.include_router(front_article.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(article.router, prefix=prefix, dependencies=front_deps)
     app.include_router(login.router, prefix=prefix, dependencies=front_deps)
+    app.include_router(user.router, prefix=prefix, dependencies=front_deps)
     app.include_router(sms.router, prefix=prefix, dependencies=front_deps)
 
 

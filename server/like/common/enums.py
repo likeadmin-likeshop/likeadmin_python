@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 
 class SexEnum(int, Enum):
@@ -77,6 +77,23 @@ class PageTypeEnum(int, Enum):
     HOME = 1  # 首页
     USER_CENTER = 2  # 个人中心
     CUSTOMER_SERVICE = 3  # 客服设置
+
+
+class NoticeEnum(IntEnum):
+    SMS_LOGIN_CODE = 101
+    SMS_BIND_MOBILE_CODE = 102
+    SMS_CHANGE_MOBILE_CODE = 103
+    SMS_FORGOT_PASSWORD_CODE = 104
+
+    @property
+    def msg(self):
+        msg_dict = {
+            101: '登录验证码',
+            102: '绑定手机验证码',
+            103: '变更手机验证码',
+            104: '找回登录密码验证码',
+        }
+        return msg_dict.get(self.value, '')
 
 
 class PolicyTypeEnum(str, Enum):

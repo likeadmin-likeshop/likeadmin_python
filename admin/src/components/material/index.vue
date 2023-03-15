@@ -200,7 +200,7 @@
                         >
                             <del-wrap @close="batchFileDelete([item.id])">
                                 <file-item
-                                    :uri="item.uri"
+                                    :uri="getImageUrl(item.url)"
                                     :file-size="fileSize"
                                     :type="type"
                                     @click="selectFile(item)"
@@ -389,6 +389,8 @@ import { useCate, useFile } from './hook'
 import FileItem from './file.vue'
 import Preview from './preview.vue'
 import type { Ref } from 'vue'
+import useAppStore from '@/stores/modules/app'
+const { getImageUrl } = useAppStore()
 const props = defineProps({
     fileSize: {
         type: String,

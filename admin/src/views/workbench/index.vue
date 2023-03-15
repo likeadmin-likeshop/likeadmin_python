@@ -1,21 +1,21 @@
 <template>
     <div class="workbench">
-        <div class="md:flex">
-            <el-card class="!border-none mb-4 md:mr-4 w-[400px]" shadow="never">
+        <div class="lg:flex">
+            <el-card class="!border-none mb-4 lg:mr-4 lg:w-[350px]" shadow="never">
                 <template #header>
                     <span class="card-title">版本信息</span>
                 </template>
                 <div>
                     <div class="flex leading-9">
-                        <div class="w-20 flex-none">当前版本</div>
+                        <div class="w-20">当前版本</div>
                         <span> {{ workbenchData.version.version }}</span>
                     </div>
                     <div class="flex leading-9">
-                        <div class="w-20 flex-none">基于框架</div>
+                        <div class="w-20">基于框架</div>
                         <span> {{ workbenchData.version.based }}</span>
                     </div>
                     <div class="flex leading-9">
-                        <div class="w-20 felx-none">获取渠道</div>
+                        <div class="w-20">获取渠道</div>
                         <div>
                             <a :href="workbenchData.version.channel.website" target="_blank">
                                 <el-button type="success" size="small">官网</el-button>
@@ -44,30 +44,30 @@
                 <div class="flex flex-wrap">
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">访问量(人)</div>
-                        <div class="text-6xl">{{ workbenchData.today.todayVisits }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.today_visitor }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总访问量：{{ workbenchData.today.totalVisits }}
+                            总访问量：{{ workbenchData.today.total_visitor }}
                         </div>
                     </div>
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">销售额(元)</div>
-                        <div class="text-6xl">{{ workbenchData.today.todaySales }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.today_sales }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总销售额：{{ workbenchData.today.totalSales }}
+                            总销售额：{{ workbenchData.today.total_sales }}
                         </div>
                     </div>
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">订单量(笔)</div>
-                        <div class="text-6xl">{{ workbenchData.today.todayOrder }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.order_num }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总订单量：{{ workbenchData.today.totalOrder }}
+                            总订单量：{{ workbenchData.today.order_sum }}
                         </div>
                     </div>
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">新增用户</div>
-                        <div class="text-6xl">{{ workbenchData.today.todayUsers }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.today_new_user }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总访用户：{{ workbenchData.today.totalUsers }}
+                            总访用户：{{ workbenchData.today.total_new_user }}
                         </div>
                     </div>
                 </div>

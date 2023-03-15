@@ -76,6 +76,19 @@ class ArticleCollectOut(BaseModel):
     createTime: datetime = Field(alias='create_time')  # 创建时间
 
 
+class ArticleSearchOut(BaseModel):
+    """
+    文章搜索返回
+    """
+    id: int
+    title: str
+    image: str
+    intro: str
+    visit: int  # 浏览
+    collect: Union[bool, None]  # 收藏
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+
+
 class ArticleCollectPostIn(BaseModel):
     """
     文章加入/取消收藏 入参

@@ -1,12 +1,7 @@
 <template>
     <div>
         <div class="file-item relative" :style="{ height: fileSize, width: fileSize }">
-            <el-image
-                class="image"
-                v-if="type == 'image'"
-                fit="contain"
-                :src="getImageUrl(uri)"
-            ></el-image>
+            <el-image class="image" v-if="type == 'image'" fit="contain" :src="uri"></el-image>
             <video class="video" v-else-if="type == 'video'" :src="uri"></video>
             <div
                 v-if="type == 'video'"

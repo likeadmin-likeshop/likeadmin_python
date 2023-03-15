@@ -1,6 +1,8 @@
 from typing import List
 
+from fastapi import Query
 from pydantic import BaseModel
+from typing_extensions import Literal
 
 from like.common.enums import PolicyTypeEnum
 from like.front.schemas.article import ArticleDetailOut
@@ -22,6 +24,11 @@ class PolicyIn(BaseModel):
     type: PolicyTypeEnum
 
 
+# class PolicyIn(BaseModel):
+#     """协议参数"""
+#     type: Literal['service', 'privacy'] = Query()
+
+
 class CommonProtocol(BaseModel):
     """
     政策通用参数
@@ -34,3 +41,8 @@ class PolicyOut(BaseModel):
     """
     隐私政策
     """
+
+
+class SearchIn(BaseModel):
+    """搜索参数"""
+    keyword: str = Query()

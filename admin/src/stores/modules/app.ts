@@ -19,7 +19,7 @@ const useAppStore = defineStore({
     },
     actions: {
         getImageUrl(url: string) {
-            return url ? `${this.config.ossDomain}${url}` : ''
+            return url ? `${this.config.ossDomain}/${url}` : ''
         },
         getConfig() {
             return new Promise((resolve, reject) => {
