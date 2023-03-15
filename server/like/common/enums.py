@@ -94,3 +94,18 @@ class NoticeEnum(IntEnum):
             104: '找回登录密码验证码',
         }
         return msg_dict.get(self.value, '')
+
+
+class PolicyTypeEnum(str, Enum):
+    """
+    政策协议类型枚举
+    """
+    SERVICE = "service"
+    PRIVACY = "privacy"
+
+
+class SmsEnum(int, Enum):
+    LOGIN = 101,
+    BIND_MOBILE = 102,
+    CHANGE_MOBILE = 103,
+    FIND_PASSWORD = 104

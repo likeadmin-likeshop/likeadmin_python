@@ -7,7 +7,7 @@ from like.dependencies.database import db
 from like.exceptions.base import AppException
 from like.front.schemas.user import UserCenterOut, UserInfoOut, UserEditIn, UserChangePwdIn, UserBindMobileIn
 from like.http_base import HttpResp
-from like.models import user_table, user_auth
+from like.models import user_table, user_auth_table
 from like.utils.config import ConfigUtil
 from like.utils.redis import RedisUtil
 from like.utils.tools import ToolsUtil
@@ -59,7 +59,8 @@ class UserService(IUserService):
         """个人信息"""
         obj = await db.fetch_one(user_table.select().where(user_table.c.id == user_id).limit(1))
         auth = await db.fetch_one(
-            user_auth.select().where(user_auth.c.user_id == user_id, user_auth.c.client == LoginClientEnum.MNP.value)
+            user_auth_table.select().where(user_auth_table.c.user_id == user_id,
+                                           user_auth_table.c.client == LoginClientEnum.MNP.value)
             .limit(1))
         res = UserInfoOut.from_orm(obj)
         res.isPassword = True if obj.password else False

@@ -5,9 +5,10 @@ from .base import Base, TimestampMixin
 
 __all__ = [
     'SystemConfig', 'SystemAuthAdmin', 'SystemAuthMenu', 'SystemAuthPerm', 'SystemAuthRole', 'SystemLogLogin',
-    'SystemLogOperate', 'SystemAuthDept', 'SystemAuthPost',
+    'SystemLogOperate', 'SystemAuthDept', 'SystemAuthPost', "SystemLogSms",
     'system_config', 'system_auth_admin', 'system_auth_menu', 'system_auth_perm', 'system_auth_role',
-    'system_log_login', 'system_log_operate', 'system_auth_post', 'system_auth_dept'
+    'system_log_login', 'system_log_operate', 'system_auth_post', 'system_auth_dept',
+    "system_log_sms"
 ]
 
 
@@ -230,6 +231,31 @@ class SystemAuthPost(Base, TimestampMixin):
                        comment='是否删除: [0=否, 1=是]')
 
 
+class SystemLogSms(Base, TimestampMixin):
+    """
+    系统短信日志表
+    """
+    __tablename__ = 'la_system_log_sms'
+    __table_args__ = {
+        'mysql_engine': 'InnoDB',
+        'mysql_charset': 'utf8mb4',
+        'mysql_collate': 'utf8mb4_general_ci',
+        'mysql_row_format': 'Dynamic',
+        'mysql_auto_increment': '1',
+        'comment': '系统短信日志表',
+    }
+    id = Column(mysql.INTEGER(11, unsigned=True), primary_key=True, comment='主键')
+    scene = Column(mysql.INTEGER(11, unsigned=True), nullable=False, server_default=text(''), comment='场景编号')
+    mobile = Column(String(32), nullable=False, server_default='', comment='手机号码')
+    content = Column(String(255), nullable=False, server_default='', comment='发送内容')
+    status = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),
+                    comment='发送状态：[0=发送中, 1=发送成功, 2=发送失败]')
+    results = Column(Text, nullable=True, comment='短信结果')
+    send_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='发送时间')
+    create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
+    update_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='更新时间')
+
+
 system_config = SystemConfig.__table__
 system_auth_admin = SystemAuthAdmin.__table__
 system_auth_menu = SystemAuthMenu.__table__
@@ -239,3 +265,4 @@ system_log_login = SystemLogLogin.__table__
 system_log_operate = SystemLogOperate.__table__
 system_auth_post = SystemAuthPost.__table__
 system_auth_dept = SystemAuthDept.__table__
+system_log_sms = SystemLogSms.__table__

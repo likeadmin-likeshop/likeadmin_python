@@ -1,17 +1,17 @@
 from sqlalchemy import Column, String, text, Index
 from sqlalchemy.dialects import mysql
 
-from .base import Base
+from like.models.base import TimestampMixin, Base
 
 __all__ = [
     'User',
     'user_table',
     'UserAuth',
-    'user_auth'
+    'user_auth_table',
 ]
 
 
-class User(Base):
+class User(Base, TimestampMixin):
     """用户实体"""
     __tablename__ = 'la_user'
     __table_args__ = {
@@ -43,9 +43,6 @@ class User(Base):
     last_login_ip = Column(String(30), nullable=False, server_default='', comment='最后登录IP')
     last_login_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'),
                              comment='最后登录时间')
-    create_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='创建时间')
-    update_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='更新时间')
-    delete_time = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='删除时间')
 
 
 class UserAuth(Base):
@@ -73,4 +70,4 @@ class UserAuth(Base):
 
 
 user_table = User.__table__
-user_auth = UserAuth.__table__
+user_auth_table = UserAuth.__table__

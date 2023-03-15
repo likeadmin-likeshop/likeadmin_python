@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends
 
 from like.front.schemas.article import ArticleSearchOut
-from like.front.schemas.index import PolicyIn, SearchIn
-from like.front.service.index import IIndexService, IndexService
+from like.front.schemas.index import PolicyIn
+from like.front.schemas.index import SearchIn
+from like.front.service.index import IndexService, IIndexService
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
 
@@ -11,15 +12,15 @@ router = APIRouter()
 
 @router.get('/index')
 @unified_resp
-async def index():
-    return
+async def index(index_service: IIndexService = Depends(IndexService.instance)):
+    return await index_service.index()
 
 
 @router.get('/policy')
 @unified_resp
 async def policy(policy_in: PolicyIn = Depends(), index_service: IIndexService = Depends(IndexService.instance)):
     """协议"""
-    return await index_service.policy(policy_in.type)
+    return await index_service.policy(policy_in)
 
 
 @router.get('/hotSearch')

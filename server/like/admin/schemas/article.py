@@ -38,7 +38,7 @@ class ArticleCateAddIn(BaseModel):
     """
     文章分类新增入参
     """
-    name = str
+    name: str
     sort: int = Field(ge=0)  # 排序
     is_show: int = Field(alias='isShow', ge=0, le=1)  # 是否显示: [0=否, 1=是]
 
