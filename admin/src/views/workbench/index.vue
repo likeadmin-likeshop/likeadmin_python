@@ -44,30 +44,30 @@
                 <div class="flex flex-wrap">
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">访问量(人)</div>
-                        <div class="text-6xl">{{ workbenchData.today.today_visitor }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.todayVisits }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总访问量：{{ workbenchData.today.total_visitor }}
+                            总访问量：{{ workbenchData.today.totalVisits }}
                         </div>
                     </div>
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">销售额(元)</div>
-                        <div class="text-6xl">{{ workbenchData.today.today_sales }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.todaySales }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总销售额：{{ workbenchData.today.total_sales }}
+                            总销售额：{{ workbenchData.today.totalSales }}
                         </div>
                     </div>
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">订单量(笔)</div>
-                        <div class="text-6xl">{{ workbenchData.today.order_num }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.todayOrder }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总订单量：{{ workbenchData.today.order_sum }}
+                            总订单量：{{ workbenchData.today.totalOrder }}
                         </div>
                     </div>
                     <div class="w-1/2 md:w-1/4">
                         <div class="leading-10">新增用户</div>
-                        <div class="text-6xl">{{ workbenchData.today.today_new_user }}</div>
+                        <div class="text-6xl">{{ workbenchData.today.todayUsers }}</div>
                         <div class="text-tx-secondary text-xs">
-                            总访用户：{{ workbenchData.today.total_new_user }}
+                            总访用户：{{ workbenchData.today.totalUsers }}
                         </div>
                     </div>
                 </div>
