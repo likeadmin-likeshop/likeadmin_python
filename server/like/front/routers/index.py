@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
 from like.front.schemas.article import ArticleSearchOut
-from like.front.schemas.index import PolicyIn
-from like.front.schemas.index import SearchIn
+from like.front.schemas.index import PolicyIn, DecorateIn, SearchIn
 from like.front.service.index import IndexService, IIndexService
 from like.http_base import unified_resp
 from like.schema_base import PageInationResult
@@ -14,6 +13,18 @@ router = APIRouter()
 @unified_resp
 async def index(index_service: IIndexService = Depends(IndexService.instance)):
     return await index_service.index()
+
+
+@router.get('/decorate')
+@unified_resp
+async def decorate(decorate_in: DecorateIn = Depends(), index_service: IIndexService = Depends(IndexService.instance)):
+    return await index_service.decorate(decorate_in.id)
+
+
+@router.get('/config')
+@unified_resp
+async def config(request: Request, index_service: IIndexService = Depends(IndexService.instance)):
+    return await index_service.config(f'{request.url.hostname}:{request.url.port}')
 
 
 @router.get('/policy')

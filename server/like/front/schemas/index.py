@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import Query
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing_extensions import Literal
 
 from like.common.enums import PolicyTypeEnum
@@ -46,3 +46,18 @@ class PolicyOut(BaseModel):
 class SearchIn(BaseModel):
     """搜索参数"""
     keyword: str = Query()
+
+
+class DecorateIn(BaseModel):
+    """装修参数"""
+    id: int = Query(gt=0)  # 主键
+
+
+class DecorateOut(BaseModel):
+    """装修返回"""
+    type: int = Field(alias='page_type')  # 页面类型
+    name: str = Field(alias='page_name')  # 页面名称
+    pages: str = Field(alias='page_data')  # 页面数据
+
+    class Config:
+        orm_mode = True
