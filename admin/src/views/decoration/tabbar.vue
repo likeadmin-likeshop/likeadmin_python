@@ -197,6 +197,7 @@ const getData = async () => {
     tabbar.style = data.style
 }
 const setData = async () => {
+    tabbar.list = tabbar.list.map((item: any) => ({ ...item, link: JSON.stringify(item.link) }))
     await setDecorateTabbar(toRaw(tabbar))
     getData()
     feedback.msgSuccess('保存成功')
