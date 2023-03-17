@@ -1,9 +1,9 @@
 from datetime import date, datetime
 from typing import List, Union
-from typing_extensions import Literal
 
 from fastapi import Query
 from pydantic import BaseModel, Field
+from typing_extensions import Literal
 
 from like.schema_base import EmptyStrToNone
 
@@ -80,8 +80,6 @@ class SystemAuthAdminOut(BaseModel):
     nickname: str  # 昵称
     avatar: str  # 头像
     role: Union[str, None]  # 角色
-    deptId: int = Field(alias='dept_id')  # 部门ID
-    postId: int = Field(alias='post_id')  # 岗位ID
     dept: Union[str, None]  # 部门
     isMultipoint: int = Field(alias='is_multipoint')  # 多端登录: [0=否, 1=是]
     isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
@@ -94,6 +92,26 @@ class SystemAuthAdminOut(BaseModel):
         orm_mode = True
 
     # def __init__(self, avatar, **kwargs):  #     super().__init__(avatar=avatar, **kwargs)
+
+
+class SystemAuthAdminDetailOut(BaseModel):
+    """管理员详情返回信息"""
+    id: int  # 主键
+    username: str  # 账号
+    nickname: str  # 昵称
+    avatar: str  # 头像
+    roleIds: Union[List[int], str] = Field(alias='role_ids')  # 角色
+    deptIds: Union[List[int], str] = Field(alias='dept_ids')  # 部门
+    postIds: Union[List[int], str] = Field(alias='post_ids')  # 岗位
+    isMultipoint: int = Field(alias='is_multipoint')  # 多端登录: [0=否, 1=是]
+    isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
+    lastLoginIp: str = Field(alias='last_login_ip')  # 最后登录IP
+    lastLoginTime: datetime = Field(alias='last_login_time')  # 最后登录时间
+    createTime: datetime = Field(alias='create_time')  # 创建时间
+    updateTime: datetime = Field(alias='update_time')  # 更新时间
+
+    class Config:
+        orm_mode = True
 
 
 class SystemAuthAdminSelfOneOut(BaseModel):

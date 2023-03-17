@@ -11,7 +11,7 @@ from sqlalchemy import select
 from like.admin.config import AdminConfig
 from like.admin.schemas.system import (
     SystemAuthAdminCreateIn, SystemAuthAdminEditIn, SystemAuthAdminUpdateIn, SystemAuthAdminListIn,
-    SystemAuthAdminOut, SystemAuthAdminSelfOneOut, SystemAuthAdminSelfOut)
+    SystemAuthAdminOut, SystemAuthAdminSelfOneOut, SystemAuthAdminSelfOut, SystemAuthAdminDetailOut)
 from like.dependencies.database import db
 from like.exceptions.base import AppException
 from like.http_base import HttpResp
@@ -106,9 +106,9 @@ class SystemAuthAdminService(ISystemAuthAdminService):
 
     async def list(self, list_in: SystemAuthAdminListIn) -> AbstractPage[SystemAuthAdminOut]:
         """管理员列表"""
-        columns = [system_auth_admin.c.id, system_auth_admin.c.dept_id, system_auth_admin.c.post_id,
+        columns = [system_auth_admin.c.id,
+                   system_auth_admin.c.dept_ids.label('dept'), system_auth_admin.c.role_ids.label('role'),
                    system_auth_admin.c.username, system_auth_admin.c.nickname, system_auth_admin.c.avatar,
-                   system_auth_dept.c.name.label('dept'), system_auth_role.c.name.label('role'),
                    system_auth_admin.c.is_multipoint, system_auth_admin.c.is_disable,
                    system_auth_admin.c.last_login_ip, system_auth_admin.c.last_login_time,
                    system_auth_admin.c.create_time, system_auth_admin.c.update_time]
@@ -119,11 +119,9 @@ class SystemAuthAdminService(ISystemAuthAdminService):
         if list_in.nickname:
             where.append(system_auth_admin.c.nickname.like(f'%{list_in.nickname}%'))
         if list_in.role is not None:
-            where.append(system_auth_admin.c.role == list_in.role)
+            where.append(system_auth_admin.c.role.in_(list_in.role))
         query = select(columns).where(*where) \
-            .select_from(
-            system_auth_admin.outerjoin(system_auth_role, system_auth_admin.c.role == system_auth_role.c.id)
-            .outerjoin(system_auth_dept, system_auth_admin.c.dept_id == system_auth_dept.c.id)) \
+            .select_from(system_auth_admin) \
             .order_by(system_auth_admin.c.id.desc(), system_auth_admin.c.sort.desc())
         pager = await paginate(db, query)
         # 处理返回结果
@@ -131,20 +129,30 @@ class SystemAuthAdminService(ISystemAuthAdminService):
             obj.avatar = await UrlUtil.to_absolute_url(obj.avatar)
             if obj.id == 1:
                 obj.role = '系统管理员'
+            else:
+                role_ids = [int(i) for i in obj.role.split(',') if i.isdigit()]
+                roles = await db.fetch_all(system_auth_role.select().where(system_auth_role.c.id.in_(role_ids)))
+                obj.role = '/'.join([i.name for i in roles])
             if not obj.dept:
                 obj.dept = ''
+            else:
+                dept_ids = [int(i) for i in obj.dept.split(',') if i.isdigit()]
+                depts = await db.fetch_all(system_auth_dept.select().where(
+                    system_auth_dept.c.id.in_(dept_ids), system_auth_dept.c.is_delete == 0))
+                obj.dept = '/'.join([i.name for i in depts])
         return pager
 
-    async def detail(self, id_: int) -> SystemAuthAdminOut:
+    async def detail(self, id_: int) -> SystemAuthAdminDetailOut:
         """管理员详细"""
         sys_admin = await db.fetch_one(
             system_auth_admin.select().where(
                 system_auth_admin.c.id == id_, system_auth_admin.c.is_delete == 0).limit(1))
         assert sys_admin, '账号已不存在！'
-        sys_admin_out = SystemAuthAdminOut.from_orm(sys_admin)
+        sys_admin_out = SystemAuthAdminDetailOut.from_orm(sys_admin)
         sys_admin_out.avatar = await UrlUtil.to_absolute_url(sys_admin_out.avatar)
-        if not sys_admin_out.dept:
-            sys_admin_out.dept = str(sys_admin_out.deptId)
+        sys_admin_out.roleIds = [int(i) for i in sys_admin_out.roleIds.split(',') if i.isdigit()]
+        sys_admin_out.deptIds = [int(i) for i in sys_admin_out.deptIds.split(',') if i.isdigit()]
+        sys_admin_out.postIds = [int(i) for i in sys_admin_out.postIds.split(',') if i.isdigit()]
         return sys_admin_out
 
     async def add(self, admin_create_in: SystemAuthAdminCreateIn):
