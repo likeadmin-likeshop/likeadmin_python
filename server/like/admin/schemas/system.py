@@ -102,8 +102,8 @@ class SystemAuthAdminSelfOneOut(BaseModel):
     username: str  # 账号
     nickname: str  # 昵称
     avatar: str  # 头像
-    role: str  # 角色
-    dept: str = Field(alias='dept_id')  # 部门
+    # role: str  # 角色
+    # dept: str = Field(alias='dept_id')  # 部门
     isMultipoint: int = Field(alias='is_multipoint')  # 多端登录: [0=否, 1=是]
     isDisable: int = Field(alias='is_disable')  # 是否禁用: [0=否, 1=是]
     lastLoginIp: str = Field(alias='last_login_ip')  # 最后登录IP

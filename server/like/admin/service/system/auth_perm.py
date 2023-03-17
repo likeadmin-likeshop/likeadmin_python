@@ -13,7 +13,7 @@ class ISystemAuthPermService(ABC):
 
     @classmethod
     @abstractmethod
-    async def select_menu_ids_by_role_id(cls, role_id: int) -> List[int]:
+    async def select_menu_ids_by_role_id(cls, role_ids: List[int]) -> List[int]:
         pass
 
     @classmethod
@@ -38,14 +38,14 @@ class SystemAuthPermService(ISystemAuthPermService):
     """系统权限服务实现类"""
 
     @classmethod
-    async def select_menu_ids_by_role_id(cls, role_id: int) -> List[int]:
+    async def select_menu_ids_by_role_id(cls, role_ids: List[int]) -> List[int]:
         """根据角色ID获取菜单ID"""
         role = await db.fetch_one(
             system_auth_role.select()
-            .where(system_auth_role.c.id == role_id, system_auth_role.c.is_disable == 0).limit(1))
+            .where(system_auth_role.c.id.in_(role_ids), system_auth_role.c.is_disable == 0).limit(1))
         if not role:
             return []
-        perms = await db.fetch_all(system_auth_perm.select().where(system_auth_perm.c.role_id == role_id))
+        perms = await db.fetch_all(system_auth_perm.select().where(system_auth_perm.c.role_id.in_(role_ids)))
         return [i.menu_id for i in perms]
 
     @classmethod

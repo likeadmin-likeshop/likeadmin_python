@@ -45,13 +45,16 @@ class SystemAuthAdmin(Base, TimestampMixin):
     }
 
     id = Column(mysql.INTEGER(10, unsigned=True), primary_key=True, comment='主键')
-    dept_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='部门ID')
-    post_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='岗位ID')
+    # dept_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='部门ID')
+    # post_id = Column(mysql.INTEGER(10, unsigned=True), nullable=False, server_default=text('0'), comment='岗位ID')
     username = Column(String(32), nullable=False, server_default='', comment='用户账号')
     nickname = Column(String(32), nullable=False, server_default='', comment='用户昵称')
     password = Column(String(200), nullable=False, server_default='', comment='用户密码')
     avatar = Column(String(200), nullable=False, server_default='', comment='用户头像')
-    role = Column(String(200), nullable=False, server_default='', comment='角色主键')
+    # role = Column(String(200), nullable=False, server_default='', comment='角色主键')
+    role_ids = Column(String(200), nullable=False, server_default='', comment='角色主键')
+    dept_ids = Column(String(200), nullable=False, server_default='', comment='部门ID')
+    post_ids = Column(String(200), nullable=False, server_default='', comment='岗位ID')
     salt = Column(String(20), nullable=False, server_default='', comment='加密盐巴')
     sort = Column(mysql.SMALLINT(5), nullable=False, server_default=text('0'), comment='排序编号')
     is_multipoint = Column(mysql.TINYINT(1, unsigned=True), nullable=False, server_default=text('0'),

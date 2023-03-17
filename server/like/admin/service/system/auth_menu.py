@@ -49,7 +49,7 @@ class SystemAuthMenuService(ISystemAuthMenuService):
     async def select_menu_by_role_id(self, role_id) -> List[Union[SystemAuthMenuOut, dict]]:
         """根据角色ID获取菜单"""
         admin_id = self.request.state.admin_id
-        menu_ids = await self.auth_perm_service.select_menu_ids_by_role_id(role_id) or [0]
+        menu_ids = await self.auth_perm_service.select_menu_ids_by_role_id([role_id]) or [0]
         where = [system_auth_menu.c.menu_type.in_(('M', 'C')),
                  system_auth_menu.c.is_disable == 0]
         if admin_id != 1:
