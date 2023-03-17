@@ -78,7 +78,7 @@ class UserService(IUserService):
         field, value = edit_in.field.strip(), edit_in.value.strip()
         update_dict = {'update_time': int(time.time())}
         if field == 'avatar':
-            update_dict['avatar'] = UrlUtil.to_relative_url(value)
+            update_dict['avatar'] = await UrlUtil.to_relative_url(value)
             await db.execute(user_table.update().where(user_table.c.id == user_id).values(**update_dict))
         elif field == 'username':
             obj = await db.fetch_one(
@@ -87,7 +87,7 @@ class UserService(IUserService):
                 raise AppException(HttpResp.FAILED, msg='账号已被使用!')
             if obj and obj.username == value:
                 raise AppException(HttpResp.FAILED, msg='新账号与旧账号一致,修改失败!')
-            update_dict['username'] = UrlUtil.to_relative_url(value)
+            update_dict['username'] = value
             await db.execute(user_table.update().where(user_table.c.id == user_id).values(**update_dict))
         elif field == 'nickname':
             update_dict['nickname'] = value

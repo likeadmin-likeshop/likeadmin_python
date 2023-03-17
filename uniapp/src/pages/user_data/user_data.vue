@@ -188,7 +188,7 @@
 <script lang="ts" setup>
 import { ref, shallowRef } from 'vue'
 import { onShow, onUnload } from '@dcloudio/uni-app'
-import { getUserInfo, userEdit, userBindMobile, userMnpMobile } from '@/api/user'
+import { getUserInfo, userEdit, userBindMobile, userMnpMobile, upload } from '@/api/user'
 import { smsSend } from '@/api/app'
 import { FieldType, SMSEnum } from '@/enums/appEnums'
 import { uploadFile } from '@/utils/util'
@@ -315,7 +315,7 @@ const changeNameConfirm = async (e: any) => {
 }
 
 // 微信小程序 绑定｜｜修改用户手机号
-const getPhoneNumber = async (e): Promise<void> => {
+const getPhoneNumber = async (e: any): Promise<void> => {
     const { encryptedData, iv, code } = e.detail
     const data = {
         code,
@@ -337,15 +337,15 @@ const goPage = (url: string) => {
     })
 }
 
-const uploadAvatar = (path: string) => {
+const uploadAvatar = async (path: string) => {
     uni.showLoading({
         title: '正在上传中...',
         mask: true
     })
     uploadFile(path)
-        .then((res) => {
+        .then((res: any) => {
             uni.hideLoading()
-            setUserInfoFun(res.url)
+            setUserInfoFun(res.filename)
         })
         .catch(() => {
             uni.hideLoading()
