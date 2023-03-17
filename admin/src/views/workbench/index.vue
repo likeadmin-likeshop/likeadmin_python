@@ -3,7 +3,7 @@
         <div class="lg:flex">
             <el-card class="!border-none mb-4 lg:mr-4 lg:w-[350px]" shadow="never">
                 <template #header>
-                    <span class="card-title">版本信息</span>
+                    <span class="card-title">版本信息(测试打包自动更新)</span>
                 </template>
                 <div>
                     <div class="flex leading-9">
