@@ -58,7 +58,7 @@ async def verify_token(request: Request):
 
     # 单次请求信息保存
     request.state.admin_id = uid
-    request.state.role_id = mapping.get('role')
+    request.state.role_ids = mapping.get('role_ids')
     request.state.username = mapping.get('username')
     request.state.nickname = mapping.get('nickname')
 
@@ -66,13 +66,15 @@ async def verify_token(request: Request):
     if auths in AdminConfig.not_auth_uri or uid == 1:
         return
 
+    role_ids = mapping.get('role_ids')
+    menus = []
     # 校验角色权限是否存在
-    role_id = mapping.get('role')
-    if not await RedisUtil.hexists(AdminConfig.backstage_roles_key, role_id):
-        await SystemAuthPermService.cache_role_menus_by_role_id(role_id)
+    for role_id in role_ids:
+        if not await RedisUtil.hexists(AdminConfig.backstage_roles_key, role_id):
+            await SystemAuthPermService.cache_role_menus_by_role_id(role_id)
+        menus.extend(await RedisUtil.hget(AdminConfig.backstage_roles_key, role_id))
 
     # 验证是否有权限操作
-    menus = await RedisUtil.hget(AdminConfig.backstage_roles_key, role_id)
     if not (menus and auths in menus.split(',')):
         raise AppException(HttpResp.NO_PERMISSION)
 
