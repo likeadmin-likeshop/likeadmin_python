@@ -100,11 +100,14 @@ export function objectToQuery(params: Record<string, any>): string {
  */
 export function uploadFile(path: any) {
     return new Promise((resolve, reject) => {
+        console.log(path)
+
         const token = getToken()
         uni.uploadFile({
             url: `${import.meta.env.VITE_APP_BASE_URL}/api/upload/image`,
             filePath: path,
-            name: 'file',
+            // files: [{ name: 'file_in', uri: path }],
+            name: 'file_in',
             header: {
                 token
             },
