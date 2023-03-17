@@ -40,6 +40,7 @@ class StorageDriver(object):
         origin_ext = origin_file_name.split('.')[-1].lower()
 
         result = {
+            'id': 0,
             'name': origin_file_name,
             'size': file_size,
             'ext': origin_ext,

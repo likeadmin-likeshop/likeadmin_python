@@ -15,7 +15,10 @@ class LocalStorage:
     @classmethod
     async def upload(cls, file_in: UploadFile, key: str):
         directory = get_settings().upload_directory
-        folder, _date, save_name = key.split('/')
+        paths = key.split('/')
+        save_name = paths[-1]
+        _date = paths[-2]
+        folder = '/'.join(paths[:-2])
         save_path = os.path.join(directory, folder, _date).replace('\\', '/')
         file_name = os.path.join(save_path, save_name).replace('\\', '/')
 
