@@ -165,13 +165,13 @@ class SystemAuthAdminService(ISystemAuthAdminService):
             system_auth_admin.select()
             .where(system_auth_admin.c.nickname == admin_create_in.nickname,
                    system_auth_admin.c.is_delete == 0).limit(1)), '昵称已存在换一个吧！'
-        role_out = await self.auth_role_service.detail(admin_create_in.role)
-        assert role_out, '角色不存在!'
-        assert role_out.isDisable <= 0, '当前角色已被禁用!'
         if not (6 <= len(admin_create_in.password) <= 20):
             raise AppException(HttpResp.FAILED, msg='密码必须在6~20位')
         create_dict = dict(admin_create_in)
         salt = ToolsUtil.random_string(5)
+        create_dict['role_ids'] = ','.join([str(i) for i in admin_create_in.role_ids])
+        create_dict['dept_ids'] = ','.join([str(i) for i in admin_create_in.dept_ids])
+        create_dict['post_ids'] = ','.join([str(i) for i in admin_create_in.post_ids])
         create_dict['salt'] = salt
         create_dict['password'] = ToolsUtil.make_md5(f'{admin_create_in.password.strip()}{salt}')
         create_dict['avatar'] = await UrlUtil.to_relative_url(admin_create_in.avatar) \
@@ -198,12 +198,12 @@ class SystemAuthAdminService(ISystemAuthAdminService):
                    system_auth_admin.c.is_delete == 0,
                    system_auth_admin.c.id != admin_edit_in.id)
             .limit(1)), '昵称已存在换一个吧！'
-        if admin_edit_in.role > 0 and admin_edit_in.id != 1:
-            assert await self.auth_role_service.detail(admin_edit_in.role), '角色不存在!'
         # 更新管理员信息
         admin_dict = admin_edit_in.dict()
+        admin_dict['role_ids'] = ','.join([str(i) for i in admin_edit_in.role_ids])
+        admin_dict['dept_ids'] = ','.join([str(i) for i in admin_edit_in.dept_ids])
+        admin_dict['post_ids'] = ','.join([str(i) for i in admin_edit_in.post_ids])
         admin_dict['avatar'] = await UrlUtil.to_relative_url(admin_edit_in.avatar)
-        admin_dict['role'] = 0 if admin_edit_in.id == 1 else admin_edit_in.role
         admin_dict['update_time'] = int(time.time())
         if admin_edit_in.id == 1:
             del admin_dict['username']

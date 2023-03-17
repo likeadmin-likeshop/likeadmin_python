@@ -38,13 +38,13 @@ class SystemAuthAdminDetailIn(BaseModel):
 
 class SystemAuthAdminCreateIn(BaseModel):
     """管理员新增参数"""
-    dept_id: int = Field(alias='deptId')  # 部门ID
-    post_id: int = Field(alias='postId')  # 岗位ID
+    role_ids: List[int] = Field(alias='roleIds')  # 角色ID
+    dept_ids: List[int] = Field(alias='deptIds')  # 部门ID
+    post_ids: List[int] = Field(alias='postIds')  # 岗位ID
     username: str = Field(min_length=2, max_length=20)  # 账号
     nickname: str = Field(min_length=2, max_length=30)  # 昵称
     password: str  # 密码
     avatar: str  # 头像
-    role: int = Field(gt=0)  # 角色
     sort: int = Field(ge=0)  # 排序
     is_disable: int = Field(alias='isDisable', ge=0, le=1)  # 是否禁用: [0=否, 1=是]
     is_multipoint: int = Field(alias='isMultipoint', ge=0, le=1)  # 多端登录: [0=否, 1=是]
