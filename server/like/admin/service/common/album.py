@@ -3,22 +3,24 @@ from abc import ABC, abstractmethod
 from typing import List
 
 import pydantic
+from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
 from sqlalchemy import select
 
 from like.admin.schemas.common import CommonAlbumListIn, CommonAlbumCateListIn, CommonAlbumCateOut, \
     CommonAlbumCateEditIn, CommonAlbumAddIn, CommonAlbumCateDelIn, CommonAlbumRenameIn, CommonAlbumMoveIn, \
-    CommonAlbumDelIn
+    CommonAlbumDelIn, CommonAlbumOut
 from like.dependencies.database import db
 from like.models.common import common_album, common_album_cate
 from like.utils.array import ArrayUtil
+from like.utils.urls import UrlUtil
 
 
 class IAlbumService(ABC):
     """相册服务抽象类"""
 
     @abstractmethod
-    async def album_list(self, params: CommonAlbumListIn):
+    async def album_list(self, params: CommonAlbumListIn) -> AbstractPage[CommonAlbumOut]:
         """
         文件列表
         :param params:
@@ -105,7 +107,7 @@ class AlbumService(IAlbumService):
     album_order_by = [common_album.c.id.desc()]
     cate_order_by = [common_album_cate.c.id.desc()]
 
-    async def album_list(self, params: CommonAlbumListIn):
+    async def album_list(self, params: CommonAlbumListIn) -> AbstractPage[CommonAlbumOut]:
         where = [common_album.c.is_delete == 0]
         if params.cid is not None:
             where.append(common_album.c.cid == params.cid)
@@ -114,7 +116,11 @@ class AlbumService(IAlbumService):
         if params.keyword:
             where.append(common_album.c.name.like('%{0}%'.format(params.keyword)))
         query = select(self.select_album_columns).select_from(common_album).where(*where).order_by(*self.album_order_by)
-        return await paginate(db, query)
+
+        pager = await paginate(db, query)
+        for row in pager.lists:
+            row.url = await UrlUtil.to_absolute_url(row.url)
+        return pager
 
     async def album_rename(self, params: CommonAlbumRenameIn):
         _id = params.id
