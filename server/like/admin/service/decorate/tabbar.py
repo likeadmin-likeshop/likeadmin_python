@@ -30,7 +30,7 @@ class DecorateTabbarService(ABC):
 
     async def detail(self) -> DecorateTabbarOut:
         tabbar_list = await db.fetch_all(
-            select(self.select_columns).select_from(decorate_tabbar).order_by(decorate_tabbar.c.id.desc()))
+            select(self.select_columns).select_from(decorate_tabbar).order_by(decorate_tabbar.c.id.asc()))
         tabbar_style = await ConfigUtil.get_val("tabbar", "style", "{}")
 
         style = pydantic.parse_obj_as(DecorateTabbarStyle, json.loads(tabbar_style))
