@@ -1,3 +1,5 @@
+import os.path
+
 from typing_extensions import Final
 
 from like.config import get_settings
@@ -42,10 +44,10 @@ class UrlUtil:
         if not url or not url.startswith('http'):
             return url
         if not engine:
-            engine = await ConfigUtil.get_val("storage", "default", "local")
+            engine = await ConfigUtil.get_val('storage', 'default', 'local')
         if engine == 'local':
-            return url.replace(get_settings().domain, '').replace('/' + cls.upload_prefix + '/', '/')
-        config = await ConfigUtil.get_map("storage", engine)
+            return url.replace(get_settings().domain, '').replace(os.path.join('/', cls.upload_prefix) + '/', '/')
+        config = await ConfigUtil.get_map('storage', engine)
         if config:
-            return url.replace(config.get("domain", ""), "").replace("/" + cls.upload_prefix + "/", "")
+            return url.replace(config.get('domain', ''), '').replace(os.path.join('/', cls.upload_prefix) + '/', '')
         return url
