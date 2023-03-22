@@ -8,12 +8,7 @@
                 @close="handleDelete(index)"
             >
                 <div class="bg-fill-light flex items-center w-full p-4 mb-4">
-                    <material-picker
-                        v-model="item.image"
-                        upload-class="bg-body"
-                        size="60px"
-                        exclude-domain
-                    >
+                    <material-picker v-model="item.image" upload-class="bg-body" size="60px">
                         <template #upload>
                             <div class="upload-btn w-[60px] h-[60px]">
                                 <icon name="el-icon-Plus" :size="20" />

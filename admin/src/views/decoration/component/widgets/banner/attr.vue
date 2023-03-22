@@ -17,11 +17,7 @@
                         class="max-w-[400px]"
                     >
                         <div class="bg-fill-light flex items-center w-full p-4 mt-4">
-                            <material-picker
-                                v-model="item.image"
-                                upload-class="bg-body"
-                                exclude-domain
-                            />
+                            <material-picker v-model="item.image" upload-class="bg-body" />
                             <div class="ml-3 flex-1">
                                 <el-form-item label="图片名称">
                                     <el-input v-model="item.name" placeholder="请输入名称" />
@@ -67,6 +63,7 @@ const handleAdd = () => {
     } else {
         feedback.msgError(`最多添加${limit}张图片`)
     }
+    console.log(props.content.data)
 }
 const handleDelete = (index: number) => {
     if (props.content.data?.length <= 1) {

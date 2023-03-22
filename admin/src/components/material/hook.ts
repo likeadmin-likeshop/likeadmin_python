@@ -144,6 +144,7 @@ export function useFile(
 
     const selectFile = (item: any) => {
         const index = select.value.findIndex((items: any) => items.id == item.id)
+
         if (index != -1) {
             select.value.splice(index, 1)
             return

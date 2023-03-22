@@ -345,7 +345,8 @@ const uploadAvatar = async (path: string) => {
     uploadFile(path)
         .then((res: any) => {
             uni.hideLoading()
-            setUserInfoFun(res.filename)
+
+            setUserInfoFun(res.path)
         })
         .catch(() => {
             uni.hideLoading()

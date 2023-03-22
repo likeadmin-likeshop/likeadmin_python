@@ -2,7 +2,7 @@
     <view
         class="customer-service bg-white flex flex-col justify-center items-center mx-[36rpx] mt-[20rpx] rounded-lg px-[110rpx] pt-[100rpx] pb-[160rpx]"
     >
-        <u-image width="280" height="280" :src="getImageUrl(content.qrcode)" />
+        <u-image width="280" height="280" :src="content.qrcode" />
         <view v-if="content.title" class="text-lg mt-[14rpx] font-medium">{{ content.title }}</view>
         <view v-if="content.time" class="text-content mt-[40rpx]"
             >服务时间：{{ content.time }}</view
@@ -19,11 +19,7 @@
             <!-- #endif -->
         </view>
         <view class="mt-[100rpx] w-full">
-            <u-button
-                type="primary"
-                shape="circle"
-                @click="saveImageToPhotosAlbum(getImageUrl(content.qrcode))"
-            >
+            <u-button type="primary" shape="circle" @click="saveImageToPhotosAlbum(content.qrcode)">
                 保存二维码图片
             </u-button>
         </view>
