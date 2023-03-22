@@ -83,7 +83,7 @@ class SystemAuthDeptService(ISystemAuthDeptService):
         assert edit_dept, '部门不存在'
 
         assert not (edit_dept.pid == 0 and dept_edit_in.pid > 0), "顶级部门不能修改上级"
-        assert not (edit_dept.pid == dept_edit_in.id), "上级部门不能是自己"
+        assert not (dept_edit_in.pid == dept_edit_in.id), "上级部门不能是自己"
 
         edit_post = dept_edit_in.dict()
         edit_post['update_time'] = int(time.time())
