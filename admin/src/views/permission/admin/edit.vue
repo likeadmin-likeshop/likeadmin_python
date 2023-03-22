@@ -28,11 +28,11 @@
                 <el-form-item label="名称" prop="nickname">
                     <el-input v-model="formData.nickname" placeholder="请输入名称" clearable />
                 </el-form-item>
-                <el-form-item label="归属部门" prop="deptId">
+                <el-form-item label="归属部门" prop="deptIds">
                     <el-tree-select
                         multiple
                         class="flex-1"
-                        v-model="formData.deptId"
+                        v-model="formData.deptIds"
                         :data="optionsData.dept"
                         clearable
                         node-key="id"
@@ -48,12 +48,12 @@
                         placeholder="请选择上级部门"
                     />
                 </el-form-item>
-                <el-form-item label="岗位" prop="postId">
+                <el-form-item label="岗位" prop="postIds">
                     <el-select
                         multiple
                         class="flex-1"
                         clearable
-                        v-model="formData.postId"
+                        v-model="formData.postIds"
                         placeholder="请选择岗位"
                     >
                         <el-option
@@ -65,10 +65,10 @@
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="角色" prop="role">
+                <el-form-item label="角色" prop="roleIds">
                     <el-select
                         multiple
-                        v-model="formData.role"
+                        v-model="formData.roleIds"
                         :disabled="isRoot"
                         class="flex-1"
                         clearable
@@ -79,7 +79,7 @@
                             v-for="(item, index) in optionsData.role"
                             :key="index"
                             :label="item.name"
-                            :value="String(item.id)"
+                            :value="item.id"
                         />
                     </el-select>
                 </el-form-item>
@@ -141,9 +141,9 @@ const formData = reactive({
     id: '',
     username: '',
     nickname: '',
-    deptId: '',
-    postId: '',
-    role: '',
+    deptIds: '',
+    postIds: '',
+    roleIds: '',
     avatar: '',
     password: '',
     passwordConfirm: '',
@@ -179,21 +179,21 @@ const formRules = reactive({
             trigger: ['blur']
         }
     ],
-    role: [
+    roleIds: [
         {
             required: true,
             message: '请选择角色',
             trigger: ['blur']
         }
     ],
-    deptId: [
+    deptIds: [
         {
             required: true,
             message: '请输入名称',
             trigger: ['blur']
         }
     ],
-    postId: [
+    postIds: [
         {
             required: true,
             message: '请输入名称',
@@ -258,8 +258,8 @@ const setFormData = async (row: any) => {
             //@ts-ignore
             formData[key] = data[key]
         }
-        Number(formData.deptId) == 0 && (formData.deptId = '')
-        Number(formData.postId) == 0 && (formData.postId = '')
+        Number(formData.deptIds) == 0 && (formData.deptIds = '')
+        Number(formData.postIds) == 0 && (formData.postIds = '')
     }
     formRules.password = []
     formRules.passwordConfirm = [

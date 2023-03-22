@@ -10,11 +10,7 @@
                             :key="index"
                             :style="{ color: tabbar.style.defaultColor }"
                         >
-                            <img
-                                class="w-[22px] h-[22px]"
-                                :src="getImageUrl(item.unselected)"
-                                alt=""
-                            />
+                            <img class="w-[22px] h-[22px]" :src="item.unselected" alt="" />
                             <div class="leading-3 text-[12px] mt-[4px]">{{ item.name }}</div>
                         </div>
                     </div>

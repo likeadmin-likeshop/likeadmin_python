@@ -200,7 +200,7 @@
                         >
                             <del-wrap @close="batchFileDelete([item.id])">
                                 <file-item
-                                    :uri="getImageUrl(item.url)"
+                                    :uri="item.url"
                                     :file-size="fileSize"
                                     :type="type"
                                     @click="selectFile(item)"

@@ -173,9 +173,11 @@ export default defineComponent({
         })
         const handleConfirm = useThrottleFn(
             () => {
+                //TODO
                 const selectUri = select.value.map((item) =>
-                    props.excludeDomain ? item.path : item.uri
+                    props.excludeDomain ? item.path : item.url
                 )
+
                 if (!isAdd.value) {
                     fileList.value.splice(currentIndex.value, 1, selectUri.shift())
                 } else {
@@ -202,6 +204,7 @@ export default defineComponent({
         }
         const handleChange = () => {
             const valueImg = limit.value != 1 ? fileList.value : fileList.value[0] || ''
+
             emit('update:modelValue', valueImg)
             emit('change', valueImg)
             handleClose()
