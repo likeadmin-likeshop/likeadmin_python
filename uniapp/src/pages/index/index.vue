@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { getIndex } from '@/api/shop'
+import { getIndex, getDecorate } from '@/api/shop'
 import { reactive } from 'vue'
 const state = reactive<{
     pages: any[]
@@ -40,7 +40,10 @@ const state = reactive<{
 })
 const getData = async () => {
     const data = await getIndex()
-    state.pages = JSON.parse(data.pages)
+    const res = await getDecorate({ id: 1 })
+    state.pages = JSON.parse(res.pages)
+    console.log(JSON.parse(res.pages))
+
     state.article = data.article
 }
 

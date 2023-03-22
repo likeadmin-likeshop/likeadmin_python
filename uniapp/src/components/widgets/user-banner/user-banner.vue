@@ -18,7 +18,7 @@
                     mode="aspectFit"
                     width="100%"
                     height="100%"
-                    :src="getImageUrl(item.image)"
+                    :src="item.image"
                     :border-radius="14"
                 />
             </swiper-item>
