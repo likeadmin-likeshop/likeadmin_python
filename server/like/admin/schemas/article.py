@@ -24,7 +24,7 @@ class ArticleCateListIn(BaseModel):
     文章分类列表入参
     """
     name: Union[str, None] = Query(default=None)
-    is_show: Union[int, None] = Query(default=1, alias='isShow')
+    is_show: Union[int, None] = Query(default=None, alias='isShow')
 
 
 class ArticleCateDetailIn(BaseModel):
