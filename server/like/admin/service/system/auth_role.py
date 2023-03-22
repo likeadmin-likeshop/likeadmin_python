@@ -68,7 +68,7 @@ class SystemAuthRoleService(ISystemAuthRoleService):
         """根据角色ID获取成员数量"""
         return await db.fetch_val(
             select(func.count(system_auth_admin.c.id))
-            .where(system_auth_admin.c.role == role_id, system_auth_admin.c.is_delete == 0))
+            .where(func.find_in_set(role_id, system_auth_admin.c.role_ids), system_auth_admin.c.is_delete == 0))
 
     async def detail(self, id_: int) -> SystemAuthRoleDetailOut:
         """角色详情"""
@@ -123,7 +123,7 @@ class SystemAuthRoleService(ISystemAuthRoleService):
             .limit(1)), '角色已不存在!'
         assert not await db.fetch_one(
             system_auth_admin.select()
-            .where(system_auth_admin.c.role == id_, system_auth_admin.c.is_delete == 0)
+            .where(func.find_in_set(id_, system_auth_admin.c.role_ids), system_auth_admin.c.is_delete == 0)
             .limit(1)), '角色已被管理员使用,请先移除'
         await db.execute(system_auth_role.delete().where(system_auth_role.c.id == id_))
         await self.auth_perm_service.batch_delete_by_role_id(id_)
