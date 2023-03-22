@@ -148,7 +148,7 @@ class ArticleCateService(IArticleCateService):
         edit_dict = edit_in.dict()
         edit_dict['update_time'] = int(time.time())
         return await db.execute(article_cate_table.update()
-                                .where(article_cate_table.c.id == article_cate_table.id)
+                                .where(article_cate_table.c.id == edit_in.id)
                                 .values(**edit_dict))
 
     async def delete(self, delete_in: ArticleCateDeleteIn) -> ArticleCateOut:
