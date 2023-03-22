@@ -76,6 +76,7 @@ class SystemAuthPostService(ISystemAuthPostService):
             system_auth_post.c.is_delete == 0).limit(1)), '岗位不存在'
 
         assert not await db.fetch_one(system_auth_post.select().where(
+            system_auth_post.c.id != post_edit_in.id,
             system_auth_post.c.code == post_edit_in.code or system_auth_post.c.name == post_edit_in.name,
             system_auth_post.c.is_delete == 0).limit(1)), '该岗位已存在'
 
