@@ -175,7 +175,7 @@ export default defineComponent({
             () => {
                 //TODO
                 const selectUri = select.value.map((item) =>
-                    props.excludeDomain ? item.path : item.url
+                    props.excludeDomain ? item.url : item.url
                 )
 
                 if (!isAdd.value) {

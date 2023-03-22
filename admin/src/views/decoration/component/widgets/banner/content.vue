@@ -23,6 +23,7 @@ const props = defineProps({
 
 const getImage = computed(() => {
     const { data } = props.content
+
     if (Array.isArray(data)) {
         return data[0] ? data[0].image : ''
     }

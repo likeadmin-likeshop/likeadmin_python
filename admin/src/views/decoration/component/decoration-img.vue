@@ -1,5 +1,5 @@
 <template>
-    <el-image :style="styles" v-bind="props" :src="getImageUrl(src)">
+    <el-image :style="styles" v-bind="props" :src="src">
         <template #placeholder>
             <div class="image-slot"></div>
         </template>
