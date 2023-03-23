@@ -11,6 +11,7 @@ from like.admin.schemas.decorate import DecorateTabbarOut, DecorateTabbarStyle, 
 from like.dependencies.database import db
 from like.models.decorate import decorate_tabbar
 from like.utils.config import ConfigUtil
+from like.utils.urls import UrlUtil
 
 
 class IDecorateTabbarService(ABC):
@@ -47,8 +48,8 @@ class DecorateTabbarService(ABC):
         for obj in tabbar_list:
             save_dict = {
                 "name": obj.name,
-                "selected": obj.selected,
-                "unselected": obj.unselected,
+                "selected": await UrlUtil.to_relative_url(obj.selected),
+                "unselected": await UrlUtil.to_relative_url(obj.unselected),
                 "link": obj.link,
                 "update_time": int(time.time()),
                 "create_time": int(time.time())

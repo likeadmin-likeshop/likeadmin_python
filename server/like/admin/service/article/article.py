@@ -152,6 +152,7 @@ class ArticleService(IArticleService):
         assert edit_article, '文章不存在！'
 
         edit_article_dict = edit_in.dict()
+        edit_article_dict['image'] = await UrlUtil.to_relative_url(edit_in.image)
         edit_article_dict['update_time'] = int(time.time())
 
         return await db.execute(article_table.update()

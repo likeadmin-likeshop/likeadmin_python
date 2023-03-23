@@ -174,7 +174,7 @@ class ArticleService(IArticleService):
         result.image = await UrlUtil.to_absolute_url(result.image)
         if self.user_id:
             article_collects = await self.get_user_collect_article_ids(user_id=self.user_id,
-                                                                       article_ids=article_detail.id)
+                                                                       article_ids=[article_detail.id])
             result.collect = bool(article_detail.id in article_collects)
         await self.update_article_visit(article_detail.id)
         return result
@@ -192,8 +192,8 @@ class ArticleService(IArticleService):
                   article_table.c.create_time,
                   ]
         collect_query = select(colums).where(article_collect_table.c.user_id == self.user_id,
-                                                          article_collect_table.c.is_delete == False,
-                                                          article_table.c.is_delete == False) \
+                                             article_collect_table.c.is_delete == False,
+                                             article_table.c.is_delete == False) \
             .select_from(
             article_collect_table.outerjoin(article_table,
                                             article_collect_table.c.article_id == article_table.c.id)) \

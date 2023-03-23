@@ -89,6 +89,7 @@ class ArticleAddIn(BaseModel):
     title: str
     cid: int
     intro: str
+    image: str
     summary: str
     author: str
     content: str

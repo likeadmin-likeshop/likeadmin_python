@@ -88,16 +88,22 @@ async def front_login_verify(request: Request):
     # 路由转权限
     auths = request.url.path
 
+    token = await APIKeyHeader(name="token")(request)
+    redis_key = f'{FrontConfig.frontendTokenKey}{token}'
     # 免登录接口
     if auths in FrontConfig.not_login_uri:
+        if token:
+            uid_str = await RedisUtil.get(redis_key)
+            if uid_str and uid_str.isdigit():
+                uid = int(uid_str)
+                request.state.user_id = uid
         return
-    token = await APIKeyHeader(name="token")(request)
+
     # Token是否为空
     if not token:
         raise AppException(HttpResp.TOKEN_EMPTY)
 
     # Token是否过期
-    redis_key = f'{FrontConfig.frontendTokenKey}{token}'
     exist_cnt = await RedisUtil.exists(redis_key)
     if exist_cnt == 0:
         raise AppException(HttpResp.TOKEN_INVALID)
