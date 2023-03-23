@@ -241,7 +241,7 @@ class ArticleService(IArticleService):
             select([article_collect_table.c.id]).select_from(article_collect_table).where(
                 article_collect_table.c.user_id == self.user_id,
                 article_collect_table.c.is_delete == False,
-                article_collect_table.c.article_id == post_in.articleId).limit(1))
+                article_collect_table.c.article_id == post_in.article_id).limit(1))
         assert article_collect, '收藏不存在!'
         return await db.execute(article_collect_table.update()
                                 .where(article_collect_table.c.id == article_collect.id)
