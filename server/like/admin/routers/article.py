@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from like.admin.schemas.article import ArticleCateListIn, ArticleCateOut, ArticleCateDetailIn, ArticleCateDeleteIn, \
     ArticleCateEditIn, ArticleCateAddIn, ArticleCateChangeIn, ArticleListIn, ArticleListOut, ArticleDetailIn, \
-    ArticleAddIn, ArticleEditIn, ArticleChangeIn
+    ArticleAddIn, ArticleEditIn, ArticleChangeIn, ArticleDeleteIn
 from like.admin.service.article.article import IArticleService, ArticleService
 from like.admin.service.article.article_cate import IArticleCateService, ArticleCateService
 from like.http_base import unified_resp
@@ -140,6 +140,17 @@ async def article_edit(edit_in: ArticleEditIn, article_service: IArticleService 
     :return:
     """
     return await article_service.edit(edit_in)
+
+
+@router.post('/del')
+@unified_resp
+async def article_del(del_in: ArticleDeleteIn,
+                      article_service: IArticleService = Depends(ArticleService.instance)):
+    """
+    文章删除
+    :return:
+    """
+    return await article_service.delete(del_in)
 
 
 @router.post('/change')
