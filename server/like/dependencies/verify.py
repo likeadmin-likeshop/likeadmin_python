@@ -88,7 +88,7 @@ async def front_login_verify(request: Request):
     # 路由转权限
     auths = request.url.path
 
-    token = await APIKeyHeader(name="token")(request)
+    token = await APIKeyHeader(name="token", auto_error=False)(request)
     redis_key = f'{FrontConfig.frontendTokenKey}{token}'
     # 免登录接口
     if auths in FrontConfig.not_login_uri:
