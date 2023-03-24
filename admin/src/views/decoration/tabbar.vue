@@ -10,7 +10,11 @@
                             :key="index"
                             :style="{ color: tabbar.style.defaultColor }"
                         >
-                            <img class="w-[22px] h-[22px]" :src="item.unselected" alt="" />
+                            <img
+                                class="w-[22px] h-[22px]"
+                                :src="getImageUrl(item.unselected)"
+                                alt=""
+                            />
                             <div class="leading-3 text-[12px] mt-[4px]">{{ item.name }}</div>
                         </div>
                     </div>
@@ -47,6 +51,7 @@
                                                             v-model="element.unselected"
                                                             upload-class="bg-body"
                                                             size="60px"
+                                                            excludeDomain
                                                         >
                                                             <template #upload>
                                                                 <div
@@ -66,6 +71,7 @@
                                                             v-model="element.selected"
                                                             upload-class="bg-body"
                                                             size="60px"
+                                                            excludeDomain
                                                         >
                                                             <template #upload>
                                                                 <div
@@ -137,7 +143,7 @@ import { getDecorateTabbar, setDecorateTabbar } from '@/api/decoration'
 import feedback from '@/utils/feedback'
 import Draggable from 'vuedraggable'
 import useAppStore from '@/stores/modules/app'
-const { getImageUrl } = useAppStore()
+const { getImageUrl, getimageUrl } = useAppStore()
 const max = 5
 const min = 2
 const tabbar = reactive({
@@ -189,7 +195,12 @@ const onMove = (e: any) => {
 
 const getData = async () => {
     const data = await getDecorateTabbar()
-    tabbar.list = data.list.map((item: any) => ({ ...item, link: JSON.parse(item.link) }))
+    tabbar.list = data.list.map((item: any) => ({
+        ...item,
+        link: JSON.parse(item.link),
+        selected: 'api/uploads' + item.selected,
+        unselected: 'api/uploads' + item.unselected
+    }))
     tabbar.style = data.style
 }
 const setData = async () => {

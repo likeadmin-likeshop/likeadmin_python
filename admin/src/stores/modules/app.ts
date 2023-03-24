@@ -21,6 +21,10 @@ const useAppStore = defineStore({
         getImageUrl(url: string) {
             return url ? `${this.config.ossDomain}/${url}` : ''
         },
+        //TODO处理图片url返回缺少api/uploads
+        getimageUrl(url: string) {
+            return url ? `${this.config.ossDomain}/api/uploads/${url}/` : ''
+        },
         getConfig() {
             return new Promise((resolve, reject) => {
                 getConfig()
