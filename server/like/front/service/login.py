@@ -8,8 +8,10 @@ from sqlalchemy import select
 from like.common.enums import SmsEnum, LoginClientEnum
 from like.common.sms_captcha import SmsCaptchaManager
 from like.dependencies.database import db
+from like.exceptions.base import AppException
 from like.front.config import FrontConfig
 from like.front.schemas.login import FrontLoginCheckOut, FrontRegisterIn
+from like.http_base import HttpResp
 from like.models.user import user_table, User, user_auth_table
 from like.utils.redis import RedisUtil
 from like.utils.tools import ToolsUtil
@@ -120,25 +122,28 @@ class LoginService(ILoginService):
         """
         user_auth = await db.fetch_one(
             user_auth_table.select().where(
-                user_auth_table.c.unionid == union_id, user_auth_table.c.open_id == open_id).limit(1))
+                user_auth_table.c.unionid == union_id, user_auth_table.c.openid == open_id).limit(1))
         user = None
         if user_auth:
             user = await db.fetch_one(
                 select(self.select_columns).select_from(self.table).where(
-                    self.table.c.is_delete == 0, self.table.c.id == user_auth.id).limit(1))
+                    self.table.c.is_delete == 0, self.table.c.id == user_auth.user_id).limit(1))
 
         if not user:
-            user = await self.insert_new_user()
+            user_id = await self.insert_new_user()
+            user = await db.fetch_one(
+                select(self.select_columns).select_from(self.table).where(
+                    self.table.c.is_delete == 0, self.table.c.id == user_id).limit(1))
 
         if not user_auth:
             user_auth = await self.insert_new_user_auth(user.id, union_id, client, open_id)
 
-        if not user_auth.union_id:
+        if not user_auth.unionid:
             await self.update_user_auth(user.id, unionid=union_id)
 
         await self.update_user_info(user.id, self.request.client.host, int(time.time()))
 
-        return self.make_login_token(user.id, user.mobile)
+        return await self.make_login_token(user.id, user.mobile)
 
     async def update_user_auth(self, user_id, **kwargs):
         return await db.execute(user_auth_table.update()
@@ -149,7 +154,7 @@ class LoginService(ILoginService):
         user_auth_dict = {
             "user_id": user_id,
             "unionid": union_id,
-            "client": client,
+            "client": client.value,
             "openid": open_id,
             'create_time': int(time.time()),
             'update_time': int(time.time())
@@ -192,7 +197,7 @@ class LoginService(ILoginService):
             'nickname': '用户%s' % sn,
             'username': "u%s" % sn,
             'avatar': "/api/static/default_avatar.png",
-            'channel': LoginClientEnum.PC,
+            'channel': LoginClientEnum.PC.value,
             'last_login_time': int(time.time()),
             'last_login_ip': self.request.client.host,
             'create_time': int(time.time()),
@@ -271,7 +276,10 @@ class LoginService(ILoginService):
         :return:
         """
         wx_client = await WeChatUtil.mnp()
-        session_result = wx_client.code_to_session(code)
+        try:
+            session_result = wx_client.code_to_session(code)
+        except Exception as e:
+            raise AppException(HttpResp.FAILED, msg=str(e))
         open_id = session_result.get("openid")
         union_id = session_result.get("unionid")
         return await self.user_service(open_id, union_id, client=client)
