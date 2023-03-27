@@ -12,6 +12,7 @@ from like.utils.config import ConfigUtil
 from like.utils.redis import RedisUtil
 from like.utils.tools import ToolsUtil
 from like.utils.urls import UrlUtil
+from like.utils.wechat import WeChatUtil
 
 
 class IUserService(ABC):
@@ -127,8 +128,20 @@ class UserService(IUserService):
         await db.execute(user_table.update().where(user_table.c.id == user_id).values(
             mobile=bind_in.mobile, update_time=int(time.time())))
 
-    async def mnp_mobile(self):
-        pass
+    async def mnp_mobile(self, user_id: int, code: str):
+        """微信手机号"""
+        client = await WeChatUtil.mnp()
+        try:
+            data = client._post(
+                'wxa/business/getuserphonenumber',
+                data={'code': code}
+            )
+        except Exception as e:
+            raise AppException(HttpResp.FAILED, msg=str(e))
+        phone_info = data.get('phone_info', {})
+        mobile = phone_info.get('phoneNumber', '')
+        await db.execute(user_table.update().where(user_table.c.id == user_id).values(
+            mobile=mobile, update_time=int(time.time())))
 
     @classmethod
     async def instance(cls):

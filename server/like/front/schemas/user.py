@@ -49,3 +49,8 @@ class UserBindMobileIn(BaseModel):
     type: Literal['bind', 'change']
     mobile: str = Field(regex='^[1][3,4,5,6,7,8,9][0-9]{9}$')  # 手机号
     code: str  # 验证码
+
+
+class UserMnpMobileIn(BaseModel):
+    """微信手机号参数"""
+    code: str  # 验证码

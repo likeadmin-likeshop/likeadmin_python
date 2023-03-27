@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 
-from like.front.schemas.user import UserEditIn, UserChangePwdIn, UserBindMobileIn
+from like.front.schemas.user import UserEditIn, UserChangePwdIn, UserBindMobileIn, UserMnpMobileIn
 from like.front.service.user import IUserService, UserService
 from like.http_base import unified_resp
 
@@ -42,3 +42,11 @@ async def bind_mobile(request: Request, bind_in: UserBindMobileIn,
                       user_service: IUserService = Depends(UserService.instance)):
     """绑定手机号"""
     return await user_service.bind_mobile(request.state.user_id, bind_in)
+
+
+@router.post('/mnpMobile')
+@unified_resp
+async def mnp_mobile(request: Request, mnp_in: UserMnpMobileIn,
+                     user_service: IUserService = Depends(UserService.instance)):
+    """微信手机号"""
+    return await user_service.mnp_mobile(request.state.user_id, mnp_in.code)
