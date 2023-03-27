@@ -39,7 +39,7 @@ class IUserService(ABC):
         pass
 
     @abstractmethod
-    async def mnp_mobile(self):
+    async def mnp_mobile(self, user_id: int, code: str):
         pass
 
 
