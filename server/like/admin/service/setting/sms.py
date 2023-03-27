@@ -47,7 +47,7 @@ class SettingSmsService(ISettingSmsService):
         config = await ConfigUtil.get_map('sms', alias)
         res = {'name': config.get('name', ''),
                'status': 1 if engine == alias else 0, 'alias': alias,
-               'sign': config.get('name', '')}
+               'sign': config.get('sign', '')}
         if alias == 'aliyun':
             res['appKey'] = config.get('appKey', '')
             res['secretKey'] = config.get('secretKey', '')
