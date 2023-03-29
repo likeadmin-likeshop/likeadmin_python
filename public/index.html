@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        /*
+        后续有PC端使用该代码，判断前台跳转PC或者手机
+        var isMobile = function () {
+            var u = navigator.userAgent
+            return /Mobile|Android|webOS|iPhone|iPad|Phone/i.test(u)
+        }
+        window.location.href = isMobile() ? '/mobile' : '/pc'
+        */
+       
+
+        //现在只有手机端，跳转手机端
+       window.location.href = '/mobile'
+    </script>
+</body>
+
+</html>
