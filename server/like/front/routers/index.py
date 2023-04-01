@@ -24,7 +24,8 @@ async def decorate(decorate_in: DecorateIn = Depends(), index_service: IIndexSer
 @router.get('/config')
 @unified_resp
 async def config(request: Request, index_service: IIndexService = Depends(IndexService.instance)):
-    return await index_service.config(f'{request.url.hostname}:{request.url.port}')
+    domain = f'{request.url.hostname}:{request.url.port}' if request.url.port else request.url.hostname
+    return await index_service.config(domain)
 
 
 @router.get('/policy')

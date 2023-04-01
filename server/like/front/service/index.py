@@ -33,7 +33,7 @@ class IIndexService(ABC):
         pass
 
     @abstractmethod
-    async def config(self) -> dict:
+    async def config(self, domain) -> dict:
         pass
 
     @abstractmethod
@@ -123,7 +123,7 @@ class IndexService(IIndexService):
         }
         return {
             'version': get_settings().version,
-            'domain': domain,
+            'domain': UrlUtil.domain,
             'style': ToolsUtil.json_to_map(tabbar_style),
             'tabbar': tabs,
             'login': login_map,
