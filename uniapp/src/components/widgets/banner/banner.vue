@@ -14,7 +14,12 @@
                 :key="index"
                 @click="handleClick(item.link)"
             >
-                <u-image mode="aspectFit" width="100%" height="100%" :src="item.image" />
+                <u-image
+                    mode="aspectFit"
+                    width="100%"
+                    height="100%"
+                    :src="getImageUrl(item.image)"
+                />
             </swiper-item>
         </swiper>
     </view>
