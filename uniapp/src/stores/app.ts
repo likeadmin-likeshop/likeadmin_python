@@ -23,6 +23,9 @@ export const useAppStore = defineStore({
         async getConfig() {
             const data = await getConfig()
             this.config = data
+        },
+        getImageurl(url: string) {
+            return url ? `https://python-admin.likeadmin.cn${url}` : ''
         }
     }
 })

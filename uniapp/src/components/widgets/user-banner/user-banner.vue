@@ -43,7 +43,7 @@ const props = defineProps({
 const handleClick = (link: any) => {
     navigateTo(link)
 }
-const { getImageUrl } = useAppStore()
+const { getImageUrl, getImageurl } = useAppStore()
 </script>
 
 <style></style>

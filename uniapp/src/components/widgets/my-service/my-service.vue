@@ -47,7 +47,7 @@ const props = defineProps({
         default: () => ({})
     }
 })
-const { getImageUrl } = useAppStore()
+const { getImageUrl, getImageurl } = useAppStore()
 const handleClick = (link: any) => {
     navigateTo(link)
 }
