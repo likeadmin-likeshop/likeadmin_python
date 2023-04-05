@@ -23,13 +23,15 @@ class ChannelOaService(IChannelOaService):
 
     async def detail(self) -> dict:
         """公众号渠道设置详情"""
+        is_prod = get_settings().mode == 'prod'
+
         config = await ConfigUtil.get('oa_channel')
         config.pop('menus')
         config['qrCode'] = await UrlUtil.to_absolute_url(config.get('qrCode', ''))
         config['name'] = config.get('name', '')
         config['primaryId'] = config.get('primaryId', '')
-        config['appId'] = config.get('appId', '')
-        config['appSecret'] = config.get('appSecret', '')
+        config['appId'] = '******' if is_prod else config.get('appId', '')
+        config['appSecret'] = '******' if is_prod else config.get('appSecret', '')
         config['url'] = config.get('url', '')
         config['token'] = config.get('token', '')
         config['encodingAesKey'] = config.get('encodingAesKey', '')

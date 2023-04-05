@@ -23,11 +23,13 @@ class ChannelMpService(IChannelMpService):
 
     async def detail(self) -> dict:
         """微信小程序渠道详情"""
+        is_prod = get_settings().mode == 'prod'
+
         config = await ConfigUtil.get('mp_channel')
         config['name'] = config.get('name', '')
         config['primaryId'] = config.get('primaryId', '')
-        config['appId'] = config.get('appId', '')
-        config['appSecret'] = config.get('appSecret', '')
+        config['appId'] = '******' if is_prod else config.get('appId', '')
+        config['appSecret'] = '******' if is_prod else config.get('appSecret', '')
         config['qrCode'] = await UrlUtil.to_absolute_url(config.get('qrCode', ''))
 
         domain = get_settings().domain

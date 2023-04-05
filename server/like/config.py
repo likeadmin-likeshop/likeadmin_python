@@ -65,6 +65,9 @@ class Settings(BaseSettings):
     # 允许跨域的源列表 eg. '["*"]'   '["http://localhost", "http://localhost:8080", "https://www.example.org"]'
     cors_allow_origins: str = '["*"]'
 
+    # 模式
+    mode: str = 'prod'  # dev, prod
+
     # 全局配置
     # 版本
     version: str = 'v1.1.0'

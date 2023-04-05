@@ -7,6 +7,7 @@ from abc import ABC, abstractmethod
 import pydantic
 
 from like.admin.schemas.setting import SettingStorageEditIn, SettingStorageDetailOut, SettingStorageOut
+from like.config import get_settings
 from like.utils.config import ConfigUtil
 
 SettingsStorageConfDict = {
@@ -47,6 +48,8 @@ class SettingStorageService(ISettingStorageService):
             alias, conf in SettingsStorageConfDict.items()]
 
     async def detail(self, alias: str):
+        is_prod = get_settings().mode == 'prod'
+
         engine = await ConfigUtil.get_val("storage", "default", "local")
         config = await ConfigUtil.get_map("storage", alias) or {}
         detail = {
@@ -57,8 +60,8 @@ class SettingStorageService(ISettingStorageService):
         if alias != 'local':
             detail.update({
                 "bucket": config.get("bucket", ""),
-                "secretKey": config.get("secretKey", ""),
-                "accessKey": config.get("accessKey", ""),
+                '******' if is_prod else "secretKey": config.get("secretKey", ""),
+                '******' if is_prod else "accessKey": config.get("accessKey", ""),
                 "domain": config.get("domain", ""),
             })
             if alias == "qcloud":

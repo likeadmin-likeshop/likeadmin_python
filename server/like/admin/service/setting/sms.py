@@ -3,6 +3,7 @@ import json
 from abc import ABC, abstractmethod
 
 from like.admin.schemas.setting import SettingSmsSaveIn
+from like.config import get_settings
 from like.utils.config import ConfigUtil
 
 
@@ -43,18 +44,20 @@ class SettingSmsService(ISettingSmsService):
 
     async def detail(self, alias: str) -> dict:
         """短信引擎详情"""
+        is_prod = get_settings().mode == 'prod'
+
         engine = await ConfigUtil.get_val('sms', 'default', 'local')
         config = await ConfigUtil.get_map('sms', alias)
         res = {'name': config.get('name', ''),
                'status': 1 if engine == alias else 0, 'alias': alias,
                'sign': config.get('sign', '')}
         if alias == 'aliyun':
-            res['appKey'] = config.get('appKey', '')
-            res['secretKey'] = config.get('secretKey', '')
+            res['appKey'] = '******' if is_prod else config.get('appKey', '')
+            res['secretKey'] = '******' if is_prod else config.get('secretKey', '')
         elif alias == 'tencent':
-            res['appId'] = config.get('appId', '')
-            res['secretId'] = config.get('secretId', '')
-            res['secretKey'] = config.get('secretKey', '')
+            res['appId'] = '******' if is_prod else config.get('appId', '')
+            res['secretId'] = '******' if is_prod else config.get('secretId', '')
+            res['secretKey'] = '******' if is_prod else config.get('secretKey', '')
         elif alias == 'huawei':
             pass
         return res

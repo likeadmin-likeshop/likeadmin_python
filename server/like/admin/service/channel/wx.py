@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from like.admin.schemas.channel import ChannelWxIn
+from like.config import get_settings
 from like.utils.config import ConfigUtil
 
 
@@ -21,9 +22,11 @@ class ChannelWxService(IChannelWxService):
 
     async def detail(self) -> dict:
         """微信开放平台设置详情"""
+        is_prod = get_settings().mode == 'prod'
+
         config = await ConfigUtil.get('wx_channel')
-        config['appId'] = config.get('appId', '')
-        config['appSecret'] = config.get('appSecret', '')
+        config['appId'] = '******' if is_prod else config.get('appId', '')
+        config['appSecret'] = '******' if is_prod else config.get('appSecret', '')
         return config
 
     async def save(self, wx_in: ChannelWxIn):
