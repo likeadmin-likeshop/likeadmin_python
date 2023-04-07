@@ -153,7 +153,7 @@ class LoginService(ILoginService):
     async def insert_new_user_auth(self, user_id, union_id, client, open_id):
         user_auth_dict = {
             "user_id": user_id,
-            "unionid": union_id,
+            "unionid": union_id or '0',
             "client": client.value,
             "openid": open_id,
             'create_time': int(time.time()),
