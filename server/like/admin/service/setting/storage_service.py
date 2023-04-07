@@ -13,8 +13,8 @@ from like.utils.config import ConfigUtil
 SettingsStorageConfDict = {
     'local': {"name": "本地存储", "describe": "存储在本地服务器"},
     'qiniu': {"name": "七牛云存储", "describe": "存储在七牛云，请前往七牛云开通存储服务"},
-    'aliyun': {"name": "阿里云存储", "describe": "存储在阿里云，请前往阿里云开通存储服务"},
-    'qcloud': {"name": "腾讯云存储", "describe": "存储在腾讯云，请前往腾讯云开通存储服务"}
+    'aliyun': {"name": "阿里云OSS", "describe": "存储在阿里云，请前往阿里云开通存储服务"},
+    'qcloud': {"name": "腾讯云COS", "describe": "存储在腾讯云，请前往腾讯云开通存储服务"}
 }
 
 

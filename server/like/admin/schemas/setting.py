@@ -76,6 +76,7 @@ class SettingStorageChangeIn(BaseModel):
 class SettingStorageOut(BaseModel):
     """存储设置列表返回"""
     alias: str
+    name: str
     status: int
     describe: str = ""
 
