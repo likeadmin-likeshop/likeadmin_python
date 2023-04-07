@@ -1,6 +1,6 @@
 {
-    "name" : "",
-    "appid" : "",
+    "name" : "likeadmin开源管理后台python版",
+    "appid" : "__UNI__6192F68",
     "description" : "",
     "versionName" : "1.0.0",
     "versionCode" : "100",
@@ -50,9 +50,11 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wx2fc5a95604634c46",
+        "appid" : "wxf3a2e7cfdbb63a78",
         "setting" : {
-            "urlCheck" : false
+            "urlCheck" : false,
+            "minified" : true,
+            "es6" : true
         },
         "usingComponents" : true,
         "unipush" : {

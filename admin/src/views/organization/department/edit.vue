@@ -106,25 +106,25 @@ const formRules = {
             message: '请输入部门名称',
             trigger: ['blur']
         }
+    ],
+    duty: [
+        {
+            required: true,
+            message: '请输入负责人姓名',
+            trigger: ['blur']
+        }
+    ],
+    mobile: [
+        {
+            required: true,
+            message: '请输入联系电话',
+            trigger: ['blur']
+        },
+        {
+            validator: checkMobile,
+            trigger: ['blur']
+        }
     ]
-    // duty: [
-    //     {
-    //         required: true,
-    //         message: '请输入负责人姓名',
-    //         trigger: ['blur']
-    //     }
-    // ],
-    // mobile: [
-    //     {
-    //         required: true,
-    //         message: '请输入联系电话',
-    //         trigger: ['blur']
-    //     },
-    //     {
-    //         validator: checkMobile,
-    //         trigger: ['blur']
-    //     }
-    // ]
 }
 
 const { optionsData } = useDictOptions<{
@@ -148,11 +148,15 @@ const open = (type = 'add') => {
     popupRef.value?.open()
 }
 
-const setFormData = (data: Record<any, any>) => {
+const setFormData = (data: Record<any, any>, sort?: any) => {
     for (const key in formData) {
         if (data[key] != null && data[key] != undefined) {
             //@ts-ignore
             formData[key] = data[key]
+            if (key == 'sort' && sort == 0) {
+                formData[key] = 0
+                formData['isStop'] = 0
+            }
         }
         //TODO：因为后端返回字段为is_stop
         else {

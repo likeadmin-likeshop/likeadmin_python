@@ -123,7 +123,8 @@ const handleAdd = async (id?: number) => {
     await nextTick()
     if (id) {
         editRef.value?.setFormData({
-            pid: id
+            pid: id,
+            sort: 0
         })
     }
     editRef.value?.open('add')

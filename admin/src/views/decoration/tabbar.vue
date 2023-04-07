@@ -10,11 +10,7 @@
                             :key="index"
                             :style="{ color: tabbar.style.defaultColor }"
                         >
-                            <img
-                                class="w-[22px] h-[22px]"
-                                :src="getImageUrl(item.unselected)"
-                                alt=""
-                            />
+                            <img class="w-[22px] h-[22px]" :src="item.unselected" alt="" />
                             <div class="leading-3 text-[12px] mt-[4px]">{{ item.name }}</div>
                         </div>
                     </div>
@@ -51,7 +47,6 @@
                                                             v-model="element.unselected"
                                                             upload-class="bg-body"
                                                             size="60px"
-                                                            excludeDomain
                                                         >
                                                             <template #upload>
                                                                 <div
@@ -71,7 +66,6 @@
                                                             v-model="element.selected"
                                                             upload-class="bg-body"
                                                             size="60px"
-                                                            excludeDomain
                                                         >
                                                             <template #upload>
                                                                 <div
@@ -192,14 +186,21 @@ const onMove = (e: any) => {
     }
     return true
 }
-
+const appStore = useAppStore()
 const getData = async () => {
     const data = await getDecorateTabbar()
     tabbar.list = data.list.map((item: any) => ({
         ...item,
         link: JSON.parse(item.link),
-        selected: 'api/uploads' + item.selected,
-        unselected: 'api/uploads' + item.unselected
+        //TODO
+        selected: item.selected.includes('api/uploads')
+            ? appStore.config.ossDomain + '/' + item.selected
+            : appStore.config.ossDomain + '/api/uploads' + item.selected,
+        unselected: item.unselected.includes('api/uploads')
+            ? appStore.config.ossDomain + '/' + item.unselected
+            : appStore.config.ossDomain + '/api/uploads' + item.unselected
+        // selected: item.selected,
+        // unselected: item.unselected
     }))
     tabbar.style = data.style
 }

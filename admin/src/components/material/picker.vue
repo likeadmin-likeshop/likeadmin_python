@@ -149,7 +149,7 @@ export default defineComponent({
         const isAdd = ref(true)
         const currentIndex = ref(-1)
         const { disabled, limit, modelValue } = toRefs(props)
-        const { getImageUrl } = useAppStore()
+        const { getImageUrl, getimageUrl } = useAppStore()
         const tipsText = computed(() => {
             switch (props.type) {
                 case 'image':
@@ -177,7 +177,6 @@ export default defineComponent({
                 const selectUri = select.value.map((item) =>
                     props.excludeDomain ? item.url : item.url
                 )
-
                 if (!isAdd.value) {
                     fileList.value.splice(currentIndex.value, 1, selectUri.shift())
                 } else {
@@ -204,7 +203,6 @@ export default defineComponent({
         }
         const handleChange = () => {
             const valueImg = limit.value != 1 ? fileList.value : fileList.value[0] || ''
-
             emit('update:modelValue', valueImg)
             emit('change', valueImg)
             handleClose()
