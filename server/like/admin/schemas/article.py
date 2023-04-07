@@ -14,6 +14,7 @@ class ArticleCateOut(BaseModel):
     id: int
     name: str = Field(default='')
     sort: int
+    number: Union[int, None]
     isShow: int = Field(alias='is_show')
     createTime: datetime = Field(alias='create_time')  # 创建时间
     updateTime: datetime = Field(alias='update_time')  # 更新时间

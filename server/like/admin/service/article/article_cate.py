@@ -5,12 +5,12 @@ from typing import List
 import pydantic
 from fastapi_pagination.bases import AbstractPage
 from fastapi_pagination.ext.databases import paginate
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 from like.admin.schemas.article import ArticleCateOut, ArticleCateListIn, ArticleCateAddIn, \
     ArticleCateEditIn, ArticleCateDetailIn, ArticleCateChangeIn, ArticleCateDeleteIn
 from like.dependencies.database import db
-from like.models.article import article_cate_table
+from like.models.article import article_cate_table, article_table
 
 
 class IArticleCateService(ABC):
@@ -114,7 +114,12 @@ class ArticleCateService(IArticleCateService):
         if list_in.is_show is not None:
             where.append(article_cate_table.c.is_show == list_in.is_show)
         query = select(self.select_columns).select_from(article_cate_table).where(*where).order_by(*self.order_by)
-        return await paginate(db, query)
+        pager = await paginate(db, query)
+        for obj in pager.lists:
+            obj.number = await db.fetch_val(
+                select(func.count(article_table.c.id))
+                .where(article_table.c.cid == obj.id, article_table.c.is_delete == 0))
+        return pager
 
     async def detail(self, detail_in: ArticleCateDetailIn) -> ArticleCateOut:
         """
