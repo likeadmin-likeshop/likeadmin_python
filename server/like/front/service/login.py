@@ -2,6 +2,7 @@ import time
 from abc import ABC, abstractmethod
 from typing import Union
 
+import sqlalchemy as sa
 from fastapi import Request
 from sqlalchemy import select
 
@@ -122,7 +123,7 @@ class LoginService(ILoginService):
         """
         user_auth = await db.fetch_one(
             user_auth_table.select().where(
-                user_auth_table.c.unionid == union_id, user_auth_table.c.openid == open_id).limit(1))
+                sa.or_(user_auth_table.c.unionid == union_id, user_auth_table.c.openid == open_id)).limit(1))
         user = None
         if user_auth:
             user = await db.fetch_one(
