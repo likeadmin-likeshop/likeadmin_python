@@ -101,7 +101,6 @@
                         placeholder="请输入确认密码"
                     />
                 </el-form-item>
-
                 <el-form-item label="管理员状态" v-if="!isRoot">
                     <el-switch v-model="formData.isDisable" :active-value="0" :inactive-value="1" />
                 </el-form-item>
@@ -154,7 +153,7 @@ const formData = reactive({
 })
 
 const isRoot = computed(() => {
-    return formData.role == '0'
+    return formData.id == '1'
 })
 
 const passwordConfirmValidator = (rule: object, value: string, callback: any) => {

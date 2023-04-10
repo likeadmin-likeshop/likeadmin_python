@@ -52,7 +52,15 @@
                     </el-table-column>
                     <el-table-column label="账号" prop="username" min-width="100" />
                     <el-table-column label="名称" prop="nickname" min-width="100" />
-                    <el-table-column label="角色" prop="role" min-width="100" />
+                    <el-table-column label="角色" prop="role" min-width="100">
+                        <template #default="{ row }">
+                            <div class="flex items-center">
+                                <el-tooltip :content="row.role" placement="top-start">
+                                    <div class="ml-[10px] text_hidden">{{ row.role }}</div>
+                                </el-tooltip>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column label="部门" prop="dept" min-width="100" />
                     <el-table-column label="创建时间" prop="createTime" min-width="180" />
                     <el-table-column label="最近登录时间" prop="lastLoginTime" min-width="180" />
@@ -162,3 +170,11 @@ onMounted(() => {
     getLists()
 })
 </script>
+<style lang="scss" scoped>
+.text_hidden {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+</style>
