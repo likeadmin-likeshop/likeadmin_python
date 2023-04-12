@@ -56,6 +56,7 @@
                             type="danger"
                             link
                             @click="handleDelete(row.id)"
+                            v-if="row.number !== 0"
                         >
                             删除
                         </el-button>
