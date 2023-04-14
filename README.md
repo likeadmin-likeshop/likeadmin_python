@@ -1,5 +1,5 @@
  <h1 align="center">likeadmin通用管理后台（Python）</h1>
-<h4 align="center">🚀快速开发、✅后台多端自适应</h4> 
+<h4 align="center">🚀快速开发、🛠️ 一键生成代码、✅后台多端自适应、📱手机端</h4> 
 <p align="center">
 <a href="https://www.java.com/zh-CN/download/"><img src="https://img.shields.io/badge/Python-3.5-fadf6f"> </a><a href="#"> <img src="https://img.shields.io/badge/FastAPI-0.85.0-46968a"> </a><a href="https://www.tslang.cn/"><img src="https://img.shields.io/badge/TypeScript-3-294e80"></a> <a href="#"><img src="https://img.shields.io/badge/Vue.js-3-4eb883"> </a><a href="#"><img src="https://img.shields.io/badge/vite-2-ffc018"> </a><a href="#"><img src="https://img.shields.io/badge/Element Plus-2-409eff"> </a><a target="_blank" href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker--139cff"></a>
 </p>
