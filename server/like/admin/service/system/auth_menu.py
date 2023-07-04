@@ -19,7 +19,7 @@ class ISystemAuthMenuService(ABC):
     """系统菜单服务抽象类"""
 
     @abstractmethod
-    async def select_menu_by_role_id(self, role_id) -> List[Union[SystemAuthMenuOut, dict]]:
+    async def select_menu_by_role_id(self, role_ids: List[int]) -> List[Union[SystemAuthMenuOut, dict]]:
         pass
 
     @abstractmethod
@@ -46,10 +46,10 @@ class ISystemAuthMenuService(ABC):
 class SystemAuthMenuService(ISystemAuthMenuService):
     """系统菜单服务实现类"""
 
-    async def select_menu_by_role_id(self, role_id) -> List[Union[SystemAuthMenuOut, dict]]:
+    async def select_menu_by_role_id(self, role_ids: List[int]) -> List[Union[SystemAuthMenuOut, dict]]:
         """根据角色ID获取菜单"""
         admin_id = self.request.state.admin_id
-        menu_ids = await self.auth_perm_service.select_menu_ids_by_role_id([role_id]) or [0]
+        menu_ids = await self.auth_perm_service.select_menu_ids_by_role_id(role_ids) or [0]
         where = [system_auth_menu.c.menu_type.in_(('M', 'C')),
                  system_auth_menu.c.is_disable == 0]
         if admin_id != 1:
