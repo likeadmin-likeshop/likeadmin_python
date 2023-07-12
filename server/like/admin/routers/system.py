@@ -160,7 +160,7 @@ async def role_del(del_in: SystemAuthRoleDelIn,
 async def menu_route(request: Request,
                      menu_service: ISystemAuthMenuService = Depends(SystemAuthMenuService.instance)):
     """菜单路由"""
-    return await menu_service.select_menu_by_role_id(request.state.admin_id)
+    return await menu_service.select_menu_by_role_id(request.state.role_ids)
 
 
 @router.get('/menu/list')

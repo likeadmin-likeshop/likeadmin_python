@@ -1,0 +1,66 @@
+version: '3'
+
+networks:
+  likeadmin:
+    driver: bridge
+
+services:
+
+  mysql:
+    container_name: likeadmin-py-mysql
+    image: mysql:5.7.29 #X86架构
+    #image: amd64/mysql:5.7.29 #arm架构
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ../sql:/likeadmin_python/sql
+      - ./data/mysql5.7.29/lib:/var/lib/mysql
+      - ./config/mysql/mysqld.cnf:/etc/mysql/my.cnf
+    networks:
+      - likeadmin
+    ports:
+      - "3306:3306"
+
+  redis:
+    container_name: likeadmin-py-redis
+    image: redis:7.0.4
+    restart: always
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - likeadmin
+    ports:
+      - "6379:6379"
+
+  fastapi:
+    depends_on:
+      - mysql
+      - redis
+    container_name: likeadmin-py-main
+    image: python:3.8.16-slim-bullseye
+    restart: always
+    tty: true
+    working_dir: /likeadmin_python/server
+    volumes:
+      - ../server:/likeadmin_python/server
+    networks:
+      - likeadmin
+    ports:
+      - "8000:8000"
+      - "8002:8002"
+    command: bash
+  
+
+  node:
+    container_name: likeadmin-py-node
+    image: node:14.18.1
+    restart: always
+    volumes:
+      - ../admin:/likeadmin_python/admin
+    networks:
+      - likeadmin
+    tty: true
+    working_dir: /likeadmin_python/admin
+    ports:
+      - "5173:5173"

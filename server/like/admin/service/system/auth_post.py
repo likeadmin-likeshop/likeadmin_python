@@ -93,7 +93,7 @@ class SystemAuthPostService(ISystemAuthPostService):
             system_auth_post.c.is_delete == 0).limit(1)), '岗位不存在'
 
         assert not await db.fetch_one(system_auth_admin.select().where(
-            system_auth_admin.c.post_id == _id,
+            system_auth_admin.c.post_ids == _id,
             system_auth_admin.c.is_delete == 0).limit(1)), '该岗位已被管理员使用,请先移除'
 
         return await db.execute(system_auth_post.update()

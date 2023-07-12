@@ -24,7 +24,8 @@ class GenUtil:
             where.append(text(f'lower(table_name) like lower("%{table_name}%")'))
         if table_comment:
             where.append(text(f'lower(table_comment) like lower("%{table_comment}%")'))
-        return select(text('table_name, table_comment, create_time, update_time')) \
+        return select(text('table_name AS table_name, table_comment AS table_comment, '
+                           'create_time AS create_time, update_time AS update_time')) \
             .where(
             and_(
                 text('table_schema = (SELECT database())'),
@@ -37,7 +38,8 @@ class GenUtil:
     def get_db_tables_query_by_names(table_names: List[str]) -> Select:
         """根据表名集查询表"""
         tbl_list_str = ','.join([f'"{i}"' for i in table_names])
-        return select(text('table_name, table_comment, create_time, update_time')) \
+        return select(text('table_name AS table_name, table_comment AS table_comment, '
+                           'create_time AS create_time, update_time AS update_time')) \
             .where(
             and_(
                 text('table_schema = (SELECT database())'),
@@ -50,11 +52,11 @@ class GenUtil:
     def get_db_table_columns_query_by_name(table_name: str) -> Select:
         """根据表名查询列信息"""
         return select(text(
-            'column_name,'
+            'column_name AS column_name,'
             '(CASE WHEN (is_nullable = "no" && column_key != "PRI") THEN "1" ELSE NULL END) AS is_required, '
             '(CASE WHEN column_key = "PRI" THEN "1" ELSE "0" END) AS is_pk, '
-            'ordinal_position AS sort, column_comment, '
-            '(CASE WHEN extra = "auto_increment" THEN "1" ELSE "0" END) AS is_increment, column_type')) \
+            'ordinal_position AS sort, column_comment AS column_comment, '
+            '(CASE WHEN extra = "auto_increment" THEN "1" ELSE "0" END) AS is_increment, column_type AS column_type')) \
             .where(
             and_(
                 text('table_schema = (SELECT database())'),

@@ -42,9 +42,9 @@ class TemplateUtil:
             sub_columns.append(origin_pri_col)
         for column in columns:
             all_fields.append(column.column_name)
-            if column.column_name not in origin_cols:
-                sub_table_fields.append(column.column_name)
-                sub_columns.append(column)
+            # if column.column_name not in origin_cols:
+            #     sub_table_fields.append(column.column_name)
+            #     sub_columns.append(column)
             if column.is_list == 1:
                 list_fields.append(column.column_name)
             if column.is_edit == 1:

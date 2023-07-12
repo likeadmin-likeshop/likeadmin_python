@@ -58,7 +58,7 @@ async def verify_token(request: Request):
 
     # 单次请求信息保存
     request.state.admin_id = uid
-    request.state.role_ids = mapping.get('role_ids')
+    request.state.role_ids = [int(i) for i in mapping.get('role_ids').split(',')]
     request.state.username = mapping.get('username')
     request.state.nickname = mapping.get('nickname')
 
